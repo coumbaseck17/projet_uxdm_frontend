@@ -1,13 +1,13 @@
 <template>
   <div>
     <h1>Popularity</h1>
-    <BarChartV1></BarChartV1>
+    <BarChartV1/>
+
   </div>
 </template>
 
 <script>
 import BarChartV1 from "@/components/bar-chart/BarChartV1.vue";
-
 export default {
   name: 'App',
   components: {
