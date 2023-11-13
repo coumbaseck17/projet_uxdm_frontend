@@ -9,14 +9,11 @@
 
 <script>
 import BarChartVue from "@/components/bar-chart/BarChartV1.vue";
-import BarChartV1Details from "@/components/bar-chart/BarChartV1Details.vue";
 
 export default {
   name: 'App',
   components: {
     BarChartVue,
-    // eslint-disable-next-line vue/no-unused-components
-    BarChartV1Details,
   }
 }
 </script>
