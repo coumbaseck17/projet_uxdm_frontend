@@ -1,17 +1,22 @@
 <template>
   <div>
     <h1>Popularity</h1>
-    <BarChartV1></BarChartV1>
+    <BarChartVue>
+    </BarChartVue>
+
   </div>
 </template>
 
 <script>
-import BarChartV1 from "@/components/bar-chart/BarChartV1.vue";
+import BarChartVue from "@/components/bar-chart/BarChartV1.vue";
+import BarChartV1Details from "@/components/bar-chart/BarChartV1Details.vue";
 
 export default {
   name: 'App',
   components: {
-    BarChartV1
+    BarChartVue,
+    // eslint-disable-next-line vue/no-unused-components
+    BarChartV1Details,
   }
 }
 </script>
