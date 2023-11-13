@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>Popularity</h1>
     <BarChartV1/>
 
   </div>
