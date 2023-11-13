@@ -1,16 +1,23 @@
 <template>
-  <div class="chart-container">
-    <!-- Filter radio box -->
+
+  <!-- Filter radio box -->
     <div class="filter-container" >
 
     </div>
 
-    </div>
     <!-- Pictogram chart -->
     <div>
       <div class="pictogram-chart"></div>
     </div>
 
+  <!-- Légende des pictogrammes -->
+  <div class="legend-container">
+    <h4>Légende des Pictogrammes </h4>
+    <div v-for="legendItem in legend" :key="legendItem.value" class="legend-item">
+      <img :src="legendItem.icon" alt="Pictogram" class="legend-icon" />
+      <span>{{ legendItem.label }}  {{ labelLegend }}</span>
+    </div>
+  </div>
     <!-- Genre details -->
     <div class="genre-details">
       <!-- Content of genre details -->
@@ -20,14 +27,16 @@
     <label>
       <input type="radio"  name="filterGroup" v-model="selectedFilter" value="all" @change="applyFilter">  All
     </label>
+    <p>GENDER</p>
     <label>
       <input type="radio"  name="filterGroup" v-model="selectedFilter" value="Female" @change="applyFilter">  Female
     </label>
     <label>
       <input type="radio"  name="filterGroup" v-model="selectedFilter" value="Male" @change="applyFilter">  Male
     </label>
+    <p>TYPE</p>
     <label>
-      <input type="radio"  name="filterGroup" v-model="selectedFilter" value="Others" @change="applyFilter">  Others
+      <input type="radio"  name="filterGroup" v-model="selectedFilter" value="" @change="applyFilter">  Others
     </label>
     <label>
       <input type="radio"   name="filterGroup" v-model="selectedFilter" value="Group" @change="applyFilter">  Group
@@ -36,6 +45,10 @@
       <input type="radio"  name="filterGroup" v-model="selectedFilter" value="Person"  @change="applyFilter"> Person
     </label>
   </div>
+  <div class="artist-details">
+    <!-- Content of genre details -->
+  </div>
+
   </template>
 
 
@@ -60,12 +73,26 @@ export default {
     return {
       data: null,
       marges: {haut: 40, droit: 20, bas: 30, gauche: 60},
-      largeurTotale: 1500,
+      largeurTotale: 900,
       hauteurTotale: 600,
       innerWidth: 0,
       innerHeight: 0,
       currentGenre: null,
-      subgenre :''// Track the currently selected genre
+      subgenre :'',
+      selectedFilter:'all',
+      labelLegend: 'artistes',
+      legend: [
+        { label: '1000000+', icon: pic1000000, value: '1000000+'},
+        { label: '100000', icon: pic100000, value: '100000' },
+        { label: '10000', icon: pic10000, value: '10000' },
+        { label: '1000', icon: pic1000, value: '1000' },
+        { label: '100', icon: pic100, value: '100' },
+        { label: '10', icon: pic10, value: '10' },
+        { label: '1', icon: pic1, value: '1' },
+      ],
+      selectedArtist: null
+//
+      // Track the currently selected genre
     };
   },
 
@@ -84,6 +111,7 @@ export default {
 
   methods: {
     drawChart() {
+      this.labelLegend = "artistes"
       if (!this.data || !this.data.genres) {
         return;
       }
@@ -155,10 +183,14 @@ export default {
           .style('font-size', '14px')
           .style('fill', 'black')
           .style('text-anchor', 'start');
+
+
     },
     showSubgenres(genre) {
       // Update currentGenre to the selected genre
       this.currentGenre = genre;
+      this.labelLegend = "artistes"
+
 
       // Remove the existing chart
       d3.select('.pictogram-chart').selectAll('*').remove();
@@ -200,7 +232,7 @@ export default {
             this.hideSubgenreDetails();
           })
           .on('click', (event, subgenre) => {
-            this.subgenre=subgenre;
+            this.subgenre = subgenre;
             this.showArtists(subgenre);
           });
 
@@ -242,15 +274,12 @@ export default {
       const subgenreDetails = this.data.genres[this.currentGenre].subgenres[subgenre].details;
 
 
-
-
       // Logique pour afficher les détails du genre
       const detailsContainer = d3.select('.genre-details');
       detailsContainer.html(`<p>Nombre de groupe: ${subgenreDetails.nombre_groupes} / Actifs : ${subgenreDetails.nombre_actif_groupes}</p>
         <p>Nombre de solos: ${subgenreDetails.nombre_solos} / Actifs : ${subgenreDetails.nombre_actif_solos} </p>
         <p>Nombre autres: ${subgenreDetails.nombre_autres} / Actifs : ${subgenreDetails.nombre_actif_autres} </p>`);
     },
-
 
 
     hideSubgenreDetails() {
@@ -289,31 +318,23 @@ export default {
     },
 
 
-
-
-
     drawArtistsChart(subgenre, artistsData) {
 
 
       // Supprimez l'ancien graphique
       d3.select('.pictogram-chart').selectAll('*').remove();
-      d3.select('.chart-container').selectAll('*').remove();
 
       // Determine the total width needed for pictograms
 
 
       // Set the width of the container dynamically
       // Créez une boîte de défilement pour la liste des artistes
-      const container = d3.select('.chart-container').append('div')
+      const container = d3.select('.pictogram-chart').append('div')
           .attr('class', 'artists-container')
-          .style('width', 800)
           .style('height', `${artistsData.length * 50}px`) // Ajustez la hauteur en fonction du nombre d'artistes
-          .style('overflow-y', 'auto')
           .style('position', 'absolute')
           .style('top', '0')
           .style('left', '0');
-
-
 
 
       // Dessinez la liste des artistes à l'intérieur de la boîte de défilement
@@ -322,11 +343,14 @@ export default {
 
     drawArtistsList(container, artistsData) {
       d3.select('.genre-details').html('');
+      this.labelLegend = "fans"
 
       // Create an SVG container for the artist chart
       const svg = container.append('svg')
           .attr('width', 1000)
-          .attr('height', artistsData.length * 100);
+          .attr('height', artistsData.length * 70)
+
+      ;
 
       // Create a scale for the y-axis
       const yScale = d3.scaleBand()
@@ -347,7 +371,20 @@ export default {
           .enter()
           .append('g')
           .attr('class', 'artist-group')
-          .attr('transform', artist => `translate(200, ${yScale(artist.name) + yScale.bandwidth() / 2})`);
+          .attr('id', artist => `artist-group-${CSS.escape(artist.name.replace(/\s+/g, '-'))}`) // Use CSS.escape()
+          .attr('transform', artist => `translate(200, ${yScale(artist.name) + yScale.bandwidth() / 2})`)
+          .on('mouseout', () => {
+        this.unhighlightArtist();
+      }).on('mouseover', (event, artist) => {
+        this.highlightArtist(artist);
+      })
+          .on('click', (event, artist) => {
+            console.log(artist.name)
+
+             this.selectArtist(artist);
+              this.highlightArtist(artist);
+              this.showArtistDetails(artist);
+          });
 
       // Add pictograms for each artist
       artistGroups.selectAll('.pictogram')
@@ -360,6 +397,8 @@ export default {
               ...Array(Math.floor((deezerFans % 100000) / 10000)).fill(pic10000),
               ...Array(Math.floor(deezerFans / 1000)).fill(pic1000),
               ...Array(Math.floor((deezerFans % 1000) / 100)).fill(pic100),
+              ...Array(Math.floor((deezerFans % 100) / 10)).fill(pic10),
+              ...Array(deezerFans % 10).fill(pic1),
             ];
           })
           .enter()
@@ -385,7 +424,7 @@ export default {
 // Wrap function to handle line breaks
       // Wrap function to handle line breaks
       function wrap(text, width) {
-        text.each(function() {
+        text.each(function () {
           var text = d3.select(this),
               words = text.text().split(/\s+/),
               word,
@@ -413,40 +452,78 @@ export default {
     ,
     applyFilter() {
       // Déterminez le filterType en fonction de la filterValue
-      console.log(this.selectedFilter);
       let filterType = null;
       const filterValue = this.selectedFilter;
-      if (['All', 'Group', 'Person'].includes(this.selectedFilter)) {
+      if (['all', 'Group', 'Person', ''].includes(this.selectedFilter)) {
         filterType = 'TYPE';
-      } else if (['Female', 'Male', 'Others'].includes(this.selectedFilter)) {
+      } else if (['Female', 'Male'].includes(this.selectedFilter)) {
         filterType = 'GENDER';
       }
-
+      console.log(filterType + "," + filterValue)
 
       // Appelez la fonction pour appliquer le filtre
       this.filterArtists(filterType, filterValue);
     },
 
     filterArtists(filterType, filterValue) {
-      // Appelez votre API pour obtenir la liste des artistes filtrés
-      const apiUrl = `http://127.0.0.1:5000/api/filter_artists?genre=${this.currentGenre}&subgenre=${this.subgenre}&filter_type=${filterType}&filter_value=${filterValue}`;
 
-      axios.get(apiUrl)
-          .then(response => {
-            const filteredArtistsData = response.data;
+      if (filterValue == "all") {
+        this.showArtists(this.subgenre)
+      } else {
+        // Appelez votre API pour obtenir la liste des artistes filtrés
+        const apiUrl = `http://127.0.0.1:5000/api/filter_artists?genre=${this.currentGenre}&subgenre=${this.subgenre}&filter_type=${filterType}&filter_value=${filterValue}`;
 
-            this.drawArtistsChart(this.subgenre, filteredArtistsData);
-          })
-          .catch(error => {
-            console.error('Erreur lors de la récupération des artistes filtrés : ', error);
-          });
+        axios.get(apiUrl)
+            .then(response => {
+              const filteredArtistsData = response.data;
+
+              this.drawArtistsChart(this.subgenre, filteredArtistsData);
+            })
+            .catch(error => {
+              console.error('Erreur lors de la récupération des artistes filtrés : ', error);
+            });
+
+      }
     },
     // ... autres méthodes existantes ...
-  },
+
+    highlightArtist(artist) {
+      // Highlight the artist by modifying the style (add a blue border)
+      d3.select(`.artist-group#${CSS.escape(artist.name.replace(/\s+/g, '-'))}`)
+          .style('border', '2px solid blue');
+    },
+
+    unhighlightArtist() {
+      // Unhighlight the artist by resetting the style (remove the border)
+      if (this.selectedArtist) {
+        d3.select(`.artist-group#${CSS.escape(this.selectedArtist.name.replace(/\s+/g, '-'))}`)
+            .style('border', 'none');
+      }
+    },
+    selectArtist(artist) {
+      // Mettez à jour la variable selectedArtist
+      this.selectedArtist = artist;
+    },
+
+    showArtistDetails(artist) {
+      // Logique pour afficher les détails de l'artiste
+      // Vous pouvez utiliser la classe 'genre-details' ou toute autre méthode pour afficher les détails
+      // Mise à jour des détails de l'artiste actuel
+      const detailsContainer = d3.select('.artist-details');
+      detailsContainer.html(`<p>Liste des albums: ${artist.albums.join(', ')}</p>
+    <p>Genre: ${artist.gender}</p>
+    <p>Liste des genres: ${artist.genres.join(', ')}</p>
+    <p>LifeSpan Ended: ${artist.lifeSpan.ended ? 'Oui' : 'Non'}</p>
+    <p>Membres: ${artist.members.join(', ')}</p>
+    <p>Image: <img src="${artist.picture}" alt="Artist"></p>
+    <p>Record Label: ${artist.recordLabel}</p>
+    <p>Type: ${artist.type}</p>
+    <p>URL Deezer: <a href="${artist.urlDeezer}" target="_blank">${artist.urlDeezer}</a></p>`);
+    }
 
     // ...
 
-
+  },
 };
 </script>
 
@@ -479,7 +556,6 @@ export default {
 .artist-name-container {
   cursor: pointer;
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 .chart-container {
@@ -489,10 +565,15 @@ export default {
 
 .pictogram-chart {
   margin-right: 20px;
+
 }
 
 .genre-details {
   font-size: 16px;
+}
+
+.artist-details {
+  margin-left: 100px;
 }
 
 .axis path,
@@ -512,7 +593,6 @@ export default {
   fill: black;
   cursor: pointer;
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -535,5 +615,40 @@ export default {
 .filter-container {
   flex-direction: column;
   margin-right: -1000px;  /* Ajustez la valeur en conséquence */
+}
+
+
+
+.artists-container {
+  position: relative;
+  margin-right: 20px;
+  width: 800px; /* Assurez-vous que le conteneur parent a une largeur fixe */
+}
+
+.artists-container svg {
+  width: 2500px; /* Définissez la largeur du contenu que vous souhaitez pouvoir faire défiler */
+  overflow-x: auto; /* Activez le défilement horizontal si nécessaire */
+}
+
+.legend-container {
+  margin-right: -10000px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.legend-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+
+
+}
+
+.artist-group:hover {
+  border: 2px solid blue;
 }
 </style>
