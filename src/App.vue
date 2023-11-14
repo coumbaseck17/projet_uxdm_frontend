@@ -6,11 +6,11 @@
 </template>
 
 <script>
-import BarChartV1 from "@/components/bar-chart/BarChartV1.vue";
+import BarChartV1 from "@/components/bar-chart/BarChartV1";
 export default {
   name: 'App',
   components: {
-    BarChartV1
+   BarChartV1
   }
 }
 </script>

@@ -1,28 +1,55 @@
 <template>
 
   <!-- Filter radio box -->
-  <FilterComponent @apply-filter="handleApplyFilter" v-if="subgenre"/>
+    <div class="filter-container" >
 
-  <!-- Pictogram chart -->
-    <div>
-      <div class="pictogram-chart"></div>
-      <!-- Légende des pictogrammes -->
-      <div class="legend-container">
-        <h4>Légende des Pictogrammes </h4>
-        <div v-for="legendItem in legend" :key="legendItem.value" class="legend-item">
-          <img :src="legendItem.icon" alt="Pictogram" class="legend-icon" />
-          <span>{{ legendItem.label }}  {{ labelLegend }}</span>
-        </div>
-      </div>
     </div>
 
+    <!-- Pictogram chart -->
+    <div>
+      <div class="pictogram-chart"></div>
+    </div>
 
+  <!-- Légende des pictogrammes -->
+  <div class="legend-container">
+    <h4>Légende des Pictogrammes </h4>
+    <div v-for="legendItem in legend" :key="legendItem.value" class="legend-item">
+      <img :src="legendItem.icon" alt="Pictogram" class="legend-icon" />
+      <span>{{ legendItem.label }}  {{ labelLegend }}</span>
+    </div>
+  </div>
     <!-- Genre details -->
-  <GenreDetailsComponent :genre-details="currentGenreDetails"></GenreDetailsComponent>
-  <ArtistDetailsComponent v-if="selectedArtist" :artist="selectedArtist"/>
+    <div class="genre-details">
+      <!-- Content of genre details -->
+    </div>
+  <!-- Ajoutez un nouveau bouton radio pour le filtre -->
+  <div class="filter-container" v-if="subgenre">
+    <label>
+      <input type="radio"  name="filterGroup" v-model="selectedFilter" value="all" @change="applyFilter">  All
+    </label>
+    <p>GENDER</p>
+    <label>
+      <input type="radio"  name="filterGroup" v-model="selectedFilter" value="Female" @change="applyFilter">  Female
+    </label>
+    <label>
+      <input type="radio"  name="filterGroup" v-model="selectedFilter" value="Male" @change="applyFilter">  Male
+    </label>
+    <p>TYPE</p>
+    <label>
+      <input type="radio"  name="filterGroup" v-model="selectedFilter" value="" @change="applyFilter">  Others
+    </label>
+    <label>
+      <input type="radio"   name="filterGroup" v-model="selectedFilter" value="Group" @change="applyFilter">  Group
+    </label>
+    <label>
+      <input type="radio"  name="filterGroup" v-model="selectedFilter" value="Person"  @change="applyFilter"> Person
+    </label>
+  </div>
+  <div class="artist-details">
+    <!-- Content of genre details -->
+  </div>
 
-
-</template>
+  </template>
 
 
 <script>
@@ -38,9 +65,6 @@ import pic1000 from '@/data/pic1000.png';
 import pic100 from '@/data/pic100.png';
 import pic10 from '@/data/pic10.png';
 import pic1 from '@/data/pic1.png';
-import FilterComponent from './FilterComponent.vue';
-import GenreDetailsComponent from './GenreDetailsComponent.vue'; // Assurez-vous que le chemin est correct
-import ArtistDetailsComponent from './ArtistDetailsComponent.vue';
 
 export default {
 
@@ -54,9 +78,9 @@ export default {
       innerWidth: 0,
       innerHeight: 0,
       currentGenre: null,
+      subgenre :'',
       currentGenreDetails: null,
 
-      subgenre :'',
       selectedFilter:'all',
       labelLegend: 'artistes',
       legend: [
@@ -69,7 +93,7 @@ export default {
         { label: '1', icon: pic1, value: '1' },
       ],
       selectedArtist: null
-
+//
       // Track the currently selected genre
     };
   },
@@ -86,11 +110,7 @@ export default {
       console.error('Erreur lors de la récupération des données de l\'API : ', error);
     }
   },
-  components: {
-    FilterComponent,    GenreDetailsComponent,ArtistDetailsComponent
 
-    // Autres composants si nécessaire
-  },
   methods: {
     drawChart() {
       this.labelLegend = "artistes"
@@ -250,7 +270,17 @@ export default {
     },
 
     showSubgenreDetails(subgenre) {
-      this.currentGenreDetails = this.data.genres[this.currentGenre].subgenres[subgenre].details;
+      // Logique pour afficher les détails du subgenre
+      // Vous pouvez utiliser la classe 'genre-details' ou toute autre méthode pour afficher les détails
+      // Mise à jour des détails du genre actuel
+      const subgenreDetails = this.data.genres[this.currentGenre].subgenres[subgenre].details;
+
+
+      // Logique pour afficher les détails du genre
+      const detailsContainer = d3.select('.genre-details');
+      detailsContainer.html(`<p>Nombre de groupe: ${subgenreDetails.nombre_groupes} / Actifs : ${subgenreDetails.nombre_actif_groupes}</p>
+        <p>Nombre de solos: ${subgenreDetails.nombre_solos} / Actifs : ${subgenreDetails.nombre_actif_solos} </p>
+        <p>Nombre autres: ${subgenreDetails.nombre_autres} / Actifs : ${subgenreDetails.nombre_actif_autres} </p>`);
     },
 
 
@@ -262,8 +292,10 @@ export default {
 
     showGenreDetails(genre) {
       // Logique pour afficher les détails du genre
-      this.currentGenreDetails = this.data.genres[genre].details;
-
+      const detailsContainer = d3.select('.genre-details');
+      detailsContainer.html(`<p>Nombre de groupe: ${this.data.genres[genre].details.nombre_groupes} / Actifs : ${this.data.genres[genre].details.nombre_actif_groupes}</p>
+        <p>Nombre de solos: ${this.data.genres[genre].details.nombre_solos} / Actifs : ${this.data.genres[genre].details.nombre_actif_solos} </p>
+        <p>Nombre autres: ${this.data.genres[genre].details.nombre_autres} / Actifs : ${this.data.genres[genre].details.nombre_actif_autres} </p>`);
     },
 
 
@@ -353,6 +385,7 @@ export default {
 
              this.selectArtist(artist);
               this.highlightArtist(artist);
+              this.showArtistDetails(artist);
           });
 
       // Add pictograms for each artist
@@ -419,11 +452,23 @@ export default {
       }
     }
     ,
-    handleApplyFilter(filterData) {
+    applyFilter() {
       // Déterminez le filterType en fonction de la filterValue
-      const { filterType, filterValue } = filterData;
+      let filterType = null;
+      const filterValue = this.selectedFilter;
+      if (['all', 'Group', 'Person', ''].includes(this.selectedFilter)) {
+        filterType = 'TYPE';
+      } else if (['Female', 'Male'].includes(this.selectedFilter)) {
+        filterType = 'GENDER';
+      }
+      console.log(filterType + "," + filterValue)
 
-      console.log(filterType)
+      // Appelez la fonction pour appliquer le filtre
+      this.filterArtists(filterType, filterValue);
+    },
+
+    filterArtists(filterType, filterValue) {
+
       if (filterValue == "all") {
         this.showArtists(this.subgenre)
       } else {
@@ -460,8 +505,23 @@ export default {
     selectArtist(artist) {
       // Mettez à jour la variable selectedArtist
       this.selectedArtist = artist;
-
     },
+
+    showArtistDetails(artist) {
+      // Logique pour afficher les détails de l'artiste
+      // Vous pouvez utiliser la classe 'genre-details' ou toute autre méthode pour afficher les détails
+      // Mise à jour des détails de l'artiste actuel
+      const detailsContainer = d3.select('.artist-details');
+      detailsContainer.html(`<p>Liste des albums: ${artist.albums.join(', ')}</p>
+    <p>Genre: ${artist.gender}</p>
+    <p>Liste des genres: ${artist.genres.join(', ')}</p>
+    <p>LifeSpan Ended: ${artist.lifeSpan.ended ? 'Oui' : 'Non'}</p>
+    <p>Membres: ${artist.members.join(', ')}</p>
+    <p>Image: <img src="${artist.picture}" alt="Artist"></p>
+    <p>Record Label: ${artist.recordLabel}</p>
+    <p>Type: ${artist.type}</p>
+    <p>URL Deezer: <a href="${artist.urlDeezer}" target="_blank">${artist.urlDeezer}</a></p>`);
+    }
 
     // ...
 
@@ -545,19 +605,7 @@ export default {
 .pictogram:hover {
   filter: brightness(70%);
 }
-.filter-container {
-  display: flex;
-  flex-direction: column;
-  margin-right: 20px;
-}
 
-.filter-container label {
-  margin-bottom: 5px;
-}
-.filter-container {
-  flex-direction: column;
-  margin-right: -1000px;  /* Ajustez la valeur en conséquence */
-}
 
 
 

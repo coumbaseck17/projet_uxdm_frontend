@@ -1,8 +1,10 @@
+
+
 import { createApp } from 'vue'
 import App from './App.vue'
-
-createApp(App).mount('#app')
+import router from './router'
+createApp(App).use(router).mount('#app')
 
 for (const node of document.querySelectorAll("[barchartv1]")) {
-    createApp(App).mount(node)
+    createApp(App).use(router).mount(node)
 }
