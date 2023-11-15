@@ -1,5 +1,4 @@
 <template>
-
   <!-- Filter radio box -->
     <div class="filter-container" >
 
@@ -53,23 +52,24 @@
 
 
 <script>
+
 import * as d3 from 'd3';
 import axios from 'axios';
 
-import pic1000000 from '@/../../../public/data/pic100000.png';
-import pic100000 from '@/../../../public/data/pic100000.png';
-import pic10000 from '@/../../../public/data/pic10000.png';
-import pic1000 from '@/../../../public/data/pic1000.png';
-import pic100 from '@/../../../public/data/pic100.png';
-import pic10 from '@/../../../public/data/pic10.png';
-import pic1 from '@/../../../public/data/pic1.png';
+import pic1000000 from '@/../public/data/pic100000.png';
+import pic100000 from '@/../public/data/pic100000.png';
+import pic10000 from '@/../public/data/pic10000.png';
+import pic1000 from '@/../public/data/pic1000.png';
+import pic100 from '@/../public/data/pic100.png';
+import pic10 from '@/../public/data/pic10.png';
+import pic1 from '@/../public/data/pic1.png';
+import {filterArtists} from "@/data";
 
 export default {
 
 
   data() {
     return {
-      data: null,
       marges: {haut: 40, droit: 20, bas: 30, gauche: 60},
       largeurTotale: 900,
       hauteurTotale: 600,
@@ -88,35 +88,32 @@ export default {
         { label: '10', icon: pic10, value: '10' },
         { label: '1', icon: pic1, value: '1' },
       ],
-      selectedArtist: null
-//
+      selectedArtist: null,
+      data: null
+
       // Track the currently selected genre
     };
   },
 
   async mounted() {
 
+
+
+  try {
     const response = await fetch(
-        "./data/all_data_details.json"
-    )
-
-    const data = await response.json()
-    console.log(data)
-    try {
-      const response = await axios.get('http://127.0.0.1:5000/api/statistiques');
-      this.data = response.data;
-      this.innerWidth = this.largeurTotale - this.marges.gauche - this.marges.droit;
-      this.innerHeight = this.hauteurTotale - this.marges.haut - this.marges.bas;
-      this.drawChart();
-
-
-    } catch (error) {
-      console.error('Erreur lors de la récupération des données de l\'API : ', error);
-    }
-  },
-
+        "./data/details_v1/all_data_details.json"
+    );
+    this.data = await response.json();
+    this.innerWidth = this.largeurTotale - this.marges.gauche - this.marges.droit;
+    this.innerHeight = this.hauteurTotale - this.marges.haut - this.marges.bas;
+    this.drawChart();
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données de l\'API : ', error);
+  }
+},
   methods: {
     drawChart() {
+
       this.labelLegend = "artistes"
       if (!this.data || !this.data.genres) {
         return;
@@ -224,7 +221,6 @@ export default {
           .call(yAxis).selectAll('.domain, .tick line')
           .style('stroke', 'transparent');
 
-      // Create groups for each subgenre
       const subgenreGroups = svg.selectAll('.subgenre-group')
           .data(subgenres)
           .enter()
@@ -262,7 +258,6 @@ export default {
           .attr('height', 40)
           .attr('xlink:href', d => d);
 
-      // Add subgenre names as text labels
       subgenreGroups.append('text')
           .attr('class', 'label')
           .text(subgenre => subgenre)
@@ -274,13 +269,10 @@ export default {
     },
 
     showSubgenreDetails(subgenre) {
-      // Logique pour afficher les détails du subgenre
-      // Vous pouvez utiliser la classe 'genre-details' ou toute autre méthode pour afficher les détails
-      // Mise à jour des détails du genre actuel
+
       const subgenreDetails = this.data.genres[this.currentGenre].subgenres[subgenre].details;
 
 
-      // Logique pour afficher les détails du genre
       const detailsContainer = d3.select('.genre-details');
       detailsContainer.html(`<p>Nombre de groupe: ${subgenreDetails.nombre_groupes} / Actifs : ${subgenreDetails.nombre_actif_groupes}</p>
         <p>Nombre de solos: ${subgenreDetails.nombre_solos} / Actifs : ${subgenreDetails.nombre_actif_solos} </p>
@@ -309,20 +301,18 @@ export default {
       d3.select('.genre-details').html('');
     },
 
-    showArtists(subgenre) {
-      // Appelez votre API pour obtenir la liste des artistes du sous-genre
-      const apiUrl = `http://127.0.0.1:5000/api/filter_artists?genre=${this.currentGenre}&subgenre=${subgenre}`;
-
-      axios.get(apiUrl)
-          .then(response => {
-            const artistsData = response.data;
-            this.drawArtistsChart(subgenre, artistsData);
-          })
-          .catch(error => {
-            console.error('Erreur lors de la récupération des artistes du sous-genre : ', error);
-          });
+    async showArtists(subgenre) {
+      try {
+        const artistsData = await filterArtists(this.currentGenre, subgenre);
+        if (artistsData) {
+          this.drawArtistsChart(subgenre, artistsData);
+        } else {
+          console.error('No artist data fetched.');
+        }
+      } catch (error) {
+        console.error('Error fetching artists:', error);
+      }
     },
-
 
     drawArtistsChart(subgenre, artistsData) {
 
