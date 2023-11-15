@@ -1,4 +1,6 @@
 <template>
+  <br>
+  <h3> Popularity </h3>
   <div class="chart-container">
     <div>
       <div class="bar-chart" ref="detailsContainer" >
@@ -6,27 +8,19 @@
         <svg ref="mainChart"></svg>
         </div>
       </div>
-    <BarChartV1Details  v-if="showDetails"
-                       :detailData="detailData" >
-    </BarChartV1Details>
   </div>
 </template>
 
 <script>
-import BarChartV1Details from "@/components/bar-chart/BarChartV1Details.vue";
 import axios from "axios";
 import * as d3 from "d3";
 
 export default {
   name: 'BarChart',
-  components: {BarChartV1Details},
-
   data() {
     return {
       data: null,
       genres : null,
-      showDetails: false,
-      detailData: null,
     };
   },
 
@@ -48,7 +42,7 @@ export default {
       }
 
       const width = 600;
-      const height = 400;
+      const height = 500;
       const margin = { top: 20, right: 20, bottom: 30, left: 60 };
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
@@ -58,6 +52,7 @@ export default {
         return this.data.genres[b].details.nombre_artists_total - this.data.genres[a].details.nombre_artists_total;
       });
 
+      // Créer le SVG
       const svg = d3.select('.bar-chart').append('svg')
           .attr('width', width)
           .attr('height', height)
@@ -89,6 +84,16 @@ export default {
       svg.append('g')
           .call(yAxis);
 
+      // create a tooltip
+      var tooltip = d3.select(".bar-chart")
+          .append("div")
+          .style("position", "absolute")
+          .style("background-color", "white")
+          .style("border", "solid")
+          .style("border-width", "2px")
+          .style("border-radius", "5px")
+          .style("padding", "5px")
+          .style("visibility", "hidden")
 
       // Append the bars
       svg.selectAll('rect')
@@ -100,62 +105,23 @@ export default {
           .attr('width', (genre) => xScale(this.data.genres[genre].details.nombre_artists_total))
           .attr('height', yScale.bandwidth())
           .attr('fill', (genre) => colorScale(genre))
-          .on('mouseover', function (genre) {
-            // Change the color of the bar , empty => black
-            d3.select(this).attr('fill', '');
-
-            // Créez le graphique en lollipop détaillé
-            const lollipopChart = d3.select('.bar-chart').append('svg')
-                .attr('width', width)
-                .attr('height', height)
-                .append('g')
-                .attr('transform', `translate(${margin.left},${margin.top + height})`);
-
-            // Ajoutez des échelles pour les axes Y et X
-            const lollipopYScale = d3.scaleLinear()
-                .domain([0, this.data.genres[genre].details.nombre_artists_total])
-                .range([0, -height + margin.top + margin.bottom]);
-
-            const lollipopXScale = d3.scaleLinear()
-                .domain([0, this.data.genres[genre].details.nombre_artists_total])
-                .range([0, innerWidth]);
-
-            // Ajoutez l'axe Y
-            lollipopChart.append('g')
-                .attr('transform', 'translate(0, 0)')
-                .call(d3.axisLeft(lollipopYScale));
-
-            // Ajoutez l'axe X
-            lollipopChart.append('g')
-                .attr('transform', `translate(0, ${-margin.top})`)
-                .call(d3.axisBottom(lollipopXScale));
-
-            lollipopChart.append('circle')
-                .attr('cx', lollipopXScale(this.data.genres[genre].details.nombre_artists_total) / 2)
-                .attr('cy', lollipopYScale(this.data.genres[genre].details.nombre_artists_total))
-                .attr('r', 5)
-                .attr('fill', 'red');
-
-            lollipopChart.append('line')
-                .attr('x1', lollipopXScale(this.data.genres[genre].details.nombre_artists_total) / 2)
-                .attr('y1', lollipopYScale(this.data.genres[genre].details.nombre_artists_total))
-                .attr('x2', lollipopXScale(this.data.genres[genre].details.nombre_artists_total) / 2)
-                .attr('y2', 0)
-                .attr('stroke', 'red');
-
-
-            // Affichez le graphique en lollipop détaillé
-            lollipopChart.style('display', 'block');
-
-
+          .on('mouseover', (event, genre) => {
+            const dataDetails = this.data.genres[genre].details;
+            const toolDetails = genre + " <br> nombre d'artistes total :  " + dataDetails.nombre_artists_total +' <br> nombre de groupe :  '
+            + dataDetails.nombre_groupes + "  <br> nombre de solo :  " + dataDetails.nombre_solos + " <br> nombre d'artistes actif total "+
+                dataDetails.nombre_actif_total ;
+            tooltip.html(toolDetails).style("visibility", "visible").style("color","black")
+             .style("border-color",colorScale(genre));
+          })
+          .on("mousemove", function () {
+            //first fig
+            // return tooltip.style("top", (event.pageY-50)+"px").style("left",(event.pageX-50)+"px")
+            //seconfd fig
+              return tooltip.style("top", (event.pageY - 10) + "px")
+                .style("left", (event.pageX + 10) + "px");
           })
           .on('mouseout', function () {
-            // Reset the color of the bar after hover
-            d3.select(this).attr('fill', (genre) => colorScale(genre));
-
-            // Supprimez le graphique en lollipop détaillé
-            d3.selectAll('.lollipop-chart').remove();
-
+            return tooltip.style("visibility", "hidden");
           });
 
       // Append the labels
@@ -170,6 +136,8 @@ export default {
           .style('font-size', '20px')
           .style('fill', 'black')
           .style('text-anchor', 'start');
+
+
 
     },
 
@@ -186,10 +154,11 @@ export default {
   height: 50vh;
 }
 
-.bar-buttons {
-  display: flex;
-  justify-content: space-between;
-  color: #2c3e50;
+svg {
+  width: 100%;
+  height: 100%;
+
 }
+
 
 </style>
