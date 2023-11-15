@@ -56,16 +56,13 @@
 import * as d3 from 'd3';
 import axios from 'axios';
 
-import pic1000000 from '@/data/pic100000.png';
-import pic100000 from '@/data/pic100000.png';
-
-import pic10000 from '@/data/pic10000.png';
-
-import pic1000 from '@/data/pic1000.png';
-import pic100 from '@/data/pic100.png';
-import pic10 from '@/data/pic10.png';
-import pic1 from '@/data/pic1.png';
-import {filterArtists} from "@/data";
+import pic1000000 from '@/../../../public/data/pic100000.png';
+import pic100000 from '@/../../../public/data/pic100000.png';
+import pic10000 from '@/../../../public/data/pic10000.png';
+import pic1000 from '@/../../../public/data/pic1000.png';
+import pic100 from '@/../../../public/data/pic100.png';
+import pic10 from '@/../../../public/data/pic10.png';
+import pic1 from '@/../../../public/data/pic1.png';
 
 export default {
 
@@ -98,14 +95,20 @@ export default {
   },
 
   async mounted() {
+
+    const response = await fetch(
+        "./data/all_data_details.json"
+    )
+
+    const data = await response.json()
+    console.log(data)
     try {
       const response = await axios.get('http://127.0.0.1:5000/api/statistiques');
       this.data = response.data;
       this.innerWidth = this.largeurTotale - this.marges.gauche - this.marges.droit;
       this.innerHeight = this.hauteurTotale - this.marges.haut - this.marges.bas;
       this.drawChart();
-      const dataA = await filterArtists('Rock');
-      console.log(dataA);
+
 
     } catch (error) {
       console.error('Erreur lors de la récupération des données de l\'API : ', error);
