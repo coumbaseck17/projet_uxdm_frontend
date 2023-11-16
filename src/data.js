@@ -1,6 +1,6 @@
 // artistUtils.js
 
-export async  function filterArtists(genre, subgenreOrAll = null, filterType = null, filterValue = null) {
+export async  function filterArtists(genre, subgenreOrAll) {
     try {
         let filePath;
         if (subgenreOrAll === "all" || subgenreOrAll === null) {
@@ -14,15 +14,6 @@ export async  function filterArtists(genre, subgenreOrAll = null, filterType = n
         console.log(artists); // Log fetched artists
         let filteredArtists = artists;
 
-        if (filterType !== null && filterValue !== null) {
-            filteredArtists = artists.filter(artist => {
-                if (filterType === "TYPE") {
-                    return artist.type === filterValue;
-                } else if (filterType === "GENDER") {
-                    return artist.gender === filterValue;
-                }
-            });
-        }
 
         return filteredArtists; // Return filtered artists
     } catch (error) {

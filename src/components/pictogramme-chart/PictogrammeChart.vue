@@ -1,14 +1,17 @@
 <template>
   <!-- Filter radio box -->
-    <div class="filter-container" >
+  <div class="filter-container" >
+
+  </div>
+
+  <!-- Pictogram chart -->
+    <div class="pictogram-chart">
+
 
     </div>
-
-    <!-- Pictogram chart -->
-    <div>
-      <div class="pictogram-chart"></div>
-    </div>
-
+  <div class="genre-details">
+    <!-- Content of genre details -->
+  </div>
   <!-- Légende des pictogrammes -->
   <div class="legend-container">
     <h4>Légende des Pictogrammes </h4>
@@ -17,10 +20,8 @@
       <span>{{ legendItem.label }}  {{ labelLegend }}</span>
     </div>
   </div>
-    <!-- Genre details -->
-    <div class="genre-details">
-      <!-- Content of genre details -->
-    </div>
+  <!-- Genre details -->
+
   <!-- Ajoutez un nouveau bouton radio pour le filtre -->
   <div class="filter-container" v-if="subgenre">
     <label>
@@ -48,13 +49,12 @@
     <!-- Content of genre details -->
   </div>
 
-  </template>
+</template>
 
 
 <script>
 
 import * as d3 from 'd3';
-import axios from 'axios';
 
 import pic1000000 from '@/../public/data/pic100000.png';
 import pic100000 from '@/../public/data/pic100000.png';
@@ -272,7 +272,7 @@ export default {
 
       const subgenreDetails = this.data.genres[this.currentGenre].subgenres[subgenre].details;
 
-
+console.log(subgenreDetails);
       const detailsContainer = d3.select('.genre-details');
       detailsContainer.html(`<p>Nombre de groupe: ${subgenreDetails.nombre_groupes} / Actifs : ${subgenreDetails.nombre_actif_groupes}</p>
         <p>Nombre de solos: ${subgenreDetails.nombre_solos} / Actifs : ${subgenreDetails.nombre_actif_solos} </p>
@@ -281,8 +281,7 @@ export default {
 
 
     hideSubgenreDetails() {
-      // Logique pour masquer les détails du subgenre
-      // Vous pouvez effacer les détails du subgenre de la classe 'genre-details' ou utiliser une autre méthode
+
       d3.select('.genre-details').html('');
     },
 
@@ -303,9 +302,13 @@ export default {
 
     async showArtists(subgenre) {
       try {
-        const artistsData = await filterArtists(this.currentGenre, subgenre);
-        if (artistsData) {
-          this.drawArtistsChart(subgenre, artistsData);
+        if (!this.originalArtistsData) {
+          this.originalArtistsData = await filterArtists(this.currentGenre, subgenre);
+        }
+        this.artistsData = [...this.originalArtistsData]; // Crée une copie des données d'origine
+
+        if (this.artistsData) {
+          this.drawArtistsChart(subgenre, this.artistsData);
         } else {
           console.error('No artist data fetched.');
         }
@@ -313,6 +316,43 @@ export default {
         console.error('Error fetching artists:', error);
       }
     },
+    applyFilter() {
+      // Déterminez le filterType en fonction de la filterValue
+      let filterType = null;
+      const filterValue = this.selectedFilter;
+      if (['all', 'Group', 'Person', ''].includes(this.selectedFilter)) {
+        filterType = 'TYPE';
+      } else if (['Female', 'Male'].includes(this.selectedFilter)) {
+        filterType = 'GENDER';
+      }
+      console.log(filterType + "," + filterValue)
+
+      // Appelez la fonction pour appliquer le filtre
+      this.filterArt(filterType, filterValue);
+    },
+    async filterArt(filterType = null, filterValue = null) {
+      try {
+        let filteredArtists = [...this.originalArtistsData]; // Utilise une copie des données originales pour filtrer
+
+        if (filterType !== null && filterValue !== null && this.originalArtistsData && ! ['all'].includes(filterValue)) {
+          filteredArtists = this.originalArtistsData.filter(artist => {
+            if (filterType === "TYPE") {
+              return artist.type === filterValue;
+            } else if (filterType === "GENDER") {
+              return artist.gender === filterValue;
+            }
+          });
+        }
+
+        // Mettre à jour les données filtrées et afficher le nouveau graphique
+        this.artistsData = filteredArtists;
+        // Redessiner le graphique avec les artistes filtrés
+        this.drawArtistsChart(this.subgenre, this.artistsData);
+      } catch (error) {
+        console.error('Error filtering artists:', error);
+      }
+    },
+
 
     drawArtistsChart(subgenre, artistsData) {
 
@@ -446,41 +486,8 @@ export default {
       }
     }
     ,
-    applyFilter() {
-      // Déterminez le filterType en fonction de la filterValue
-      let filterType = null;
-      const filterValue = this.selectedFilter;
-      if (['all', 'Group', 'Person', ''].includes(this.selectedFilter)) {
-        filterType = 'TYPE';
-      } else if (['Female', 'Male'].includes(this.selectedFilter)) {
-        filterType = 'GENDER';
-      }
-      console.log(filterType + "," + filterValue)
 
-      // Appelez la fonction pour appliquer le filtre
-      this.filterArtists(filterType, filterValue);
-    },
 
-    filterArtists(filterType, filterValue) {
-
-      if (filterValue == "all") {
-        this.showArtists(this.subgenre)
-      } else {
-        // Appelez votre API pour obtenir la liste des artistes filtrés
-        const apiUrl = `http://127.0.0.1:5000/api/filter_artists?genre=${this.currentGenre}&subgenre=${this.subgenre}&filter_type=${filterType}&filter_value=${filterValue}`;
-
-        axios.get(apiUrl)
-            .then(response => {
-              const filteredArtistsData = response.data;
-
-              this.drawArtistsChart(this.subgenre, filteredArtistsData);
-            })
-            .catch(error => {
-              console.error('Erreur lors de la récupération des artistes filtrés : ', error);
-            });
-
-      }
-    },
     // ... autres méthodes existantes ...
 
     highlightArtist(artist) {
@@ -526,47 +533,14 @@ export default {
 <style scoped>
 /* ... (unchanged styles) */
 
-.artists-container {
-  position: relative;
-  margin-right: 20px;
-}
 
-.artist-container {
-  cursor: pointer;
-}
-
-.artist-name {
-  flex: 1; /* Allow artist name to take remaining space */
-}
-
-.pictogram {
-  /* Add styles as needed for pictograms */
-}
-
-
-.artist-names-container {
-  position: relative;
-  margin-right: 20px;
-}
-
-.artist-name-container {
-  cursor: pointer;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.chart-container {
-  display: flex;
-
-}
 
 .pictogram-chart {
   margin-right: 20px;
 
 }
 
-.genre-details {
-  font-size: 16px;
-}
+
 
 .artist-details {
   margin-left: 100px;
@@ -592,13 +566,7 @@ export default {
   text-overflow: ellipsis;
 }
 
-.pictogram {
-  cursor: pointer;
-}
 
-.pictogram:hover {
-  filter: brightness(70%);
-}
 .filter-container {
   display: flex;
   flex-direction: column;
@@ -613,13 +581,6 @@ export default {
   margin-right: -1000px;  /* Ajustez la valeur en conséquence */
 }
 
-
-
-.artists-container {
-  position: relative;
-  margin-right: 20px;
-  width: 800px; /* Assurez-vous que le conteneur parent a une largeur fixe */
-}
 
 .artists-container svg {
   width: 2500px; /* Définissez la largeur du contenu que vous souhaitez pouvoir faire défiler */
@@ -644,7 +605,4 @@ export default {
 
 }
 
-.artist-group:hover {
-  border: 2px solid blue;
-}
 </style>
