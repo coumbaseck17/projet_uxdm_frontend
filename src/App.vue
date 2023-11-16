@@ -1,16 +1,16 @@
 <template>
   <div>
-    <BarChartV1/>
+<HelloWorld/>
 
   </div>
 </template>
 
 <script>
-import BarChartV1 from "@/components/pictogramme-chart/PictogrammeChart.vue";
+import HelloWorld from "@/components/HelloWorld";
 export default {
   name: 'App',
   components: {
-    BarChartV1
+HelloWorld
   }
 }
 </script>
