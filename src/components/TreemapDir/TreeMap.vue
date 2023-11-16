@@ -1,108 +1,89 @@
 <template>
-  <div class="chart-container">
-    <div>
-      <div class="treemap" ref="treemap"></div>
-    </div>
-    <div class="genre-details">
-      <!-- Contenu des détails du genre -->
-    </div>
+  <div>
+    <div class="treemap-chart"></div>
   </div>
 </template>
 
 <script>
 import * as d3 from 'd3';
-//import * as file  from "@/data/details_v1/all_data_details.json"
 export default {
-
   name: 'TreeMap',
   // the component's data
-  data () {
+  data() {
     return {
-      jsonData: null,
-      rootNode: {},
-      margin: {
-        top: 20,
-        right: 0,
-        bottom: 0,
-        left: 0
-      },
-      width: 960,
-      height: 530,
-      selected: null,
-      color: {}
+      data: null,
+      width: 600,
+      height: 600,
+      color: d3.scaleOrdinal(d3.schemeCategory10),
+    };
+  },
+
+  async mounted() {
+    try {
+      const response = await fetch(
+          "./data/details_v1/all_data_details.json"
+      );
+      this.data = await response.json();
+      this.createTreemap();
+    } catch (error) {
+      console.error('Erreur lors de la récupération des données de l\'API : ', error);
     }
   },
-
-  mounted() {
-    this.createTreemap();
-    /**d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram_full.json", function (error, data) {
-     if (error) console.log(error)
-     this.jsonData = data
-     console.log(data)
-     })*/
-
-
-  },
   methods: {
-    async createTreemap() {
-      // Set up the dimensions of your SVG container
-      const width = 800;
-      const height = 600;
+    createTreemap() {
+      if (!this.data || !this.data.genres) {
+        return;
+      }
 
-      // Create an SVG container
-      const svg = d3.select(this.$refs.treemap)
-          .attr('width', width)
-          .attr('height', height);
+      const hierarchy = {
+        name: 'root',
+        children: Object.keys(this.data.genres).map(genre => ({
+          name: genre,
+          children: Object.keys(this.data.genres[genre].subgenres).map(subgenre => ({
+            name: subgenre,
+            value: this.data.genres[genre].subgenres[subgenre].details.nombre_artists_total,
+          })),
+        })),
+      };
 
-      const response = await fetch(
-          "./data/all_data_details.json"
-      )
+      const treemap = d3.treemap()
+          .size([this.width, this.height])
+          .padding(1)
+          .round(true);
 
-      const data = await response.json()
-      console.log(data)
-      //let filePath= "../../data/details_v1/all_data_details.json";
-      const genresData = Object.entries(data.genres).map(([genre, details]) => ({
-        genre,
-        nombre_artists_total: details.nombre_artists_total
-      }));
+      const root = d3.hierarchy(hierarchy)
+          .sum(d => d.value)
+          .sort((a, b) => b.value - a.value);
 
-      console.log(genresData)
+      treemap(root);
 
-      // Create hierarchy based on the total number of artists
-      const root = d3.hierarchy({ children: genresData })
-          .sum(d => d.nombre_artists_total);
+      const svg = d3.select('.treemap-chart')
+          .append('svg')
+          .attr('width', this.width)
+          .attr('height', this.height);
 
-      console.log(root);
-      // Then d3.treemap computes the position of each element of the hierarchy
-      //const treemap = d3.treemap()
-      //    .size([width, height])
-      //    .padding(2);
-
-      //treemap(root);
-
-      const colorScale = d3.scaleSequential(d3.interpolateViridis)
-          .domain([0,9]);
-
-      // Create rectangles based on the treemap layout
-      svg.selectAll('rect')
-          .data(data.genres)
+      // Add rectangles for genres and subgenres
+      const rectangles = svg.selectAll('rect')
+          .data(root.descendants())
           .enter()
+          .append('g')
+          .attr('transform', d => `translate(${d.x0},${d.y0})`);
+
+      rectangles
           .append('rect')
-          .attr('x', (d) => d.x0)
-          .attr('y', (d) => d.y0)
-          .attr('width', (d) => d.x1 - d.x0)
-          .attr('height', (d) => d.y1 - d.y0)
-          .style('fill', (d, i) => colorScale(i));
+          .attr('width', d => d.x1 - d.x0)
+          .attr('height', d => d.y1 - d.y0)
+          .style('stroke', '#fff')
+          .style('fill', d => this.color((d.children ? d : d.parent).data.name));
 
-      // Add text labels to the rectangles
-      svg.selectAll('text')
-          .data(data.genres)
-          .enter()
+      // Add labels for genres and subgenres
+      rectangles
           .append('text')
-          .attr('x', (d) => d.x0 + 5)
-          .attr('y', (d) => d.y0 + 15)
-          .text((d) => d.data.name)
-          .attr('fill', 'white');
+          .attr('x', 4)
+          .attr('y', 14)
+          .attr('fill', '#fff')
+          .style('font-size', '12px')
+          .text(d => d.data.name);
 
     },
   },
@@ -110,16 +91,21 @@ export default {
 </script>
 
 <style scoped>
-/* Vos styles CSS spécifiques au composant ici */
-.chart-container {
-  display: flex;
+.treemap-chart {
+  text-align: center;
 }
 
-.treemap {
-  /* Ajoutez des styles si nécessaire */
+.treemap-chart svg {
+  overflow: visible;
 }
 
-.genre-details {
-  /* Ajoutez des styles si nécessaire */
+.treemap-chart rect {
+  stroke: #fff;
+  fill-opacity: 0.8;
+  transition: fill-opacity 0.3s ease-in-out;
+}
+
+.treemap-chart rect:hover {
+  fill-opacity: 1;
 }
 </style>

@@ -1,15 +1,14 @@
 <template>
-  <DatavizExample/>
+  <TreemapV1/>
 </template>
 
 <script>
-//import HelloWorld from './components/HelloWorld.vue'
-import DatavizExample from './components/Example/DatavizExample.vue'
+import TreemapV1 from '@/components/TreemapDir/TreeMap.vue'
 
 export default {
   name: 'App',
   components: {
-    DatavizExample
+    TreemapV1
   }
 }
 </script>
