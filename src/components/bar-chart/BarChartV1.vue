@@ -2,8 +2,6 @@
   <br>
   <h3> {{ titre }} </h3>
   <br>
-  <br>
-  <br>
   <div class="chart-container">
 <!--    barchart genres-->
     <div>
@@ -15,6 +13,12 @@
       <div class="bar-chart-details" ref="detailsContainer2" >
       </div>
     </div>
+<!--    barchart artistes-->
+    <div>
+      <div class="bar-chart-artists" ref="detailsContainer3" >
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -25,17 +29,20 @@ export default {
   data() {
     return {
       data: null,
-      genres : null,
-      subgenres : null,
-      genreDetails : null,
-      titre : null
+      genres: null,
+      subgenres: null,
+      genreDetails: null,
+      titre: null,
+      genreSelected: null,
+      artists: null,
+      colorSelected: null,
     };
   },
 
   async mounted() {
     try {
       const response = await fetch("./data/details_v1/all_data_details.json")
-      this.data= await response.json();
+      this.data = await response.json();
       console.log(this.data);
       this.drawChart();
     } catch (error) {
@@ -45,7 +52,7 @@ export default {
   },
 
   methods: {
-     async drawChart() {
+    async drawChart() {
       if (!this.data || !this.data.genres) {
         return;
       }
@@ -54,7 +61,7 @@ export default {
 
       const width = 600;
       const height = 500;
-      const margin = { top: 20, right: 20, bottom: 30, left: 60 };
+      const margin = {top: 20, right: 20, bottom: 30, left: 60};
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
 
@@ -118,24 +125,25 @@ export default {
           .attr('fill', (genre) => colorScale(genre))
           .on('mouseover', (event, genre) => {
             const dataDetails = this.data.genres[genre].details;
-            const toolDetails = genre + " <br> nombre d'artistes total :  " + dataDetails.nombre_artists_total +' <br> nombre de groupe :  '
-            + dataDetails.nombre_groupes + "  <br> nombre de solo :  " + dataDetails.nombre_solos + " <br> nombre d'artistes actif total "+
-                dataDetails.nombre_actif_total ;
-            tooltip.html(toolDetails).style("visibility", "visible").style("color","black")
-             .style("border-color",colorScale(genre));
+            const toolDetails = genre + " <br> nombre d'artistes total :  " + dataDetails.nombre_artists_total + ' <br> nombre de groupe :  '
+                + dataDetails.nombre_groupes + "  <br> nombre de solo :  " + dataDetails.nombre_solos + " <br> nombre d'artistes actif total " +
+                dataDetails.nombre_actif_total;
+            tooltip.html(toolDetails).style("visibility", "visible").style("color", "black")
+                .style("border-color", colorScale(genre));
           })
           .on("mousemove", function () {
             //first fig
             // return tooltip.style("top", (event.pageY-50)+"px").style("left",(event.pageX-50)+"px")
             //seconfd fig
-              return tooltip.style("top", (event.pageY - 10) + "px")
+            return tooltip.style("top", (event.pageY - 10) + "px")
                 .style("left", (event.pageX + 10) + "px");
           })
           .on('mouseout', function () {
             return tooltip.style("visibility", "hidden");
           })
           .on('click', (event, genre) => {
-            this.showSubgenres(genre);
+            this.colorSelected = colorScale(genre);
+            this.showSubgenres(genre, this.colorSelected);
             return tooltip.style("visibility", "hidden");
           });
 
@@ -156,7 +164,7 @@ export default {
 
 
     //afficher les sous genres
-    showSubgenres(genre) {
+    showSubgenres(genre, color) {
 
       this.titre = "Sous-genres de " + genre;
 
@@ -165,7 +173,7 @@ export default {
 
       const width = 700;
       const height = 500;
-      const margin = { top: 20, right: 20, bottom: 30, left: 90 };
+      const margin = {top: 20, right: 20, bottom: 30, left: 90};
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
 
@@ -175,9 +183,6 @@ export default {
       });
 
       console.log(this.subgenres.length);
-
-      const colorScale1 = d3.scaleOrdinal(d3.schemeOrRd[9]);
-
 
       // Créer le SVG
       const svg = d3.select('.bar-chart-details').append('svg')
@@ -228,14 +233,14 @@ export default {
           .attr('y', (subgenre) => yScale(subgenre))
           .attr('width', (subgenre) => xScale(this.genreDetails.subgenres[subgenre].details.nombre_artists_total))
           .attr('height', yScale.bandwidth())
-          .attr('fill', () => colorScale1())
+          .attr('fill', () => color)
           .on('mouseover', (event, subgenre) => {
             const dataDetails = this.genreDetails.subgenres[subgenre].details;
-            const toolDetails = subgenre + " <br> nombre d'artistes total :  " + dataDetails.nombre_artists_total +' <br> nombre de groupe :  '
-                + dataDetails.nombre_groupes + "  <br> nombre de solo :  " + dataDetails.nombre_solos + " <br> nombre d'artistes actif total "+
-                dataDetails.nombre_actif_total ;
-            tooltip.html(toolDetails).style("visibility", "visible").style("color","black")
-                .style("border-color",colorScale1);
+            const toolDetails = subgenre + " <br> nombre d'artistes total :  " + dataDetails.nombre_artists_total + ' <br> nombre de groupe :  '
+                + dataDetails.nombre_groupes + "  <br> nombre de solo :  " + dataDetails.nombre_solos + " <br> nombre d'artistes actif total " +
+                dataDetails.nombre_actif_total;
+            tooltip.html(toolDetails).style("visibility", "visible").style("color", "black")
+                .style("border-color", color);
           })
           .on("mousemove", function () {
 
@@ -246,8 +251,9 @@ export default {
             return tooltip.style("visibility", "hidden");
           })
           .on('click', (event, subgenre) => {
-            this.su
-            this.showArtists(subgenre);
+            this.genreSelected = genre;
+            this.colorSelected = color;
+            this.showArtists(subgenre, this.genreSelected, this.colorSelected);
             return tooltip.style("visibility", "hidden");
           });
 
@@ -268,53 +274,58 @@ export default {
     },
 
     //afficher les artistes
-    showArtists(subgenre) {
+    async showArtists(subgenre, genre, color) {
 
-      this.titre = "Artistes de " + subgenre;
+      this.titre = "Artistes de " + subgenre + " - " + genre;
+
+      const encodedGenre = encodeURIComponent(genre);
+      const encodedSubgenre = encodeURIComponent(subgenre);
+      const url = `data/artists_by_genre_sorted_v1/${encodedGenre}/${encodedSubgenre}.json`;
+      const response = await fetch(url);
+      this.data = await response.json();
 
       // Supprimer le graphique précédent
       d3.select('svg').remove();
 
+
+      this.artists = Object.keys(this.data).sort((a, b) => {
+        return this.data[b].deezerFans - this.data[a].deezerFans;
+      });
+
+
       const width = 700;
       const height = 500;
-      const margin = { top: 20, right: 20, bottom: 30, left: 90 };
+      const margin = {top: 20, right: 20, bottom: 30, left: 90};
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
 
-      this.genreDetails = this.data.genres[genre];
-      this.subgenres = Object.keys(this.genreDetails.subgenres).sort((a, b) => {
-        return this.genreDetails.subgenres[b].nombre_artists_total - this.genreDetails.subgenres[a].nombre_artists_total;
-      });
-
-      console.log(this.subgenres.length);
-
-      const colorScale1 = d3.scaleOrdinal(d3.schemeOrRd[9]);
-
-
-      // Créer le SVG
-      const svg = d3.select('.bar-chart-details').append('svg')
-          .attr('width', width)
-          .attr('height', height)
-          .append('g')
-          .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
       // Create the scales
       const xScale = d3.scaleLinear()
-          .domain([0, d3.max(this.subgenres, (subgenre) => this.data.genres[genre].subgenres[subgenre].details.nombre_artists_total)])
+          .domain([0, d3.max(this.data, (artist) => artist.deezerFans)])
           .range([0, innerWidth]);
 
 
       const yScale = d3.scaleBand()
-          .domain(this.subgenres)
-          .range([0, innerHeight])
+          .domain(this.data.map(artist => artist.name))
+          .range([0, this.data.length * 10])
           .padding(0.1);
+
+      // Créer le SVG
+      const svg = d3.select('.bar-chart-artists').append('svg')
+          .attr('width', width)
+          .attr('height', height)
+          //cette ligne pour longueur de la barre
+          // .attr('height', this.artists.length * 10 + margin.top + margin.bottom)
+          .append('g')
+          .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
 
       // Create the axes
       const xAxis = d3.axisBottom(xScale);
       const yAxis = d3.axisLeft(yScale);
 
       // create a tooltip
-      var tooltip = d3.select(".bar-chart-details")
+      var tooltip = d3.select(".bar-chart-artists")
           .append("div")
           .style("position", "absolute")
           .style("background-color", "white")
@@ -324,30 +335,33 @@ export default {
           .style("padding", "5px")
           .style("visibility", "hidden")
 
+
       // Append the axes to the SVG
       svg.append('g')
           .attr('transform', `translate(0, ${innerHeight})`)
           .call(xAxis);
+
       svg.append('g')
+          .attr("class", "y-axis")
           .call(yAxis);
+
+      // const yAxisGroup = svg.append('g')
+      //     .attr('class', 'y-axis')
+      //     .call(yAxis);
 
       // Append the bars
       svg.selectAll('rect')
-          .data(this.subgenres)
+          .data(this.artists)
           .enter()
           .append('rect')
           .attr('x', 0)
-          .attr('y', (subgenre) => yScale(subgenre))
-          .attr('width', (subgenre) => xScale(this.genreDetails.subgenres[subgenre].details.nombre_artists_total))
+          .attr('y', (id) => yScale(this.data[id].name))
+          .attr('width', (id) => xScale(this.data[id].deezerFans))
           .attr('height', yScale.bandwidth())
-          .attr('fill', () => colorScale1())
-          .on('mouseover', (event, subgenre) => {
-            const dataDetails = this.genreDetails.subgenres[subgenre].details;
-            const toolDetails = subgenre + " <br> nombre d'artistes total :  " + dataDetails.nombre_artists_total +' <br> nombre de groupe :  '
-                + dataDetails.nombre_groupes + "  <br> nombre de solo :  " + dataDetails.nombre_solos + " <br> nombre d'artistes actif total "+
-                dataDetails.nombre_actif_total ;
-            tooltip.html(toolDetails).style("visibility", "visible").style("color","black")
-                .style("border-color",colorScale1);
+          .attr('fill', () => color)
+          .on('mouseover', () => {
+            return tooltip.style("visibility", "visible").style("color", "black")
+                .style("border-color", color);
           })
           .on("mousemove", function () {
 
@@ -357,28 +371,63 @@ export default {
           .on('mouseout', function () {
             return tooltip.style("visibility", "hidden");
           })
-          .on('click', (event, subgenre) => {
-            this.showArtists(subgenre);
+          .on('click', () => {
             return tooltip.style("visibility", "hidden");
           });
 
 
-      // Append the labels
-      svg.selectAll('text')
-          .data(this.subgenres)
-          .enter()
-          .append('text')
-          .text((subgenre) => `${subgenre} - ${this.data.genres[genre].subgenres[subgenre].details.nombre_artists_total}`)
-          .attr('x', (subgenre) => xScale(this.data.genres[genre].subgenres[subgenre].details.nombre_artists_total) + 5)
-          .attr('y', (subgenre) => yScale(subgenre) + yScale.bandwidth() / 2)
-          .attr('dy', '.35em')
-          .style('font-size', '30px')
-          .style('fill', 'black')
-          .style('text-anchor', 'start');
-     }
+      // Ajouter une barre de défilement à l'axe y
+      // const scrollBar = d3
+      //     .select(".bar-chart-artists")
+      //     .append("input")
+      //     .attr("type", "range")
+      //     .attr("orient", "vertical")
+      //     .attr("min", 0)
+      //     .attr("max", yScale.domain().length - 1)
+      //     .attr("value", 0)
+      //     .attr("class", "scroll-bar")
+      //     .on("input", () => {
+      //     const scrollValue = +scrollBar.property("value");
+      //     const visibleItems = 15;
+      //
+      //       // Créer une nouvelle échelle en fonction de la position de la barre de défilement
+      //       const newYScale = d3.scaleBand()
+      //           .domain(yScale.domain().slice(scrollValue, scrollValue + visibleItems))
+      //           .range([0, height - margin.top - margin.bottom])
+      //           .padding(0.1);
+      //
+      //    // Mettez à jour l'axe y et les éléments du graphique en conséquence
+      //       yAxisGroup.call(d3.axisLeft(newYScale));
+      //
+      //     //  Mettez à jour les barres du graphique
+      //     svg.selectAll("rect")
+      //       .attr("y", d => newYScale(d.name))
+      //       .attr("height", newYScale.bandwidth());
+      // });
 
-  },
-};
+//       const zoom = d3.zoom()
+//           .scaleExtent([0, 20])
+//           .on("zoom", (event) => {
+//             // Ajuster la plage de l'échelle y en fonction de la transformation
+//             yScale.range([margin.top, innerHeight - margin.bottom].map(d => event.transform.applyY(d)));
+//
+//             // Mettre à jour les positions et hauteurs des barres
+//             svg.selectAll('rect')
+//                 .attr('y', id => yScale(this.data[id].name))
+//                 .attr('height', yScale.bandwidth());
+//
+//             // Mettre à jour l'axe y
+//             yAxisGroup.call(yAxis.scale(yScale));
+//           });
+//
+// // Appeler la fonction de zoom sur l'élément SVG
+//       svg.call(zoom);
+
+    },
+
+  }
+  };
+
 </script>
 
 <style scoped>
@@ -387,19 +436,28 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 50vh;
 }
+
 .bar-chart {
   color: black;
   width: 100%;
   height: 100%;
   background-color: burlywood;
 }
+
 .bar-chart-details {
   color: black;
   width: 100%;
   height: 100%;
   background-color: burlywood;
+}
+
+.bar-chart-artists {
+  color: black;
+  width: 100%;
+  height: 100%;
+  background-color: burlywood;
+  /*overflow-y: scroll; !* Activer la barre de défilement verticale *!*/
 }
 
 svg {
