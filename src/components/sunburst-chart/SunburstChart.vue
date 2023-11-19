@@ -18,8 +18,8 @@ export default {
       data: null,
       dataArtists: null,
       marges: {haut: 40, droit: 20, bas: 30, gauche: 60},
-      largeurTotale: 900,
-      hauteurTotale: 600,
+      largeurTotale: 1800,
+      hauteurTotale: 1200,
       innerWidth: 0,
       innerHeight: 0,
       currentGenre: null,
@@ -28,6 +28,7 @@ export default {
       labelLegend: 'artistes',
       selectedArtist: null,
       showGenres: false
+
 //
       // Track the currently selected genre
     };
@@ -46,10 +47,8 @@ export default {
   },
 
   methods: {
-    async fetchArtists(genre, subgenre){
-      this.dataArtists= await filterArtists(genre, subgenre);
-    },
-    drawChart() {
+
+    async drawChart() {
       // Clear previous sunburst chart genres
       d3.selectAll('svg').remove()
 
@@ -63,33 +62,40 @@ export default {
         name: 'root',
         children: []
       };
-      Object.keys(this.data.genres).forEach(genre => {
+      for (const genre of Object.keys(this.data.genres)) {
         const genreObj = {
           name: genre,
           children: []
         };
         const subgenres = this.data.genres[genre].subgenres;
-        Object.keys(subgenres).forEach(subgenre => {
+        for (const subgenre of Object.keys(subgenres)) {
           const subgenreObj = {
             name: subgenre,
             value: subgenres[subgenre].details.nombre_artists_total,
             children: []
           };
 
-          const dataArtist = this.fetchArtists(genre, subgenre);
-          console.log(dataArtist);
-          console.log("test");
-          Object.values(dataArtist).forEach((artist) => {
+          try {
+          this.dataArtists =  await filterArtists(genre, subgenre);
+          console.log(this.dataArtists)
+            Object.values(this.dataArtists).forEach((artist, index) => {
               subgenreObj.children.push({
                 name: artist.name,
-                value: artist.deezerFans
+                value: artist.deezerFans,
+                artistIndex: index // Garder une référence à l'indice de l'artiste
               });
             });
+          }
+          catch(error) {
+            console.log( "PROMESSE PAS DE ARRAY")
+          }
+
+
           genreObj.children.push(subgenreObj);
-        });
+        }
 
         hierarchy.children.push(genreObj);
-      });
+      }
 
       const width = 600;
       const height = 600;
@@ -217,10 +223,18 @@ export default {
             return `translate(${x},${y}) rotate(${angle})`;
           })
           .attr('dy', '0.35em')
-          .text(d => d.data.name)
+          .text(d => {
+            if (d.depth === 3) {
+              // Récupérer les données de l'artiste associé à ce nœud
+              const artist = d.data;
+              // Ajouter ici le texte de l'artiste
+              return `${artist.name} (${artist.value})`;
+            }
+            return null; // Pour les autres niveaux, ne pas afficher de texte
+          })
           .style('text-anchor', 'middle')
           .style('font-size', '8px')
-          .style('fill', 'gray') // Couleur des artistes
+          .style('fill', 'gray')
           .style('pointer-events', 'none');
 
     },
