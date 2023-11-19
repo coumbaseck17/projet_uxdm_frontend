@@ -18,8 +18,8 @@ export default {
       data: null,
       dataArtists: null,
       marges: {haut: 40, droit: 20, bas: 30, gauche: 60},
-      largeurTotale: 900,
-      hauteurTotale: 600,
+      largeurTotale: 1800,
+      hauteurTotale: 1200,
       innerWidth: 0,
       innerHeight: 0,
       currentGenre: null,
@@ -28,6 +28,7 @@ export default {
       labelLegend: 'artistes',
       selectedArtist: null,
       showGenres: false
+
 //
       // Track the currently selected genre
     };
@@ -46,10 +47,8 @@ export default {
   },
 
   methods: {
-    async fetchArtists(genre, subgenre){
-      this.dataArtists= await filterArtists(genre, subgenre);
-    },
-    drawChart() {
+
+    async drawChart() {
       // Clear previous sunburst chart genres
       d3.selectAll('svg').remove()
 
@@ -63,33 +62,25 @@ export default {
         name: 'root',
         children: []
       };
-      Object.keys(this.data.genres).forEach(genre => {
+      for (const genre of Object.keys(this.data.genres)) {
         const genreObj = {
           name: genre,
           children: []
         };
         const subgenres = this.data.genres[genre].subgenres;
-        Object.keys(subgenres).forEach(subgenre => {
+        for (const subgenre of Object.keys(subgenres)) {
           const subgenreObj = {
             name: subgenre,
             value: subgenres[subgenre].details.nombre_artists_total,
-            children: []
+
           };
 
-          const dataArtist = this.fetchArtists(genre, subgenre);
-          console.log(dataArtist);
-          console.log("test");
-          Object.values(dataArtist).forEach((artist) => {
-              subgenreObj.children.push({
-                name: artist.name,
-                value: artist.deezerFans
-              });
-            });
+
           genreObj.children.push(subgenreObj);
-        });
+        }
 
         hierarchy.children.push(genreObj);
-      });
+      }
 
       const width = 600;
       const height = 600;
@@ -106,6 +97,7 @@ export default {
         '#FFA07A',
         '#FFC0CB',
         '#FFDEAD'
+
       ]);
       const partition = d3.partition().size([2 * Math.PI, radius]);
 
@@ -141,7 +133,7 @@ export default {
             const artistCount = d.value;
 
             const detailsContainer = document.getElementById('details-container');
-            detailsContainer.innerHTML = `Genre: ${genreName}, Nombre d'artistes: ${artistCount}`;
+            detailsContainer.innerHTML = `Genre: ${genreName}, Number of artists: ${artistCount}`;
             detailsContainer.style.left = `${event.pageX + 10}px`; // Offset pour éviter de cacher la souris
             detailsContainer.style.top = `${event.pageY + 10}px`; // Offset pour éviter de cacher la souris
             detailsContainer.style.display = 'block';
@@ -161,7 +153,9 @@ export default {
               this.showGenres = true;
 
               if (d && d.data && d.data.name) {
-                this.drawChartGenre(d.data.name,color); // Draw the chart for the clicked genre
+                const genreColor = color(d.data.name);
+                console.log(genreColor);
+                this.drawChartGenre(d.data.name,genreColor); // Draw the chart for the clicked genre
               }
             }
           });
@@ -184,7 +178,7 @@ export default {
           .style('font-size', '12px')
           .style('fill', 'black')
           .style('pointer-events', 'none')
-          ;
+      ;
 
       svg.selectAll('.subgenre-label')
           .data(root.descendants().filter(d => d.depth === 2 && d.value >= 50))
@@ -204,48 +198,55 @@ export default {
           .style('font-size', '10px')
           .style('fill', 'black')
           .style('pointer-events', 'none');
-      svg.selectAll('.artist-label')
-          .data(root.descendants().filter(d => d.depth === 3))
-          .enter()
-          .append('text')
-          .attr('class', 'artist-label')
-          .attr('transform', d => {
-            const radius = Math.max(0, (d.y0 + d.y1) / 2);
-            const angle = ((d.x0 + d.x1) / 2 * 180 / Math.PI) - 90;
-            const x = radius * Math.cos(angle * Math.PI / 180);
-            const y = radius * Math.sin(angle * Math.PI / 180);
-            return `translate(${x},${y}) rotate(${angle})`;
-          })
-          .attr('dy', '0.35em')
-          .text(d => d.data.name)
-          .style('text-anchor', 'middle')
-          .style('font-size', '8px')
-          .style('fill', 'gray') // Couleur des artistes
-          .style('pointer-events', 'none');
+
 
     },
 
-    drawChartGenre(genreName,color) {
+    async drawChartGenre(genreName,genreColor) {
 
+      const color = d3.scaleOrdinal().range([`${genreColor}`]);
       if (!this.data || !this.data.genres || !this.data.genres[genreName]) {
         console.error(`Genre "${genreName}" not found in the data.`);
         return;
       }
 
-      // Filter to include only the specified genre and its sub-genres
-      const genreData = {
-        name: genreName,
-        children: Object.keys(this.data.genres[genreName].subgenres).map(subgenre => ({
-          name: subgenre,
-          value: this.data.genres[genreName].subgenres[subgenre].details.nombre_artists_total,
-        })),
-      };
-
-      // Creating the hierarchy with the specified genre and its sub-genres
       const hierarchy = {
         name: 'root',
-        children: [genreData],
+        children: []
       };
+        const genreObj = {
+          name: genreName,
+          children: []
+        };
+        const subgenres = this.data.genres[genreName].subgenres;
+        for (const subgenre of Object.keys(subgenres)) {
+          const subgenreObj = {
+            name: subgenre,
+            value: this.data.genres[genreName].subgenres[subgenre].details.nombre_artists_total,
+            children: []
+          };
+
+          try {
+            this.dataArtists =  await filterArtists(genreName, subgenre);
+
+            Object.values(this.dataArtists).forEach((artist, index) => {
+              subgenreObj.children.push({
+                name: artist.name,
+                value: artist.deezerFans,
+                artistIndex: index // Garder une référence à l'indice de l'artiste
+              });
+            });
+          }
+          catch(error) {
+            console.log( "error")
+          }
+
+
+          genreObj.children.push(subgenreObj);
+        }
+
+        hierarchy.children.push(genreObj);
+
 
       const width = 600;
       const height = 600;
@@ -287,7 +288,7 @@ export default {
             const artistCount = d.value;
 
             const detailsContainer = document.getElementById('details-container-genres');
-            detailsContainer.innerHTML = `Genre: ${genreName}, Nombre d'artistes: ${artistCount}`;
+            detailsContainer.innerHTML = `${genreName}, Number of deezer fans: ${artistCount}`;
             detailsContainer.style.left = `${event.pageX + 10}px`; // Offset pour éviter de cacher la souris
             detailsContainer.style.top = `${event.pageY + 10}px`; // Offset pour éviter de cacher la souris
             detailsContainer.style.display = 'block';
@@ -310,10 +311,7 @@ export default {
               this.showGenres = false;
               this.drawChart()
             }
-          })
-
-
-      ;
+          });
 
       svg.selectAll('.genre-label')
           .data(root.descendants().filter(d => d.depth === 1))
@@ -334,7 +332,7 @@ export default {
           .style('fill', 'black')
           .style('pointer-events', 'none');
       svg.selectAll('.subgenre-label')
-          .data(root.descendants().filter(d => d.depth === 2 && d.value >= 30))
+          .data(root.descendants().filter(d => d.depth === 2 && d.value >= 200000))
           .enter()
           .append('text')
           .attr('class', 'subgenre-label')
@@ -351,9 +349,35 @@ export default {
           .style('font-size', '10px')
           .style('fill', 'black')
           .style('pointer-events', 'none');
+      svg.selectAll('.artist-label')
+          .data(root.descendants().filter(d => d.depth === 3 && d.value >= 900000))
+          .enter()
+          .append('text')
+          .attr('class', 'artist-label')
+          .attr('transform', d => {
+            const radius = Math.max(0, (d.y0 + d.y1) / 2);
+            const angle = ((d.x0 + d.x1) / 2 * 180 / Math.PI) - 90;
+            const x = radius * Math.cos(angle * Math.PI / 180);
+            const y = radius * Math.sin(angle * Math.PI / 180);
+            return `translate(${x},${y}) rotate(${angle})`;
+          })
+          .attr('dy', '0.35em')
+          .text(d => {
+            if (d.depth === 3) {
+              const artist = d.data;
+              return `${artist.name}`;
+            }
+            return null;
+          })
+          .style('text-anchor', 'middle')
+          .style('font-size', '5px')
+          .style('fill', 'black')
+          .style('pointer-events', 'none');
     }
-  }
+  },
 };
+
+
 </script>
 
 <style scoped>
