@@ -10,11 +10,13 @@
 
 <script>
 import * as d3 from 'd3';
+import {filterArtists} from "@/data";
 
 export default {
   data() {
     return {
       data: null,
+      dataArtists: null,
       marges: {haut: 40, droit: 20, bas: 30, gauche: 60},
       largeurTotale: 900,
       hauteurTotale: 600,
@@ -44,6 +46,9 @@ export default {
   },
 
   methods: {
+    async fetchArtists(genre, subgenre){
+      this.dataArtists= await filterArtists(genre, subgenre);
+    },
     drawChart() {
       // Clear previous sunburst chart genres
       d3.selectAll('svg').remove()
@@ -56,14 +61,35 @@ export default {
 
       const hierarchy = {
         name: 'root',
-        children: Object.keys(this.data.genres).map(genre => ({
-          name: genre,
-          children: Object.keys(this.data.genres[genre].subgenres).map(subgenre => ({
-            name: subgenre,
-            value: this.data.genres[genre].subgenres[subgenre].details.nombre_artists_total,
-          })),
-        })),
+        children: []
       };
+      Object.keys(this.data.genres).forEach(genre => {
+        const genreObj = {
+          name: genre,
+          children: []
+        };
+        const subgenres = this.data.genres[genre].subgenres;
+        Object.keys(subgenres).forEach(subgenre => {
+          const subgenreObj = {
+            name: subgenre,
+            value: subgenres[subgenre].details.nombre_artists_total,
+            children: []
+          };
+
+          const dataArtist = this.fetchArtists(genre, subgenre);
+          console.log(dataArtist);
+          console.log("test");
+          Object.values(dataArtist).forEach((artist) => {
+              subgenreObj.children.push({
+                name: artist.name,
+                value: artist.deezerFans
+              });
+            });
+          genreObj.children.push(subgenreObj);
+        });
+
+        hierarchy.children.push(genreObj);
+      });
 
       const width = 600;
       const height = 600;
@@ -101,6 +127,7 @@ export default {
           .endAngle(d => d.x1)
           .innerRadius(d => d.y0)
           .outerRadius(d => d.y1);
+
       svg.selectAll('path')
           .data(root.descendants())
           .enter()
@@ -177,6 +204,25 @@ export default {
           .style('font-size', '10px')
           .style('fill', 'black')
           .style('pointer-events', 'none');
+      svg.selectAll('.artist-label')
+          .data(root.descendants().filter(d => d.depth === 3))
+          .enter()
+          .append('text')
+          .attr('class', 'artist-label')
+          .attr('transform', d => {
+            const radius = Math.max(0, (d.y0 + d.y1) / 2);
+            const angle = ((d.x0 + d.x1) / 2 * 180 / Math.PI) - 90;
+            const x = radius * Math.cos(angle * Math.PI / 180);
+            const y = radius * Math.sin(angle * Math.PI / 180);
+            return `translate(${x},${y}) rotate(${angle})`;
+          })
+          .attr('dy', '0.35em')
+          .text(d => d.data.name)
+          .style('text-anchor', 'middle')
+          .style('font-size', '8px')
+          .style('fill', 'gray') // Couleur des artistes
+          .style('pointer-events', 'none');
+
     },
 
     drawChartGenre(genreName,color) {
@@ -226,6 +272,7 @@ export default {
           .endAngle(d => d.x1)
           .innerRadius(d => d.y0)
           .outerRadius(d => d.y1);
+
 
       svg.selectAll('path')
           .data(root.descendants())
