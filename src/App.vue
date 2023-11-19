@@ -1,16 +1,16 @@
 <template>
   <div>
-    <BarChartV1/>
+    <Sunburst/>
 
   </div>
 </template>
 
 <script>
-import BarChartV1 from "@/components/pictogramme-chart/PictogrammeChart.vue";
+import Sunburst from "@/components/sunburst-chart/SunburstChart.vue";
 export default {
   name: 'App',
   components: {
-    BarChartV1
+    Sunburst
   }
 }
 </script>
