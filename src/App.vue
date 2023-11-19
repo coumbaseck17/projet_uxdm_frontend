@@ -1,12 +1,11 @@
 <template>
   <div>
 <HelloWorld/>
-
   </div>
 </template>
 
 <script>
-import HelloWorld from "@/components/HelloWorld";
+import HelloWorld from "@/components/pictogramme-chart/HelloWorld";
 export default {
   name: 'App',
   components: {

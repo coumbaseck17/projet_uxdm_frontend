@@ -85,10 +85,10 @@
             <!-- Colonne de gauche pour les albums, genre, etc. -->
             <div class="details-column">
               <div class="detail-item">
-                <p><b>DeezerFans:</b> {{ selectedArtist.deezerFans }}</p>
+                <p><b> {{ selectedArtist.deezerFans }} FANS</b></p>
               </div>
               <div class="detail-item">
-                <p><b>LifeSpan Ended:</b> {{ selectedArtist.lifeSpan.ended ? 'Oui' : 'Non' }}</p>
+                <p><b>ACTIF</b> {{ selectedArtist.lifeSpan.ended ? 'Oui' : 'Non' }}</p>
               </div>
               <!-- Assurez-vous que chaque élément a la même hauteur -->
               <div class="detail-item empty-item">&nbsp;</div>
@@ -162,6 +162,7 @@ export default {
          urlDeezer: 'https://www.deezer.com/artist/1234567',
          deezerFans : 124545
        }
+
   }},
   mounted() {
 
@@ -173,6 +174,7 @@ export default {
       { category: 'Catégorie 4', value: Math.floor(Math.random() * 100) },
       { category: 'Catégorie 5', value: Math.floor(Math.random() * 100) },
     ];
+
 
     // Utilisation de D3.js pour créer un graphique à barres simples
 
@@ -326,10 +328,12 @@ footer {
 
 .details-container {
   position: relative;
+  font-family:"Noto Serif" ;
   /* ... autres styles */
 
   /* Ajout d'un fond blanc avec une image graphique */
   border-radius: 10px; /* Coins arrondis pour le détail container */
+
 }
 
 

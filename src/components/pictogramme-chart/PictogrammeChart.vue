@@ -106,6 +106,7 @@ export default {
     this.data = await response.json();
     this.innerWidth = this.largeurTotale - this.marges.gauche - this.marges.droit;
     this.innerHeight = this.hauteurTotale - this.marges.haut - this.marges.bas;
+
     this.drawChart();
   } catch (error) {
     console.error('Erreur lors de la récupération des données de l\'API : ', error);
