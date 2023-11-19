@@ -9,9 +9,7 @@
 
 
     </div>
-  <div class="genre-details">
-    <!-- Content of genre details -->
-  </div>
+
   <!-- Légende des pictogrammes -->
   <div class="legend-container">
     <h4>Légende des Pictogrammes </h4>
@@ -45,10 +43,12 @@
       <input type="radio"  name="filterGroup" v-model="selectedFilter" value="Person"  @change="applyFilter"> Person
     </label>
   </div>
-  <div class="artist-details">
+  <div class ="details-container">
+    <div class="artist-details"></div>
+    <div class="genre-details">
     <!-- Content of genre details -->
   </div>
-
+</div>
 </template>
 
 
@@ -519,7 +519,7 @@ console.log(subgenreDetails);
     <p>LifeSpan Ended: ${artist.lifeSpan.ended ? 'Oui' : 'Non'}</p>
     <p>Membres: ${artist.members.join(', ')}</p>
     <p>Image: <img src="${artist.picture}" alt="Artist"></p>
-    <p>Record Label: ${artist.recordLabel}</p>
+    <p>Record Label: ${artist.deezerFans}</p>
     <p>Type: ${artist.type}</p>
     <p>URL Deezer: <a href="${artist.urlDeezer}" target="_blank">${artist.urlDeezer}</a></p>`);
     }
