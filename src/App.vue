@@ -1,27 +1,142 @@
 <template>
-  <div>
-<HelloWorld/>
+  <div id="app">
+      <!-- Header avec titre -->
+      <h1 class="text-2xl text-left">les genres les populaires 🎸</h1>
 
+      <header class="py-4 border-bottom">
+        <nav>
+        </nav>
+      </header>
+    <main class="flex flex-1">
+
+        <div  class="flex flex-1 container  shadow-left flex-col square-container " v-show="isHomeVisible">
+          <!-- Structure des 4 carrés avec chiffres et lignes -->
+          <h2 text-white> Statistiques </h2>
+
+          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+            <div class="big-number"><b>156</b></div>
+            <div class="lines">
+              <p>ARTISTES</p>
+            </div>
+          </div>
+          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+            <div class="big-number"><b>4545</b></div>
+            <div class="lines">
+              <p>ARTISTES</p>
+              <p>SOLOS</p>
+            </div>
+          </div>
+          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+            <div class="big-number"><b>454844</b></div>
+            <div class="lines">
+              <p>GROUPES</p>
+              <p></p>
+            </div>
+          </div>
+          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+            <div class="big-number"><b>154545 %</b></div>
+            <div class="lines">
+              <p>ARTISTES</p>
+              <p>ACTIFS</p>
+            </div>
+          </div>
+        </div>
+      <router-view @route-change="handleRouteChange"></router-view>
+      <div v-show="showChartsButtons" className="componentsContainer">
+        <div className="component" id="treemap">
+          <router-link to="/treemap" v-on="hideStatistics">
+            <img src="../public/data/treemap.png" alt="treemap" className="chartImage"/>
+          </router-link>
+        </div>
+        <div className="component" id="component2">
+          <router-link to="/pictogram">
+            <img src="../public/data/treemap.png" alt="pictogramchart" className="chartImage"/>
+          </router-link>
+        </div>
+        <div className="component" id="component3">
+          <router-link to="/sunburst">
+            <img src="../public/data/treemap.png" alt="sunburst" className="chartImage"/>
+          </router-link>
+        </div>
+        <div className="component" id="component4">
+          <router-link to="/barchart">
+            <img src="../public/data/treemap.png" alt="barchart" className="chartImage"/>
+          </router-link>
+        </div>
+      </div>
+
+    </main>
+
+    <footer class=" bg-gray-800 text-black py-4 text-center">
+      @MIAGE M2 UXDM
+    </footer>
   </div>
 </template>
 
 <script>
-import HelloWorld from "@/components/pictogramme-chart/PictrogrammeChart";
+
+import router from '@/router';
+
 export default {
   name: 'App',
-  components: {
-HelloWorld
-  }
+  router,
+  methods :{
+    hideStatistics() {
+      // Masquer les statistiques lorsque la route change vers un autre composant que Home.vue
+      this.isHomeVisible = false;
+    },
+  },
+  data() {
+    return {
+      showChartsButtons: true,
+      isHomeVisible:true,
+    };
+  },
+  watch: {
+    '$route'() {
+      this.showChartsButtons = this.$route.path === '/';
+      this.isHomeVisible = this.$route.path === '/';
+
+    },
+  },
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+
+header {
+  font-family: 'Poppins', sans-serif;
+  color: black;
+  padding: 10px;
+  text-decoration: underline;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+}
+
+.componentsContainer {
+  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20px;
+  padding: 20px;
+  justify-content: center;
+}
+
+.component {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.chartImage {
+  width: 100%;
+  height: auto;
+  max-width: 400px;
+  max-height: 280px;
 }
 </style>

@@ -1,12 +1,7 @@
 <template>
   <div class="flex flex-col min-h-screen">
     <!-- Header avec titre -->
-    <h1 class="text-2xl text-left">les genres les populaires 🎸</h1>
 
-    <header class="py-4 border-bottom">
-      <nav>
-      </nav>
-    </header>
 
 
 
@@ -223,9 +218,7 @@
 
 </main>
 </div>
-<footer class=" bg-gray-800 text-black py-4 text-center">
-@MIAGE M2 UXDM
-</footer>
+
 </template>
 
 <!-- Votre script reste inchangé -->

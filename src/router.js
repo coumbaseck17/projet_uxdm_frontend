@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import TreemapV1 from '@/components/TreemapDir/TreeMap.vue';
-import TreemapV2 from '@/components/TreemapDir/TreeMap.vue';
+import PictrogrammeChart from "@/components/pictogramme-chart/PictrogrammeChart";
 import TreemapV3 from '@/components/TreemapDir/TreeMap.vue';
 import TreemapV4 from '@/components/TreemapDir/TreeMap.vue';
 
@@ -14,7 +14,7 @@ const router = createRouter({
         },
         {
             path: '/pictogram',
-            component: TreemapV2,
+            component: PictrogrammeChart,
         },
         {
             path: '/sunburst',
