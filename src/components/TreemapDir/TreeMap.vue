@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div class="title">
       <h1>{{ treemapTitle }}</h1>
     </div>
       <div>
@@ -51,11 +51,9 @@
 
 <script>
 import * as d3 from 'd3';
-//import returnButton from '../../../public/data/returnButton.png';
 
 export default {
   name: 'TreeMap',
-  // the component's data
   data() {
     return {
       data: null,
@@ -137,7 +135,6 @@ export default {
           .attr('width', this.width)
           .attr('height', this.height);
 
-      // Add rectangles for genres and subgenres
       this.rectangles = this.currentSvg.selectAll('rect')
           .data(root.children)
           .enter()
@@ -153,7 +150,7 @@ export default {
           .on('mouseover', (event, d) => this.showTooltip(event, d, "artistes"));
 
 
-      // Add labels for genres and subgenres
+
       this.rectangles
           .append('text')
           .attr('x', 4)
@@ -163,29 +160,25 @@ export default {
           .style('font-size', '30px')
           .text(d => d.data.name);
 
-      //rectangles.on("click", this.treemapSubGenres);
 
       this.rectangles.on("click", function(e,d) {
         this.currentGenre = d.data.name;
-        console.log(name)
         this.treemapSubGenres(this.currentGenre);
       }.bind(this));
     },
 
     updateTreemap(data, color, nameTooltip,textSize) {
-      // Update existing rectangles
+
       const update = this.rectangles.data(data, d => d.data.name);
-      console.log(data)
-      // Enter new rectangles
       const enter = update.enter().append('g')
           .attr('transform', d => `translate(${d.x0},${d.y0})`);
 
       enter.append('rect')
-          .attr('width', 0)  // Initially set width to 0
-          .attr('height', 0) // Initially set height to 0
+          .attr('width', 0)
+          .attr('height', 0)
           .style('stroke', '#fff')
           .style('fill', d => {
-            // Stockez la couleur dans la variable
+
             this.currentFill = color(d.data.name);
             return this.currentFill;
           })
@@ -198,44 +191,42 @@ export default {
           .style('font-size', textSize)
           .text(d => d.data.name);
 
-      // Merge updated and new rectangles
+
       const merged = update.merge(enter);
 
-      // Transition to new dimensions
+
       merged.transition()
-          .duration(500)  // Adjust the duration as needed
+          .duration(500)
           .attr('transform', d => `translate(${d.x0},${d.y0})`)
           .select('rect')
           .attr('width', d => d.x1 - d.x0)
           .attr('height', d => d.y1 - d.y0);
 
-      // Remove rectangles that are no longer needed
+
       update.exit().remove();
 
-      // Update click behavior
+
       if(this.showGenres){
         merged.on("click", this.handleTreemapClick.bind(this, this.showArtistList));
       }
 
       if(this.showArtist){
-        console.log(data)
         this.showArtistdetails = true;
         merged.on("click", (event, d) => this.handleTreemapDetails(event, d));
       }
     },
 
     handleTreemapClick(showArtistList, event, data) {
-      const genre = this.currentGenre; // Assuming this.currentGenre is set elsewhere
+      const genre = this.currentGenre;
       const subgenre = data.data.name;
-      this.currentSubgenre = subgenre// Assuming you want to pass the subgenre clicked
+      this.currentSubgenre = subgenre;
       showArtistList(genre, subgenre, this.currentFill);
     },
 
     handleTreemapDetails(event, data){
-       // Assuming this.currentGenre is set elsewhere
+
       const artist = data.data.name;
-      this.currentArtist= artist;// Assuming you want to pass the subgenre clicked
-      console.log(this.currentArtist);
+      this.currentArtist= artist;
       this.artistDetails(data);
     },
 
@@ -256,10 +247,9 @@ export default {
       const root = d3.hierarchy(hierarchy)
           .sum(d => d.value)
           .sort((a, b) => b.value - a.value);
-      console.log(root.descendants())
 
       this.treemap(root);
-      // Mise à jour du treemap au lieu de le recréer
+
       this.updateTreemap(root.descendants(),this.colorScaleSubgenre,"artistes","20px");
 
     },
@@ -267,14 +257,14 @@ export default {
     showTooltip(event, data, nameValue) {
       const tooltip = d3.select('#tooltip');
 
-      // Positionner la zone de texte
+
       tooltip
           .style('left', (event.pageX + 10) + 'px')
           .style('top', (event.pageY - 20) + 'px')
           .style('opacity', 1)
           .html(`<strong>${data.data.name}</strong><br>${data.value} ${nameValue}`);
 
-      // Ajouter un événement pour masquer la zone de texte au survol
+
       d3.select('body')
           .on('mousemove', () => tooltip.style('left', (event.pageX + 10) + 'px')
               .style('top', (event.pageY - 20) + 'px'))
@@ -310,11 +300,7 @@ export default {
           .sum(d => d.deezerFans)
           .sort((a, b) => b.deezerFans - a.deezerFans);
 
-      console.log(colorF)
-
       this.treemap(root);
-
-
       this.colorScaleArtist = d3.scaleOrdinal([`${colorF}`])
       this.updateTreemap(root.leaves(),this.colorScaleArtist, "fans","14px")
 
@@ -388,17 +374,12 @@ export default {
     async filtersTreemap(){
       this.artistList = true;
       const checkedValues = Object.keys(this.checkboxValues).filter(key => this.checkboxValues[key]);
-      console.log(checkedValues)
-      console.log(this.currentGenre,this.currentSubgenre )
       const response2 = await fetch(
           `./data/artists_by_genre_sorted_v1/${this.currentGenre}/${this.currentSubgenre}.json`
       );
 
       this.dataDetails = await response2.json();
-      console.log(this.dataDetails)
       const filteredData = this.filterDataByCheckedValues(this.dataDetails, checkedValues);
-
-      console.log(filteredData)
 
       if (!this.dataDetails ) {
         return;
@@ -412,17 +393,13 @@ export default {
       const root = d3.hierarchy(hierarchy2)
           .sum(d => d.deezerFans)
           .sort((a, b) => b.deezerFans - a.deezerFans);
-      console.log(root)
-
       this.treemap(root);
-
 
       this.updateTreemap(root.descendants(), this.colorScaleArtist, 'fans');
 
     },
 
     artistDetails(data) {
-      console.log(data);
       var detailsContainer = d3.select(".artist-details");
 
       detailsContainer.html("");
@@ -445,7 +422,7 @@ export default {
       mainDiv
           .append("h2")
           .text(data.data.name)
-          .style("align-content", "center");
+          .style("text-align", "center");
 
       var imageDiv = mainDiv
           .append("div")
@@ -474,6 +451,7 @@ export default {
             .append("p")
             .text("Not in activity")
             .style("font-weight", "bold")
+            .style("text-align", "center");
       }
       else{
         mainDiv
@@ -481,12 +459,14 @@ export default {
             .append("p")
             .text("In activity")
             .style("font-weight", "bold")
+            .style("text-align", "center");
       }
 
       mainDiv
           .append("div")
           .append("p")
           .text("Music genres: ")
+          .style("text-align", "center")
           .append("p")
           .text(data.data.genres)
           .style("text-align", "center");
@@ -495,10 +475,12 @@ export default {
           .append("div")
           .append("p")
           .text("Link to  ")
+          .style("text-align", "center")
           .append("a")
           .attr("href", data.data.urlDeezer)
           .attr("target", "_blank")
-          .text("Deezer");
+          .text("Deezer")
+          .style("text-align", "center");
 
 
       var albumsDiv = mainDiv.append("div");
@@ -549,18 +531,14 @@ export default {
     },
 
     handleReturnClick(){
-      console.log(this.currentSubgenre)
-      console.log(this.currentGenre)
       //si on est dans l'affichage des artistes
       if(this.currentSubgenre !== null && this.currentGenre !== null){
         this.currentSubgenre=null;
         this.showArtistdetails = false;
         this.showCheckboxes = false;
         this.showArtist = false;
-        //const rectangles = d3.select('.treemap-chart').selectAll('rect');
         const svgElement = d3.select('.treemap-chart').select('svg');
         svgElement.remove();
-        //rectangles.remove();
         this.createTreemap();
         this.treemapSubGenres(this.currentGenre);
       }
@@ -615,22 +593,21 @@ export default {
 }
 .artist-details {
   margin-left: 10px;
-  border: 2px solid #ccc; /* Bordure de 2 pixels en couleur grise */
-  border-radius: 10px; /* Coins arrondis */
-  padding: 10px; /* Espace intérieur de 10 pixels */
-  overflow: hidden; /* Cache le débordement au cas où l'image est plus grande */
-
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  overflow: hidden;
 }
 
 .artist-details img {
-  border-radius: 100%; /* Coins arrondis pour l'image (effet d'image circulaire) */
-  float: left; /* Aligne l'image à gauche */
-  margin-right: 10px; /* Marge à droite de l'image pour l'espacement */
+  border-radius: 100%;
+  float: left;
+  margin-right: 10px;
 }
 
 .chart-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 }
 .container{
   display: flex;
@@ -638,6 +615,7 @@ export default {
 }
 .return-button{
   display: flex;
+  margin-right: 30px;
 }
 .checkbox-container {
   align-content: center;
@@ -647,9 +625,9 @@ export default {
   margin-right: 250px;
   width: 300px;
   height: 20px;
-  border: 2px solid #cccccc; /* Bordure de 2 pixels en couleur grise */
-  border-radius: 10px; /* Coins arrondis */
-  padding: 10px; /* Espace intérieur de 10 pixels */
+  border: 2px solid #cccccc;
+  border-radius: 10px;
+  padding: 10px;
   overflow: hidden;
   flex-grow: 1;
 }
@@ -664,5 +642,10 @@ export default {
 }
 .styled-label {
   font-weight: bold;
+}
+.title{
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 </style>

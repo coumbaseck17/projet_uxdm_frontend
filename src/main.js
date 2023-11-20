@@ -1,10 +1,7 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
-//import DatavizExample from './components/DatavizExample.vue'
+import { createApp } from 'vue';
+import App from './App.vue'; // Update with the correct path to your main app component
+import router from './router'; // Import your router instance
 
-//createApp(App).mount('#app')
-
-for (const node of document.querySelectorAll("[dataviz-example]")) {
-    createApp(App).mount(node)
-}
+const app = createApp(App);
+app.use(router); // Use the router plugin
+app.mount('#app');
