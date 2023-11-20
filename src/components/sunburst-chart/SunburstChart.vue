@@ -1,39 +1,38 @@
 <template>
   <div class="flex flex-col min-h-screen">
     <!-- Header avec titre -->
-    <h1 class="text-2xl text-left">les genres les populaires 🎸</h1>
+    <h1 class="text-2xl text-left border-bottom">Popular music on Deezer 🎸</h1>
 
-    <header class="py-4 border-bottom">
+    <header class="py-4">
     </header>
 
 
 
-    <main class="flex flex-1">
+    <main class="flex flex-1 fixed-top">
       <!-- Conteneur pour filter-container et pictogram-chart -->
       <div class="flex" style="width: 200px;">
 
         <div class="flex flex-1 container filter-container shadow-left flex-col ">
-          <div class="container filter-container shadow-left " >
+          <div v-show="showGenres" class="container filter-container shadow-left " >
             <!-- Contenu du filtre -->
             <h2 class="v">Filtres</h2>
+            <hr>
+            <p class="bold-text">GENDER</p>
             <label>
-              <input type="radio" name="filterGroup1" value="all" @change="applyFilter"> All <br>
+              <input type="radio" name="filterGroup" value="Female" @change="changeSelectedFilter('Female')"> Female <br>
+              <input type="radio" name="filterGroup" value="Male" @change="changeSelectedFilter('Male')"> Male
             </label>
-            <p>GENDER</p>
+            <p class="bold-text">Group/solo</p>
             <label>
-              <input type="radio" name="filterGroup2" value="Female" @change="applyFilter"> Female <br>
-              <input type="radio" name="filterGroup2" value="Male" @change="applyFilter"> Male
+              <input type="radio" name="filterGroup" value="Group" @change="changeSelectedFilter('Group')"> Group <br>
+              <input type="radio" name="filterGroup" value="Solo" @change="changeSelectedFilter('Person')"> Solo
             </label>
-            <p>Group/solo</p>
+            <p class="bold-text">Activity</p>
             <label>
-              <input type="radio" name="filterGroup3" value="Group" @change="applyFilter"> Group <br>
-              <input type="radio" name="filterGroup3" value="Solo" @change="applyFilter"> Solo
+              <input type="radio" name="filterGroup" value="Active" @change="changeSelectedFilter('false')"> Active <br>
+              <input type="radio" name="filterGroup" value="Not active" @change="changeSelectedFilter('true')"> Not active <br> <hr>
             </label>
-            <p>Activity</p>
-            <label>
-              <input type="radio" name="filterGroup4" value="Active" @change="applyFilter"> Active <br>
-              <input type="radio" name="filterGroup4" value="Not active" @change="applyFilter"> Not active
-            </label>
+            <button class="grey-button" @click="clearFilters">Remove filters</button>
           </div>
         </div>
 
@@ -44,25 +43,35 @@
         <div v-show="showGenres" class="sunburst-chart-genres"><div id="details-container-genres" class="details-container-genres"></div><div id="details-container-genres" class="details-container-genres"></div></div>
       </div>
 
-  <div class="container details-container-artists">
-    <div class="details-container-artists artist-details">
-      <!-- Photo de profil centrée -->
-      <div class="centered">
-        <p>image</p>
-      </div>
-      <div class="artist-details-columns flex justify-between">
-        <!-- Colonne de gauche pour les albums, genre, etc. -->
-        <div class="details-column">
-          <p>efbhuzv</p>
-        </div>
+      <div v-if="this.selectedArtist" class="container details-container-artist">
+        <div v-show="showInfo" class="details-container-artist artist-details" >
+          <!-- Photo de profil centrée -->
+          <div class="centered">
+            <img :src="this.selectedArtist.picture" alt="Artist" class="artist-image-small">
+            <h2>{{ this.selectedArtist.name }}</h2>
+          </div>
+          <div class="artist-details-columns flex justify-between">
+            <!-- Colonne de gauche pour les albums, genre, etc. -->
+            <div class="details-column">
+              <div class="detail-item">
+                <p><b> {{ this.selectedArtist.value }} fans</b></p>
+              </div>
+              <div class="detail-item">
+                <p><b>Active:</b> {{ this.selectedArtist.lifeSpan.ended ? 'No' : 'Yes' }}</p>
+              </div>
+              <p v-if="this.selectedArtist.recordLabel!=null && this.selectedArtist.recordLabel!=''">Label: {{ this.selectedArtist.recordLabel }}</p>
+              <p>Albums: {{ this.selectedArtist.albums }}</p>
+              <div class="detail-item">
+                <p>Music genres: {{ this.selectedArtist.genres }}</p>
+              </div>
+              <p><b>Deezer link:</b> <a :href="this.selectedArtist.urlDeezer">Deezer</a></p>
+              <p v-if="this.selectedArtist.type==='Group' && this.selectedArtist.members!=null && this.selectedArtist.members!=''">Members: {{ this.selectedArtist.members }}</p>
+            </div>
 
-        <!-- Colonne de droite pour d'autres détails -->
-        <div class="details-column">
-          <p>kfjznkef</p>
+          </div>
         </div>
+        <button @click="showInfo = false">Exit info</button>
       </div>
-    </div>
-  </div>
 
   </main>
   </div>
@@ -73,6 +82,8 @@
 
 
 <script>
+
+
 import * as d3 from 'd3';
 import {filterArtists} from "@/data";
 
@@ -81,6 +92,7 @@ export default {
     return {
       data: null,
       dataArtists: null,
+      filterValue: '',
       marges: {haut: 40, droit: 20, bas: 30, gauche: 60},
       largeurTotale: 1800,
       hauteurTotale: 1200,
@@ -91,10 +103,11 @@ export default {
       selectedFilter:'all',
       labelLegend: 'artistes',
       selectedArtist: null,
-      showGenres: false
+      showGenres: false,
+      showInfo: false,
+      genreName1: '',
+      genreColor1:''
 
-//
-      // Track the currently selected genre
     };
   },
 
@@ -111,6 +124,77 @@ export default {
   },
 
   methods: {
+
+    changeSelectedFilter(filter){
+      this.selectedFilter=filter;
+      console.log(this.selectedFilter)
+      console.log(this.genreName1 + "  et "+ this.genreColor1);
+      this.drawChartGenre(this.genreName1,this.genreColor1);
+    },
+    clearFilters() {
+      this.selectedFilter='all';
+      const filterGroups = ['filterGroup'];
+      console.log(this.selectedFilter)
+      filterGroups.forEach(groupName => {
+        const radios = document.getElementsByName(groupName);
+        radios.forEach(radio => {
+          radio.checked = false;
+        });
+      });
+      this.drawChartGenre(this.genreName1,this.genreColor1);
+    },
+
+    // Fonction pour appliquer le filtre en fonction du type et de la valeur du filtre
+    filterArt(filterType, filterValue, originalArtistsData) {
+      console.log(originalArtistsData)
+      try {
+        let filteredArtists = [...originalArtistsData]; // Utilise une copie des données originales pour filtrer
+
+        if (filterType !== null && filterValue !== null && originalArtistsData && !['all'].includes(filterValue)) {
+          filteredArtists = originalArtistsData.filter(artist => {
+            switch (filterType) {
+              case "TYPE":
+                return artist.type === filterValue;
+              case "GENDER":
+                return artist.gender === filterValue;
+              case "ACTIVITY":
+                if(filterValue==='true'){
+                  return artist.lifeSpan.ended === true;
+                }else{
+                  return artist.lifeSpan.ended === false;
+                }
+              default:
+                return true; // Si aucun filtre spécifique n'est appliqué, retourne toutes les données
+            }
+          });
+        }
+
+        this.dataArtists = filteredArtists;
+      } catch (error) {
+        console.log("Erreur lors du filtrage des artistes : ", error);// Retourne un tableau vide en cas d'erreur
+      }
+    },
+
+// Utilisation de la fonction applyFilter() pour déterminer le type et la valeur du filtre, puis appliquer le filtre
+    async applyFilter(){
+      let filterType = null;
+      this.filterValue = this.selectedFilter;
+
+      if (['all', 'Group', 'Person', ''].includes(this.selectedFilter)) {
+        filterType = 'TYPE';
+      } else if (['Female', 'Male'].includes(this.selectedFilter)) {
+        filterType = 'GENDER';
+      } else if (['true', 'false'].includes(this.selectedFilter)) {
+        filterType = 'ACTIVITY';
+      }
+
+      console.log(filterType + "," + this.filterValue);
+
+      return filterType;
+    },
+
+
+
 
     async drawChart() {
       // Clear previous sunburst chart genres
@@ -213,12 +297,11 @@ export default {
           })
           .on('click', (event, d) => {
             if (d.depth === 1) { // Limiter l'action du clic à la première couche (profondeur 1)
-              // Toggle visibility of the existing sunburst
+
               this.showGenres = true;
 
               if (d && d.data && d.data.name) {
                 const genreColor = color(d.data.name);
-                console.log(genreColor);
                 this.drawChartGenre(d.data.name,genreColor); // Draw the chart for the clicked genre
               }
             }
@@ -267,6 +350,10 @@ export default {
     },
 
     async drawChartGenre(genreName,genreColor) {
+      this.genreName1=genreName;
+      this.genreColor1=genreColor;
+
+      d3.selectAll('svg').remove()
 
       const color = d3.scaleOrdinal().range([`${genreColor}`]);
       if (!this.data || !this.data.genres || !this.data.genres[genreName]) {
@@ -291,16 +378,34 @@ export default {
           };
 
           try {
+
             this.dataArtists =  await filterArtists(genreName, subgenre);
 
+            const filterType = await this.applyFilter(this.selectedFilter);
+            console.log(filterType)
+            const originalArtistsData = this.dataArtists
+            this.filterArt(filterType, this.selectedFilter, originalArtistsData)
+
+            console.log("datafiltre "+this.dataArtists)
             Object.values(this.dataArtists).forEach((artist, index) => {
               subgenreObj.children.push({
                 name: artist.name,
                 value: artist.deezerFans,
-                artistIndex: index // Garder une référence à l'indice de l'artiste
+                artistIndex: index,
+                picture: artist.picture,
+                type: artist.type,
+                gender: artist.gender,
+                lifeSpan: artist.lifeSpan,
+                recordLabel: artist.recordLabel,
+                urlDeezer: artist.urlDeezer,
+                genres: artist.genres,
+                members: artist.members,
+                albums: artist.albums
               });
             });
           }
+
+
           catch(error) {
             console.log( "error")
           }
@@ -375,6 +480,14 @@ export default {
               this.showGenres = false;
               this.drawChart()
             }
+            if (d.depth === 3) { // Limiter l'action du clic à la première couche (profondeur 3)"
+              const artist = d.data;
+              console.log(artist)
+              this.selectedArtist = artist;
+              this.showInfo = true;
+              console.log(this.selectedArtist.name)
+            }
+
           });
 
       svg.selectAll('.genre-label')
@@ -436,7 +549,8 @@ export default {
           .style('text-anchor', 'middle')
           .style('font-size', '5px')
           .style('fill', 'black')
-          .style('pointer-events', 'none');
+          .style('pointer-events', 'none')
+          ;
     }
   },
 };
@@ -479,6 +593,14 @@ export default {
   z-index: 999;
 }
 
+.artist-image-small {
+  width: 150px; /* Ajustez la taille de l'image */
+  height: 150px; /* Ajustez la taille de l'image */
+  border-radius: 50%; /* Forme ronde */
+  border: 2px solid white; /* Bordure autour de l'image */
+  z-index: 1; /* Mettre au-dessus du contenu des détails */
+  margin-bottom: 10px; /* Espacement avec le nom */
+}
 
 .flex {
   display: flex;
@@ -622,6 +744,16 @@ footer {
   margin: 0; /* Retirez les marges par défaut */
   font-size: 1.5em; /* Taille du nom de l'artiste */
   color: black; /* Couleur du texte */
+}
+
+.grey-button {
+  background-color: lightgrey;
+  padding: 8px 16px; /* Exemple de style pour le padding */
+  border: none; /* Exemple de style pour supprimer la bordure */
+}
+
+.bold-text {
+  font-weight: bold;
 }
 
 </style>
