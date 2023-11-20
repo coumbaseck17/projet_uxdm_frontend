@@ -16,10 +16,9 @@
 <!--    barchart artistes-->
     <div>
       <div class="bar-chart-artists" ref="detailsContainer3" >
-
+        </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -74,11 +73,13 @@ export default {
       const svg = d3.select('.bar-chart').append('svg')
           .attr('width', width)
           .attr('height', height)
+          .style('background-color', 'burlywood')
           .append('g')
-          .attr('transform', `translate(${margin.left}, ${margin.top})`);
+          .attr('transform', `translate(${margin.left}, ${margin.top})`)
+      ;
 
       // Créer une échelle de couleurs ordinales en bleu
-      const colorScale = d3.scaleOrdinal(d3.schemeYlOrBr[this.genres.length].reverse());
+      const colorScale = d3.scaleOrdinal(d3.schemeYlOrBr[this.genres.length]);
 
       // Create the scales
       const xScale = d3.scaleLinear()
@@ -132,9 +133,6 @@ export default {
                 .style("border-color", colorScale(genre));
           })
           .on("mousemove", function () {
-            //first fig
-            // return tooltip.style("top", (event.pageY-50)+"px").style("left",(event.pageX-50)+"px")
-            //seconfd fig
             return tooltip.style("top", (event.pageY - 10) + "px")
                 .style("left", (event.pageX + 10) + "px");
           })
@@ -171,7 +169,7 @@ export default {
       // Supprimer le graphique précédent
       d3.select('svg').remove();
 
-      const width = 700;
+      const width = 600;
       const height = 500;
       const margin = {top: 20, right: 20, bottom: 30, left: 90};
       const innerWidth = width - margin.left - margin.right;
@@ -188,6 +186,7 @@ export default {
       const svg = d3.select('.bar-chart-details').append('svg')
           .attr('width', width)
           .attr('height', height)
+          .style('background-color', 'burlywood')
           .append('g')
           .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
@@ -221,6 +220,7 @@ export default {
       svg.append('g')
           .attr('transform', `translate(0, ${innerHeight})`)
           .call(xAxis);
+
       svg.append('g')
           .call(yAxis);
 
@@ -287,44 +287,38 @@ export default {
       // Supprimer le graphique précédent
       d3.select('svg').remove();
 
-
       this.artists = Object.keys(this.data).sort((a, b) => {
         return this.data[b].deezerFans - this.data[a].deezerFans;
       });
 
 
-      const width = 700;
-      const height = 500 ;
-      const margin = {top: 20, right: 20, bottom: 30, left: 90};
+      const width = 800;
+      // const height = 500;
+      const margin = {top: 20, right: 20, bottom: 30, left: 50};
       const innerWidth = width - margin.left - margin.right;
-      const innerHeight = height - margin.top - margin.bottom;
+      // const innerHeight = height - margin.top - margin.bottom;
 
       // Create the scales
       const xScale = d3.scaleLinear()
           .domain([0, d3.max(this.data, (artist) => artist.deezerFans)])
           .range([0, innerWidth]);
 
-
       const yScale = d3.scaleBand()
           .domain(this.data.map(artist => artist.name))
-          .range([0, this.data.length * 10])  // Inversion du range
-          .padding(0.1);
+          .range([0, this.data.length * 15 ])
+          .padding(0.3);
 
-      // Créer le SVG
+      // Create the SVG
       const svg = d3.select('.bar-chart-artists').append('svg')
           .attr('width', width)
-          .attr('height', height)
-          // cette ligne pour longueur de la barre
-          // .attr('height', this.artists.length * 10 + margin.top + margin.bottom)
-          .append('g')
-          .attr('transform', `translate(${margin.left}, ${margin.top})`)
-      .append('div')
-      .style('overflow-y', 'scroll')
+          .attr('height', this.data.length * 15 + margin.top + margin.bottom)
+          .style('background-color', 'burlywood')
+          .append('g')  // Ajout d'un groupe pour appliquer les marges
+          .attr('transform', `translate(150, ${margin.top})`);
 
       // Create the axes
-      const xAxis = d3.axisBottom(xScale);
+      // const xAxis = d3.axisBottom(xScale);
       const yAxis = d3.axisLeft(yScale);
-
 
       // create a tooltip
       var tooltip = d3.select(".bar-chart-artists")
@@ -335,17 +329,15 @@ export default {
           .style("border-width", "2px")
           .style("border-radius", "5px")
           .style("padding", "5px")
-          .style("visibility", "hidden")
-
+          .style("visibility", "hidden");
 
       // Append the axes to the SVG
-      svg.append('g')
-          .attr('transform', `translate(0, ${innerHeight})`)
-          .call(xAxis);
-
       // svg.append('g')
-      //     .attr("class", "y-axis")
-      //     .call(yAxis);
+      //     .attr('transform', `translate(0, ${innerHeight})`)
+      //     .call(xAxis);
+
+      svg.append('g')
+          .call(yAxis);
 
       // Append the bars
       svg.selectAll('rect')
@@ -357,87 +349,185 @@ export default {
           .attr('width', (id) => xScale(this.data[id].deezerFans))
           .attr('height', yScale.bandwidth())
           .attr('fill', () => color)
-          // .attr('preserveAspectRatio', 'xMinYMin')
-          .on('mouseover', () => {
-            return tooltip.style("visibility", "visible").style("color", "black")
+          .on('mouseover', (event,id) => {
+            //afficher infos artistes
+            const artist = this.data[id];
+            const toolDetails = artist.name + " <br> nombre de fans :  " + artist.deezerFans
+                + ' <br> nombre album :  ' + artist.nombre_albums + " " +
+                " <br> type :  " + artist.type +
+                " <br> genres :  " + artist.genres ;
+
+            //afficher tooltip
+            tooltip.html(toolDetails).style("visibility", "visible").style("color", "black")
                 .style("border-color", color);
           })
           .on("mousemove", function () {
-
             return tooltip.style("top", (event.pageY - 10) + "px")
                 .style("left", (event.pageX + 10) + "px");
           })
           .on('mouseout', function () {
             return tooltip.style("visibility", "hidden");
           })
-          .on('click', () => {
+          .on('click', (event,id) => {
+            const url = this.data[id].urlDeezer;
+            window.location.href = url;
+            return tooltip.style("visibility", "hidden");
+          });
+
+      // Append invisible rectangles for y-axis interactivity
+      svg.selectAll('.interaction-rect')
+          .data(this.artists)
+          .enter()
+          .append('rect')
+          .attr('class', 'interaction-rect')
+          .attr('x', 0)
+          .attr('y', (id) => yScale(this.data[id].name))
+          .attr('width', innerWidth) // Largeur égale à la largeur intérieure du graphique
+          .attr('height', yScale.bandwidth())
+          .attr('fill', 'transparent') // Rendre le rectangle invisible
+          .on('mouseover', (event, id) => {
+            // afficher infos artistes
+            const artist = this.data[id];
+            const toolDetails = artist.name + " <br> nombre de fans :  " + artist.deezerFans
+                + ' <br> nombre album :  ' + artist.nombre_albums + " " +
+                " <br> type :  " + artist.type +
+                " <br> genres :  " + artist.genres;
+
+            // afficher tooltip
+            tooltip.html(toolDetails).style("visibility", "visible").style("color", "black")
+                .style("border-color", color);
+          })
+          .on("mousemove", function () {
+            return tooltip.style("top", (event.pageY - 10) + "px")
+                .style("left", (event.pageX + 10) + "px");
+          })
+          .on('mouseout', function () {
+            return tooltip.style("visibility", "hidden");
+          })
+          .on('click', (event, id) => {
+            const url = this.data[id].urlDeezer;
+            window.location.href = url;
             return tooltip.style("visibility", "hidden");
           });
 
 
+      // this.createScrollableYAxis();
+      // this.createXAxis();
+
       // Ajouter une barre de défilement à l'axe y
-      const scrollBar = d3
-          .select(".bar-chart-artists")
-          .append("input")
-          .attr("type", "range")
-          .attr("orient", "vertical")
-          .attr("min", 0)
-          .attr("max", yScale.domain().length - 1)
-          .attr("value", 0)
-          .attr("class", "scroll-bar")
-          .style("height", "500px")
-          .on("input", () => {
-          const scrollValue = +scrollBar.property("value");
-          const visibleItems = 30;
-
-            // Créer une nouvelle échelle en fonction de la position de la barre de défilement
-            const newYScale = d3.scaleBand()
-                .domain(yScale.domain().slice(scrollValue, scrollValue + visibleItems))
-                .range([0, height - margin.top - margin.bottom])
-                .padding(0.1);
-
-         // Mettez à jour l'axe y et les éléments du graphique en conséquence
-            yAxisGroup.call(d3.axisLeft(newYScale));
-
-            // // Mettez à jour l'axe x en fonction de la nouvelle échelle
-            // xScale.range([0, innerWidth]);
-
-
-            //  Mettez à jour les barres du graphique
-          svg.selectAll("rect")
-              .attr('x', 0)
-              .attr("y", id => newYScale(this.data[id].name))
-              .attr('width', (id) => xScale(this.data[id].deezerFans))
-              .attr("height", newYScale.bandwidth());
-
-            // Mettez à jour l'axe x
-            // svg.select('.x-axis')
-            //     .call(xAxis.scale(xScale));
-
-      });
-
-//       const zoom = d3.zoom()
-//           .scaleExtent([0, 20])
-//           .on("zoom", (event) => {
-//             // Ajuster la plage de l'échelle y en fonction de la transformation
-//             yScale.range([margin.top, innerHeight - margin.bottom].map(d => event.transform.applyY(d)));
-//
-//             // Mettre à jour les positions et hauteurs des barres
-//             svg.selectAll('rect')
-//                 .attr('y', id => yScale(this.data[id].name))
-//                 .attr('height', yScale.bandwidth());
-//
-//             // Mettre à jour l'axe y
-//             yAxisGroup.call(yAxis.scale(yScale));
-//           });
-//
-// // Appeler la fonction de zoom sur l'élément SVG
-//       svg.call(zoom);
+      // const scrollBar = d3
+      //     .select(".bar-chart-artists")
+      //     .append("input")
+      //     .attr("type", "range")
+      //     .attr("orient", "vertical")
+      //     .attr("min", 0)
+      //     .attr("max", yScale.domain().length - 1)
+      //     .attr("value", 0)
+      //     .attr("class", "scroll-bar")
+      //     .style("height", "500px")
+      //     .on("input", () => {
+      //     const scrollValue = +scrollBar.property("value");
+      //     const visibleItems = 30;
+      //
+      //       // Créer une nouvelle échelle en fonction de la position de la barre de défilement
+      //       const newYScale = d3.scaleBand()
+      //           .domain(yScale.domain().slice(scrollValue, scrollValue + visibleItems))
+      //           .range([0, height - margin.top - margin.bottom])
+      //           .padding(0.1);
+      //
+      //    // Mettez à jour l'axe y et les éléments du graphique en conséquence
+      //       yAxisGroup.call(d3.axisLeft(newYScale));
+      //
+      //       // // Mettez à jour l'axe x en fonction de la nouvelle échelle
+      //       // xScale.range([0, innerWidth]);
+      //
+      //
+      //       //  Mettez à jour les barres du graphique
+      //     svg.selectAll("rect")
+      //         .attr('x', 0,5)
+      //         .attr("y", id => newYScale(this.data[id].name))
+      //         .attr('width', (id) => xScale(this.data[id].deezerFans))
+      //         .attr("height", newYScale.bandwidth());
+      //
+      //       // Mettez à jour l'axe xs
+      //       // svg.select('.x-axis')
+      //       //     .call(xAxis.scale(xScale));
+      //
+      // });
 
     },
 
+    createScrollableYAxis() {
+      const width = 700;
+      // const height = 500 ;
+      const margin = {top: 20, right: 20, bottom: 30, left: 90};
+
+      // Create SVG container for the y-axis
+      const svgY = d3
+          .select('#sections')
+          .append('svg')
+          .attr('width', width - margin.left - margin.right)
+          .attr('height', this.data.length * 10)
+          .append('g')
+          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+
+      // Create y-axis scale
+      const yScale = d3.scaleBand()
+          .domain(this.data.map(artist => artist.name))
+          .range([0, this.data.length * 10])  // Inversion du range
+          .padding(0.1)
+
+      // Create y-axis
+      const yAxis = d3.axisLeft(yScale);
+      svgY.append('g').attr('class', 'y-axis').call(yAxis);
+
+
+      this.svg.selectAll('rect')
+          .data(this.artists)
+          .enter()
+          .append('rect')
+          .attr('x', 0,5)
+          .attr('y', (id) => yScale(this.data[id].name))
+          .attr('height', yScale.bandwidth())
+
+    },
+
+    createXAxis() {
+      const margin = { top: 0, right: 0, bottom: 30, left: 50 };
+      const width = 600 - margin.left - margin.right;
+      const height = 50;
+
+      // Create SVG container for the x-axis
+      const svgX = d3
+          .select('#vis')
+          .append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.top + margin.bottom)
+          .append('g')
+          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+      // Create x-axis scale
+      const xScale = d3.scaleLinear()
+          .domain([0, d3.max(this.data, (artist) => artist.deezerFans)])
+          .range([0, innerWidth]);
+
+      // Create x-axis
+      const xAxis = d3.axisBottom(xScale);
+      svgX.append('g').attr('class', 'x-axis').call(xAxis);
+
+
+      this.svg.selectAll('rect')
+          .enter()
+          .append('rect')
+          .attr('width', (id) => xScale(this.data[id].deezerFans))
+    },
+
+
+
   }
   };
+
 
 </script>
 
@@ -453,8 +543,10 @@ export default {
   color: black;
   width: 100%;
   height: 100%;
-  background-color: burlywood;
+  /*background-color: burlywood;*/
+  overflow: auto; /* Ajoutez cette propriété pour activer le défilement */
 }
+
 
 svg {
   width: 100%;
