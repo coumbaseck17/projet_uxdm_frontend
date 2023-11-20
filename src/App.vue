@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import HelloWorld from "@/components/pictogramme-chart/HelloWorld";
+import HelloWorld from "@/components/pictogramme-chart/PictrogrammeChart";
 export default {
   name: 'App',
   components: {

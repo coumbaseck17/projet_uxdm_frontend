@@ -78,7 +78,7 @@
             </div>
           </div>
         </div>
-        <div  class="flex flex-1 container  shadow-left flex-col square-container" v-if="currentGenre && !currentSubgenre">
+        <div  class="flex flex-1 container  shadow-left flex-col square-container" v-if="currentGenre && !currentSubgenre && !subgenreIsSelected">
           <!-- Structure des 4 carrés avec chiffres et lignes -->
           <h2> {{this.currentGenre}}</h2>
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
@@ -109,7 +109,7 @@
             </div>
           </div>
         </div>
-        <div  class="flex flex-1 container  shadow-left flex-col square-container" v-if="genreIsSelected && currentSubgenre">
+        <div  class="flex flex-1 container  shadow-left flex-col square-container" v-if="genreIsSelected && currentSubgenre  && !subgenreIsSelected">
           <!-- Structure des 4 carrés avec chiffres et lignes -->
           <h2> {{this.currentGenre}}: {{this.currentSubgenre}}</h2>
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
@@ -144,8 +144,22 @@
 
         <!-- Graphique au milieu -->
         <div class="flex flex-1 flex-col">
-          <h2 class="text-2xl text-center mb-4">{{ graphTitle }}</h2>
 
+
+          <h2 class="text-2xl text-center mb-4">{{ graphTitle }}</h2>
+          <div class="legend flex items-center justify-center mt-4 ">
+            <div class="legend flex items-center justify-center mt-4 ">
+
+                    <div v-for="(item, itemIndex) in legend" :key="itemIndex">
+                      <img :src="item.icon" alt="Pictogram" class="legend-icon" />
+
+                      <span v-html="formatLabel(item.label, item.value)"></span>
+                    </div>
+
+            </div>
+
+
+          </div>
           <div class="pictogram-chart" >
             <svg id="graphique" class="w-full h-full border border-gray-300 "></svg>
           </div>
@@ -153,25 +167,12 @@
 
 
           <!-- Placer la légende en dessous du graphique -->
-          <div class="legend flex items-center justify-center mt-4 ">
-            <div v-if="! subgenreIsSelected " class="legend flex items-center justify-center mt-4 ">
-            <div v-for="legendItem in legend1" :key="legendItem.value" class="legend-item flex items-center mr-4">
-              <img :src="legendItem.icon" alt="Pictogram" class="legend-icon" />
-              <span>{{ legendItem.label }} {{ labelLegend }}</span>
-            </div>
-            </div>
-            <div v-else class="legend flex items-center justify-center mt-4 ">
-              <div v-for="legendItem in legend2" :key="legendItem.value" class="legend-item flex items-center mr-4">
-                <img :src="legendItem.icon" alt="Pictogram" class="legend-icon" />
-                <span>{{ legendItem.label }} {{ labelLegend }}</span>
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
 
       <div class="container details-container" v-if="selectedArtist">
-        <div class="details-container artist-details" >
+        <div class="artist-details" >
           <!-- Photo de profil centrée -->
           <div class="centered">
             <img :src="selectedArtist.picture" alt="Artist" class="artist-image-small">
@@ -181,31 +182,40 @@
             <!-- Colonne de gauche pour les albums, genre, etc. -->
             <div class="details-column">
               <div class="detail-item">
-                <p><b> {{ selectedArtist.deezerFans }} FANS</b></p>
+                <p><b> {{ selectedArtist.deezerFans.toLocaleString() }}</b> FANS</p>
               </div>
               <div class="detail-item">
-                <p><b>ACTIF</b> {{ selectedArtist.lifeSpan.ended ? 'Oui' : 'Non' }}</p>
+                <p><b>ACTIF : </b> {{ selectedArtist.lifeSpan.ended ? 'OUI' : 'NON' }}</p>
               </div>
               <!-- Assurez-vous que chaque élément a la même hauteur -->
-              <div class="detail-item empty-item">&nbsp;</div>
-              <p><b>Label:</b> {{ selectedArtist.recordLabel }}</p>
-              <div class="detail-item empty-item">&nbsp;</div>
-              <p><b>Albums:</b> {{ selectedArtist.albums.join(', ') }}</p>
+              <div class="detail-item" v-if="selectedArtist.recordLabel.length>0">
+                <p><b>Label:</b> {{ Array.from(selectedArtist.recordLabel.values()).join(', ') }}</p>
+              </div>
+              <div class="detail-item" v-if="selectedArtist.albums.length>0">
+                <p><b>Albums:</b></p>
+                <ul class="albums-list">
+                  <li v-for="album in selectedArtist.albums" :key="album">{{ album }}</li>
+                </ul>
+              </div>
             </div>
 
             <!-- Colonne de droite pour d'autres détails -->
             <div class="details-column">
               <div class="detail-item">
-                <p><b>Genres de musique:</b> {{ selectedArtist.genres.join(', ') }}</p>
+                <p> <b>GENRES :</b>{{ selectedArtist.genres.join('- ') }}</p>
               </div>
               <div class="detail-item">
-                <p><b>Genre:</b> {{ selectedArtist.gender }}</p>
+                <p><b>GENDER:</b> {{ selectedArtist.gender }}</p>
               </div>
               <!-- Assurez-vous que chaque élément a la même hauteur -->
               <div class="detail-item empty-item">&nbsp;</div>
               <p><b>Lien Deezer:</b> <a :href="selectedArtist.urlDeezer">Deezer</a></p>
-              <div class="detail-item empty-item">&nbsp;</div>
-              <p><b>Membres:</b> {{ selectedArtist.members.join(', ') }}</p>
+              <div class="detail-item"  v-if="selectedArtist.members.length>0">
+                <p><b>Membres:</b></p>
+                <ul class="members-list">
+                  <li v-for="member in selectedArtist.members" :key="member">{{ member }}</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -224,42 +234,64 @@
 
 <script>
 import * as d3 from 'd3';
-import pic1000000 from '../../../public/data/pic1000000.png';
-import pic100000 from '../../../public/data/pic100000.png';
-import pic10000 from '../../../public/data/pic10000.png';
-import pic1000 from '../../../public/data/pic1000.png';
-import pic100 from '../../../public/data/pic100.png';
-import pic10 from '../../../public/data/pic10.png';
-import pic1 from '../../../public/data/pic1.png';
+import pic1000000F from '../../../public/data/pic1000000F.png';
+import pic100000F from '../../../public/data/pic100000F.png';
+import pic10000F from '../../../public/data/pic10000F.png';
+import pic1000F from '../../../public/data/pic1000F.png';
+import pic100F from '../../../public/data/pic100F.png';
+import pic10F from '../../../public/data/pic10F.png';
+import pic1F from '../../../public/data/pic1F.png';
+
+
+
+import pic10000S from '../../../public/data/pic10000S.png';
+import pic1000S from '../../../public/data/pic1000S.png';
+import pic100S from '../../../public/data/pic100S.png';
+import pic10S from '../../../public/data/pic10S.png';
+import pic1S from '../../../public/data/pic1S.png';
+
+
+import pic1000G from '../../../public/data/pic1000G.png';
+import pic100G from '../../../public/data/pic100G.png';
+import pic10G from '../../../public/data/pic10G.png';
+import pic1G from '../../../public/data/pic1G.png';
 import {filterArtists} from "@/data";
 export default {
   data(){
     return {
       displayFilter: true,
-      width :700 , // Augmentez la largeur du graphique
-      height : 500, // Augmentez la hauteur du graphique
+      width :900 , // Augmentez la largeur du graphique
+      height : 650, // Augmentez la hauteur du graphique
       innerWidth: 0,
       innerHeight: 0,
       margin : { top: 20, right: 40, bottom: 20, left: 20 }, // Ajustez les marges
 
       graphTitle: "Titre initial du graphique",
-      legend1:[
-
-        { label: '1000', icon: pic1000, value: '1000' },
-        { label: '100', icon: pic100, value: '100' },
-        { label: '10', icon: pic10, value: '10' },
-        { label: '1', icon: pic1, value: '1' },
+      legend:null,
+      legend1: [
+        { label: '10 ARTISTES', icon: pic1000G, value: '1000' },
+        { label: '10 ARTISTES', icon: pic100G, value: '100' },
+        { label: '10 ARTISTES', icon: pic10G, value: '10' },
+        { label: '10 ARTISTE', icon: pic1G, value: '1' },
       ],
       legend2: [
-        { label: '1000000+', icon: pic1000000, value: '1000000'},
-        { label: '100000', icon: pic100000, value: '100000' },
-        { label: '10000', icon: pic10000, value: '10000' },
-        { label: '1000', icon: pic1000, value: '1000' },
-        { label: '100', icon: pic100, value: '100' },
-        { label: '10', icon: pic10, value: '10' },
-        { label: '1', icon: pic1, value: '1' },
+
+        { label: '10 ARTISTES', icon: pic10000S, value: '10000' },
+        { label: '10 ARTISTES', icon: pic1000S, value: '1000' },
+        { label: '10 ARTISTES', icon: pic100S, value: '100' },
+        { label: '10 ARTISTES', icon: pic10S, value: '10' },
+        { label: '10 ARTISTE', icon: pic1S, value: '1' },
       ],
 
+      legend3: [
+        { label: '10 FANS', icon: pic1000000F, value: '1000000' },
+        { label: '10 FANS', icon: pic100000F, value: '100000' },
+        { label: '10 FANS', icon: pic10000F, value: '10000' },
+        { label: '10 FANS', icon: pic1000F, value: '1000' },
+        { label: '10 FANS', icon: pic100F, value: '100' },
+        { label: '10 FANS', icon: pic10F, value: '10' },
+        { label: '10 FAN', icon: pic1F, value: '1' },
+      ],
        selectedArtist : null,
       selectedFilter:'all',
 
@@ -325,11 +357,16 @@ export default {
     }
   },
   methods: {
+    formatLabel(label, value) {
+      const exponent = parseInt(value);
+      return label.replace('10', `10<sup>${exponent}</sup>`);
+    },
     drawChart() {
 
       this.backMainPage();
       this.graphTitle= "Les genres de musiques les plus jouées par nos artistes."
       this.labelLegend = "artistes"
+      this.legend = [...this.legend1];
       if (!this.data || !this.data.genres) {
         return;
       }
@@ -377,16 +414,16 @@ export default {
           .data((genre) => {
             const count = this.data.genres[genre].details.nombre_artists_total;
             return [
-              ...Array(Math.floor(count / 1000)).fill(pic1000),
-              ...Array(Math.floor((count % 1000) / 100)).fill(pic100),
-              ...Array(Math.floor((count % 100) / 10)).fill(pic10),
-              ...Array(count % 10).fill(pic1),
+              ...Array(Math.floor(count / 1000)).fill(pic1000G),
+              ...Array(Math.floor((count % 1000) / 100)).fill(pic100G),
+              ...Array(Math.floor((count % 100) / 10)).fill(pic10G),
+              ...Array(count % 10).fill(pic1G),
             ];
           })
           .enter()
           .append('image')
           .attr('class', 'pictogram')
-          .attr('x', (d, i) => i * 40)
+          .attr('x', (d, i) => i * 100)
           .attr('y', 0)
           .attr('width', 40)
           .attr('height', 40)
@@ -463,6 +500,7 @@ export default {
 
       this.backSubgenrePage();
       this.graphTitle= "Les sous-genres du "+ genre
+      this.legend= [...this.legend2];
 
       // Update currentGenre to the selected genre
       this.currentGenre = genre;
@@ -482,7 +520,7 @@ export default {
 
       // Create a new SVG container for subgenres
       const svg = d3.select('.pictogram-chart').append('svg')
-          .attr('width', this.width)
+          .attr('width', this.width +200)
           .attr('height', this.height);
 
       // Create a scale for the y-axis based on subgenres
@@ -521,16 +559,16 @@ export default {
           .data((subgenre) => {
             const count = this.data.genres[genre].subgenres[subgenre].details.nombre_artists_total;
             return [
-              ...Array(Math.floor(count / 1000)).fill(pic1000),
-              ...Array(Math.floor((count % 1000) / 100)).fill(pic100),
-              ...Array(Math.floor((count % 100) / 10)).fill(pic10),
-              ...Array(count % 10).fill(pic1),
-            ];
+              ...Array(Math.floor(count / 1000)).fill(pic1000S),
+              ...Array(Math.floor((count % 1000) / 100)).fill(pic100S),
+              ...Array(Math.floor((count % 100) / 10)).fill(pic10S),
+              ...Array(count % 10).fill(pic1S),
+            ].slice(0,10);
           })
           .enter()
           .append('image')
           .attr('class', 'pictogram')
-          .attr('x', (d, i) => i * 40)
+          .attr('x', (d, i) => i * 90)
           .attr('y', -20) // Adjust the vertical position of pictograms
           .attr('width', 40)
           .attr('height', 40)
@@ -540,7 +578,7 @@ export default {
           .attr('class', 'label')
           .text(subgenre => subgenre)
           .attr('x', -125) // Adjust the horizontal position of subgenre names
-          .attr('y', 0)
+          .attr('y',25)
           .style('font-size', '14px')
           .style('fill', 'black')
           .style('text-anchor', 'start');
@@ -571,13 +609,13 @@ export default {
       this.currentSubgenre=subgenre;
       this.graphTitle="Nos artistes " + this.currentSubgenre
     d3.select('.pictogram-chart').selectAll('*').remove();
+      this.legend= [...this.legend3];
 
-      this.labelLegend = "fans";
 
 
     // Create an SVG container for the artist chart
     const svg = d3.select('.pictogram-chart').append('svg')
-        .attr('width', `${artistsData.length *  100}px`  )
+        .attr('width', this.width  )
         .attr('height',`${artistsData.length * 50}px`)
     ;
 
@@ -608,30 +646,35 @@ export default {
         }).on('mouseover', (event, artist) => {
           this.highlightArtist(artist);
         })*/
-        .on('click', (event, artist) => {
-          this.selectArtist(artist);
-        });
+     .on('click', (event, artist) => {
+         this.selectArtist(artist);
+       }).on('mouseover', (event, artist) => {
+        this.showDeezerFansTooltip(event, artist);
+      })
+          .on('mouseout', () => {
+            this.hideDeezerFansTooltip();
+          });
 
     // Add pictograms for each artist
-    artistGroups.selectAll('.pictogram')
+    artistGroups.selectAll('.pictogram-artist')
         .data(artist => {
           const deezerFans = artist.deezerFans;
           return [
-            ...Array(Math.floor(deezerFans / 10000000)).fill(pic1000000),
-            ...Array(Math.floor((deezerFans % 10000000) / 1000000)).fill(pic1000000),
-            ...Array(Math.floor((deezerFans % 1000000) / 100000)).fill(pic100000),
-            ...Array(Math.floor((deezerFans % 100000) / 10000)).fill(pic10000),
-            ...Array(Math.floor(deezerFans / 1000)).fill(pic1000),
-            ...Array(Math.floor((deezerFans % 1000) / 100)).fill(pic100),
-            ...Array(Math.floor((deezerFans % 100) / 10)).fill(pic10),
-            ...Array(deezerFans % 10).fill(pic1),
-          ];
+            ...Array(Math.floor(deezerFans / 10000000)).fill(pic1000000F),
+            ...Array(Math.floor((deezerFans % 10000000) / 1000000)).fill(pic1000000F),
+            ...Array(Math.floor((deezerFans % 1000000) / 100000)).fill(pic100000F),
+            ...Array(Math.floor((deezerFans % 100000) / 10000)).fill(pic10000F),
+            ...Array(Math.floor(deezerFans / 1000)).fill(pic1000F),
+            ...Array(Math.floor((deezerFans % 1000) / 100)).fill(pic100F),
+            ...Array(Math.floor((deezerFans % 100) / 10)).fill(pic10F),
+            ...Array(deezerFans % 10).fill(pic1F),
+          ].slice(0,15 );
         })
         .enter()
         .append('image')
-        .attr('class', 'pictogram')
+        .attr('class', 'pictogram-artist')
         .attr('x', (d, i) => i * 40)
-        .attr('y', -20) // Adjust the vertical position of pictograms
+        .attr('y',-20)
         .attr('width', 40)
         .attr('height', 40)
         .attr('xlink:href', d => d);
@@ -649,32 +692,28 @@ export default {
 
 // Wrap function to handle line breaks
     // Wrap function to handle line breaks
-    function wrap(text, width) {
-      text.each(function () {
-        var text = d3.select(this),
-            words = text.text().split(/\s+/),
-            word,
-            line = [],
-            lineNumber = 0,
-            lineHeight = 1.1, // ems
-            y = text.attr("y"),
-            dy = 0, // Adjust as needed
-            tspan = text.text(null).append("tspan").attr("x", -150).attr("y", y).attr("dy", dy + "em"); // Adjust the starting position
+      function wrap(text, width) {
+        text.each(function () {
+          var text = d3.select(this),
+              words = text.text().split(/\s+/),
+              word,
+              line = [],
+              y = text.attr("y"),
+              dy = 0, // Adjust as needed
+              tspan = text.text(null).append("tspan").attr("x", -150).attr("y", y).attr("dy", dy + "em"); // Adjust the starting position
 
-        while (words.length > 0) {
-          word = words.shift();
-          line.push(word);
-          tspan.text(line.join(" "));
-          if (tspan.node().getComputedTextLength() > width) {
-            line.pop();
+          while (words.length > 0) {
+            word = words.shift();
+            line.push(word);
             tspan.text(line.join(" "));
-            line = [word];
-            tspan = text.append("tspan").attr("x", -150).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word); // Adjust the starting position
+            if (tspan.node().getComputedTextLength() > width) {
+              line.pop();
+              tspan.text(line.join(" ") + '...');
+              break; // Truncate the text and exit the loop
+            }
           }
-        }
-      });
-    }
-  },
+        });
+      }},
 
     selectArtist(artist) {
       // Mettez à jour la variable selectedArtist
@@ -737,6 +776,26 @@ backMainPage() {
       this.originalArtistsData=null;
       this.artistsData=null;
 
+    },
+
+    showDeezerFansTooltip(event, artist) {
+      const tooltip = d3.select('body').append('div')
+          .attr('class', 'tooltip')
+          .style('position', 'absolute')
+          .style('background-color', 'white')
+          .style('border', 'solid')
+          .style('border-width', '1px')
+          .style('padding', '5px')
+          .style('display', 'inline-block')
+          .style('opacity', 0.9)
+          .html(`Artist: ${artist.name}<br>Deezer Fans: ${artist.deezerFans}`);
+
+      tooltip.style('left', event.pageX + 'px')
+          .style('top', event.pageY + 'px');
+    },
+
+    hideDeezerFansTooltip() {
+      d3.select('.tooltip').remove();
     }
   },
 
@@ -783,8 +842,9 @@ backMainPage() {
 
 .details-container {
   background-color: #f5f5f5; /* Couleur de fond similaire à Apple */
-  margin: 10px;
   float:left;
+  max-width: 25%; /* Ajustez la largeur maximale selon vos besoins */
+  margin-left: 0;
 
 }
 
@@ -806,7 +866,7 @@ flex-direction: column;
 .pictogram-chart,
 .details-container,
 .filter-container {
-  font-family:"Courier New",serif
+  font-family: 'Noto Serif';
 }
 
 .min-h-screen {
@@ -831,7 +891,7 @@ footer {
   background-color: whitesmoke;
   text-align: left
 ;
-  font-family: "Courier New";
+  font-family: 'Noto Serif';
   border-top: 2px black;
   /* Retirer l'arrondi complet du footer */
 }
@@ -843,7 +903,8 @@ footer {
 
   /* Ajout d'un fond blanc avec une image graphique */
   border-radius: 10px; /* Coins arrondis pour le détail container */
-
+  height: 750px;
+  overflow-y: auto;
 }
 
 
@@ -882,11 +943,15 @@ footer {
 }
 
 .legend-icon {
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
   margin-right: 5px;
 }
 
+.pictogram{
+  width:90px;
+  height: 90px;
+}
 
 
 /* Stylisez les paragraphes pour être visibles */
@@ -896,6 +961,7 @@ footer {
   font-size: 16px; /* Taille de la police */
   color: black; /* Couleur du texte */
   background-color: white;
+  max-width: 80%;
 }
 
 
@@ -953,7 +1019,7 @@ footer {
 }
 
 .axis text {
-  font-family: 'Arial', sans-serif;
+  font-family: 'Noto Serif';
   font-size: 12px;
 }
 .legend{
@@ -963,17 +1029,30 @@ footer {
 
 /* Couleurs et styles spécifiques à Apple ou Deezer */
 .pictogram-chart {
-  margin : 2px;
+
+  margin : 10px;
   font-family: "Noto Serif";
-  width: 700px;
-  height: 550px;
+  height: 700px;
   overflow-y: auto;
-  overflow-x: auto;
 }
 
-svg {
-  min-width: 700px;
+
+.detail-item{
+  text-align: left;
 }
+.details-column{
+  font-family: 'Noto Serif';
+
+  width: 200px;
+  text-align: left;
+  margin-left: 20px;
+  max-width: 45%;
+
+}
+
+
+
+
 
 
 </style>
