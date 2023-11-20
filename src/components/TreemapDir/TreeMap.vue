@@ -1,30 +1,57 @@
 <template>
   <div>
-    <div v-if="showCheckboxes" >
-      <label for="maCheckbox">Groupe</label>
-      <input type="checkbox" id="groupe" v-model="checkboxValues.group" @change="filtersTreemap" />
-      <label for="maCheckbox">Solo</label>
-      <input type="checkbox" id="solo" v-model="checkboxValues.solo" @change="filtersTreemap" />
-      <label for="maCheckbox">Femmes</label>
-      <input type="checkbox" id="femme" v-model="checkboxValues.female" @change="filtersTreemap" />
-      <label for="maCheckbox">Hommes</label>
-      <input type="checkbox" id="home" v-model="checkboxValues.male" @change="filtersTreemap" />
-      <label for="maCheckbox">En activité</label>
-      <input type="checkbox" id="enActivité" v-model="checkboxValues.inActivity" @change="filtersTreemap" />
-      <label for="maCheckbox">Pas en activité</label>
-      <input type="checkbox" id="pasenActivité" v-model="checkboxValues.careerEnded" @change="filtersTreemap" />
-    </div>
     <div>
-      <div class="treemap-chart"></div>
-      <div  class="artist-details"></div>
+      <h1>{{ treemapTitle }}</h1>
     </div>
+      <div>
+        <div class="container">
+          <div class="return-button">
+            <img v-if="showReturnButton" src="../../../public/data/returnButton.png"
+                 @click="handleReturnClick" alt="Description de l'image" width="30" height="30">
+          </div>
+          <div v-if="showCheckboxes" class="checkbox-container" >
+            <h3 style="margin-right:10px" >Filtres: </h3>
+            <div class="checkbox-item">
+              <label class="styled-label" for="maCheckbox">Groups</label>
+              <input type="checkbox" id="groupe" v-model="checkboxValues.group" class="styled-checkbox" @change="filtersTreemap" />
+            </div>
+            <div class="checkbox-item">
+              <label class="styled-label" for="maCheckbox">Solo artists</label>
+              <input type="checkbox" id="solo" v-model="checkboxValues.solo" class="styled-checkbox" @change="filtersTreemap" />
+            </div>
+            <div class="checkbox-item">
+              <label class="styled-label" for="maCheckbox">Female</label>
+              <input type="checkbox" id="femme" v-model="checkboxValues.female" class="styled-checkbox" @change="filtersTreemap" />
+            </div>
+            <div class="checkbox-item">
+              <label class="styled-label" for="maCheckbox">Male</label>
+              <input type="checkbox" id="home" v-model="checkboxValues.male" class="styled-checkbox" @change="filtersTreemap" />
+            </div>
+            <div class="checkbox-item">
+              <label class="styled-label" for="maCheckbox">In activity</label>
+              <input type="checkbox" id="enActivité" v-model="checkboxValues.inActivity" class="styled-checkbox" @change="filtersTreemap" />
+            </div>
+            <div class="checkbox-item">
+              <label class="styled-label" for="maCheckbox">Not in activity</label>
+              <input type="checkbox" id="pasenActivité" v-model="checkboxValues.careerEnded" class="styled-checkbox" @change="filtersTreemap" />
+            </div>
+          </div>
+        </div>
+      </div>
+    <div class="chart-container">
+      <div>
+        <div class="treemap-chart"></div>
+      </div>
+      <div v-if="showArtistdetails" class="artist-details"></div>
+    </div>
+
     <div id="tooltip"></div>
   </div>
 </template>
 
 <script>
 import * as d3 from 'd3';
-//import data from "core-js/internals/array-iteration";
+//import returnButton from '../../../public/data/returnButton.png';
 
 export default {
   name: 'TreeMap',
@@ -56,7 +83,10 @@ export default {
       },
       showGenres: false,
       showCheckboxes: false,
+      showArtist:false,
       showArtistdetails: false,
+      showReturnButton: false,
+      treemapTitle:null,
     };
   },
 
@@ -67,12 +97,14 @@ export default {
       );
       this.data = await response1.json();
       this.createTreemap();
+      this.returnButton();
     } catch (error) {
       console.error('Erreur lors de la récupération des données de l\'API : ', error);
     }
   },
   methods: {
     createTreemap() {
+      this.treemapTitle= "Music genres 🎶"
       if (!this.data || !this.data.genres) {
         return;
       }
@@ -117,28 +149,30 @@ export default {
           .attr('width', d => d.x1 - d.x0)
           .attr('height', d => d.y1 - d.y0)
           .style('stroke', '#fff')
-          .style('fill', d => this.colorScaleGenre(d.data.name));
+          .style('fill', d => this.colorScaleGenre(d.data.name))
+          .on('mouseover', (event, d) => this.showTooltip(event, d, "artistes"));
 
 
       // Add labels for genres and subgenres
       this.rectangles
           .append('text')
           .attr('x', 4)
-          .attr('y', 14)
+          .attr('y', 30)
           .attr('fill', '#fff')
-          .style('font-size', '12px')
+
+          .style('font-size', '30px')
           .text(d => d.data.name);
 
-      //rectangles.on("click", this.treemapGenre);
+      //rectangles.on("click", this.treemapSubGenres);
 
       this.rectangles.on("click", function(e,d) {
         this.currentGenre = d.data.name;
         console.log(name)
-        this.treemapGenre(this.currentGenre);
+        this.treemapSubGenres(this.currentGenre);
       }.bind(this));
     },
 
-    updateTreemap(data, color, nameTooltip) {
+    updateTreemap(data, color, nameTooltip,textSize) {
       // Update existing rectangles
       const update = this.rectangles.data(data, d => d.data.name);
       console.log(data)
@@ -159,9 +193,9 @@ export default {
 
       enter.append('text')
           .attr('x', 4)
-          .attr('y', 14)
+          .attr('y', 20)
           .attr('fill', '#fff')
-          .style('font-size', '12px')
+          .style('font-size', textSize)
           .text(d => d.data.name);
 
       // Merge updated and new rectangles
@@ -183,8 +217,9 @@ export default {
         merged.on("click", this.handleTreemapClick.bind(this, this.showArtistList));
       }
 
-      if(this.showArtistdetails){
+      if(this.showArtist){
         console.log(data)
+        this.showArtistdetails = true;
         merged.on("click", (event, d) => this.handleTreemapDetails(event, d));
       }
     },
@@ -196,7 +231,6 @@ export default {
       showArtistList(genre, subgenre, this.currentFill);
     },
 
-
     handleTreemapDetails(event, data){
        // Assuming this.currentGenre is set elsewhere
       const artist = data.data.name;
@@ -205,8 +239,10 @@ export default {
       this.artistDetails(data);
     },
 
-    treemapGenre(name) {
+    treemapSubGenres(name) {
+      this.treemapTitle=`${this.currentGenre} sub-genre `
       this.showGenres= true;
+      this.showReturnButton= true;
       this.getColorScale(name);
 
       const hierarchy = {
@@ -224,12 +260,9 @@ export default {
 
       this.treemap(root);
       // Mise à jour du treemap au lieu de le recréer
-      this.updateTreemap(root.descendants(),this.colorScaleSubgenre,"artistes");
-
-      console.log(this.currentGenre)
+      this.updateTreemap(root.descendants(),this.colorScaleSubgenre,"artistes","20px");
 
     },
-
 
     showTooltip(event, data, nameValue) {
       const tooltip = d3.select('#tooltip');
@@ -248,9 +281,9 @@ export default {
           .on('mouseout', () => tooltip.style('opacity', 0));
     },
 
-
     async showArtistList(genre, subgenre, colorF){
-      this.showArtistdetails = true
+      this.treemapTitle = `${this.currentSubgenre} artists 🎤 `
+      this.showArtist = true
       this.showCheckboxes = true;
 
       const response2 = await fetch(
@@ -283,16 +316,9 @@ export default {
 
 
       this.colorScaleArtist = d3.scaleOrdinal([`${colorF}`])
-      this.updateTreemap(root.leaves(),this.colorScaleArtist, "fans")
-
-
-      /**this.rectangles.on("click", function(e,d) {
-        let nameArt = d.dataDetails;
-        console.log(nameArt)
-      }.bind(this));*/
+      this.updateTreemap(root.leaves(),this.colorScaleArtist, "fans","14px")
 
     },
-
 
     getColorScale(genreName){
       if (genreName === "Rock") {
@@ -323,7 +349,6 @@ export default {
         this.colorScaleSubgenre = d3.scaleOrdinal(['#FF8A65', '#FF5722', '#D84315']);
       }
     },
-
 
     filterDataByCheckedValues(data, checkboxValues) {
       let key;
@@ -359,7 +384,6 @@ export default {
 
       return filteredData;
     },
-
 
     async filtersTreemap(){
       this.artistList = true;
@@ -397,55 +421,163 @@ export default {
 
     },
 
-    artistDetails(data){
-      console.log(data)
+    artistDetails(data) {
+      console.log(data);
       var detailsContainer = d3.select(".artist-details");
 
-      // Effacez le contenu précédent
       detailsContainer.html("");
 
       detailsContainer
           .append("img")
-          .attr("src", data.data.picture) // Assurez-vous d'avoir une propriété imageURL dans vos données d'artiste
-          .attr("alt", "Artist Image")
-          .style("float", "left")// Utilisez float pour aligner l'image à gauche
-          .style("border-radius", "50%")
-          .style("margin-right", "10px")
-          .style("margin-left", "10px");
-      // Ajoutez les détails de l'artiste au conteneur
-      detailsContainer
-          .append("h2")
-          .text(data.data.name);
+          .attr("src", "./data/marque-de-croix.png")
+          .attr("alt", "Fermer")
+          .style("cursor", "pointer")
+          .style("float", "right")
+          .style("margin", "10px")
+          .attr("width", 30)
+          .attr("height", 30)
+          .on("click", function () {
+            detailsContainer.html("");
+          });
 
-      detailsContainer
+      var mainDiv = detailsContainer.append("div");
+
+      mainDiv
+          .append("h2")
+          .text(data.data.name)
+          .style("align-content", "center");
+
+      var imageDiv = mainDiv
+          .append("div")
+          .style("text-align", "center")
+          .style("margin-bottom", "10px");
+
+      imageDiv
+          .append("img")
+          .attr("src", data.data.picture)
+          .attr("alt", "Artist Image")
+          .style("border-radius", "50%")
+          .style("margin", "0 auto")
+          .style("display", "block")
+          .attr("width", 100)
+          .attr("height", 100);
+
+      mainDiv
+          .append("div")
           .append("p")
-          .text("Fans: " + data.data.deezerFans)
-      detailsContainer
+          .text(data.data.deezerFans + " fans")
+          .style("text-align", "center");
+
+      if(data.data.lifeSpan.ended === true){
+        mainDiv
+            .append("div")
+            .append("p")
+            .text("Not in activity")
+            .style("font-weight", "bold")
+      }
+      else{
+        mainDiv
+            .append("div")
+            .append("p")
+            .text("In activity")
+            .style("font-weight", "bold")
+      }
+
+      mainDiv
+          .append("div")
+          .append("p")
+          .text("Music genres: ")
+          .append("p")
+          .text(data.data.genres)
+          .style("text-align", "center");
+
+      mainDiv
+          .append("div")
+          .append("p")
+          .text("Link to  ")
           .append("a")
           .attr("href", data.data.urlDeezer)
+          .attr("target", "_blank")
+          .text("Deezer");
 
 
+      var albumsDiv = mainDiv.append("div");
 
       if (data.data.albums && data.data.albums.length > 0) {
-        detailsContainer
-            .append("div")
+        albumsDiv
             .append("h3")
             .text("Albums");
 
-        detailsContainer
-            .select("div")  // Sélectionnez la div ajoutée pour les albums
+        albumsDiv
             .append("ul")
             .selectAll("li")
             .data(data.data.albums)
             .enter()
             .append("li")
-            .text(function(d) {
+            .text(function (d) {
               return d;
-            });
+            })
+            .style("text-align", "left");
       }
 
-      // Ajoutez d'autres détails selon vos besoins
+      var membersDiv = mainDiv.append("div");
+
+      if (data.data.members && data.data.members.length > 0) {
+        if(data.data.type==="Person"){
+          membersDiv
+              .append("h3")
+              .text("Also member of: ");
+        }
+        else{
+          membersDiv
+              .append("h3")
+              .text("Membres: ");
+        }
+
+        membersDiv
+            .append("ul")
+            .selectAll("li")
+            .data(data.data.members)
+            .enter()
+            .append("li")
+            .text(function (d) {
+              return d;
+            })
+            .style("text-align", "left");
+      }
+
     },
+
+    handleReturnClick(){
+      console.log(this.currentSubgenre)
+      console.log(this.currentGenre)
+      //si on est dans l'affichage des artistes
+      if(this.currentSubgenre !== null && this.currentGenre !== null){
+        this.currentSubgenre=null;
+        this.showArtistdetails = false;
+        this.showCheckboxes = false;
+        this.showArtist = false;
+        //const rectangles = d3.select('.treemap-chart').selectAll('rect');
+        const svgElement = d3.select('.treemap-chart').select('svg');
+        svgElement.remove();
+        //rectangles.remove();
+        this.createTreemap();
+        this.treemapSubGenres(this.currentGenre);
+      }
+      //si on est dans l'affichage du sous genre
+      else if(this.currentGenre !== null && this.currentSubgenre === null){
+        this.showCheckboxes = false;
+        this.currentGenre=null;
+        this.currentSubgenre=null;
+        this.showGenres= false;
+        this.showReturnButton= false;
+        this.showArtistdetails = false;
+        const svgElement = d3.select('.treemap-chart').select('svg');
+        svgElement.remove();
+        this.createTreemap();
+      }
+    },
+
   },
 
 
@@ -482,15 +614,55 @@ export default {
   opacity: 0;
 }
 .artist-details {
+  margin-left: 10px;
   border: 2px solid #ccc; /* Bordure de 2 pixels en couleur grise */
   border-radius: 10px; /* Coins arrondis */
   padding: 10px; /* Espace intérieur de 10 pixels */
   overflow: hidden; /* Cache le débordement au cas où l'image est plus grande */
+
 }
 
 .artist-details img {
   border-radius: 100%; /* Coins arrondis pour l'image (effet d'image circulaire) */
   float: left; /* Aligne l'image à gauche */
   margin-right: 10px; /* Marge à droite de l'image pour l'espacement */
+}
+
+.chart-container {
+  display: flex;
+  justify-content: space-between;
+}
+.container{
+  display: flex;
+  margin-bottom: 20px;
+}
+.return-button{
+  display: flex;
+}
+.checkbox-container {
+  align-content: center;
+  display: flex;
+  align-items: center;
+  margin-left: 100px;
+  margin-right: 250px;
+  width: 300px;
+  height: 20px;
+  border: 2px solid #cccccc; /* Bordure de 2 pixels en couleur grise */
+  border-radius: 10px; /* Coins arrondis */
+  padding: 10px; /* Espace intérieur de 10 pixels */
+  overflow: hidden;
+  flex-grow: 1;
+}
+.chart-container {
+  align-content: baseline;
+}
+.chart-container {
+  align-content: start;
+}
+.styled-checkbox {
+  margin-right: 10px;
+}
+.styled-label {
+  font-weight: bold;
 }
 </style>
