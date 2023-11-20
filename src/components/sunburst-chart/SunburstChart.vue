@@ -1,10 +1,74 @@
 <template>
-  <div>
-    <div v-show="!showGenres" class="sunburst-chart"><div id="details-container" class="details-container"></div><div id="details-container" class="details-container"></div></div>
-    <div v-show="showGenres" class="sunburst-chart-genres"><div id="details-container-genres" class="details-container-genres"></div><div id="details-container-genres" class="details-container-genres"></div></div>
+  <div class="flex flex-col min-h-screen">
+    <!-- Header avec titre -->
+    <h1 class="text-2xl text-left">les genres les populaires 🎸</h1>
 
+    <header class="py-4 border-bottom">
+    </header>
+
+
+
+    <main class="flex flex-1">
+      <!-- Conteneur pour filter-container et pictogram-chart -->
+      <div class="flex" style="width: 200px;">
+
+        <div class="flex flex-1 container filter-container shadow-left flex-col ">
+          <div class="container filter-container shadow-left " >
+            <!-- Contenu du filtre -->
+            <h2 class="v">Filtres</h2>
+            <label>
+              <input type="radio" name="filterGroup1" value="all" @change="applyFilter"> All <br>
+            </label>
+            <p>GENDER</p>
+            <label>
+              <input type="radio" name="filterGroup2" value="Female" @change="applyFilter"> Female <br>
+              <input type="radio" name="filterGroup2" value="Male" @change="applyFilter"> Male
+            </label>
+            <p>Group/solo</p>
+            <label>
+              <input type="radio" name="filterGroup3" value="Group" @change="applyFilter"> Group <br>
+              <input type="radio" name="filterGroup3" value="Solo" @change="applyFilter"> Solo
+            </label>
+            <p>Activity</p>
+            <label>
+              <input type="radio" name="filterGroup4" value="Active" @change="applyFilter"> Active <br>
+              <input type="radio" name="filterGroup4" value="Not active" @change="applyFilter"> Not active
+            </label>
+          </div>
+        </div>
+
+      </div>
+      <!-- Graphique au milieu -->
+      <div class="flex flex-1 flex-col">
+        <div v-show="!showGenres" class="sunburst-chart"><div id="details-container" class="details-container"></div><div id="details-container" class="details-container"></div></div>
+        <div v-show="showGenres" class="sunburst-chart-genres"><div id="details-container-genres" class="details-container-genres"></div><div id="details-container-genres" class="details-container-genres"></div></div>
+      </div>
+
+  <div class="container details-container-artists">
+    <div class="details-container-artists artist-details">
+      <!-- Photo de profil centrée -->
+      <div class="centered">
+        <p>image</p>
+      </div>
+      <div class="artist-details-columns flex justify-between">
+        <!-- Colonne de gauche pour les albums, genre, etc. -->
+        <div class="details-column">
+          <p>efbhuzv</p>
+        </div>
+
+        <!-- Colonne de droite pour d'autres détails -->
+        <div class="details-column">
+          <p>kfjznkef</p>
+        </div>
+      </div>
+    </div>
   </div>
 
+  </main>
+  </div>
+  <footer class=" bg-gray-800 text-black py-4 text-center">
+    @MIAGE M2 UXDM
+  </footer>
 </template>
 
 
@@ -413,6 +477,151 @@ export default {
   border-radius: 5px;
   padding: 10px;
   z-index: 999;
+}
+
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+/* Header avec titre */
+
+.text-white {
+  color: white;
+}
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+/* Conteneur principal */
+.flex-1 {
+  display: flex;
+}
+
+
+.container {
+  border-radius: 8px; /* Coins légèrement arrondis */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre douce */
+  background-color: #ffffff; /* Couleur de fond blanc */
+  padding: 20px; /* Espacement intérieur */
+}
+
+/* Couleurs et styles spécifiques à Apple ou Deezer */
+.pictogram-chart {
+}
+
+.details-container-artist {
+  background-color: #f5f5f5; /* Couleur de fond similaire à Apple */
+}
+
+.filter-container {
+  background-color: white; /* Autre couleur neutre */
+}
+
+.min-h-screen {
+  min-height: 100vh;
+  background-color: white; /* Couleur bleu-gris pour l'arrière-plan */
+}
+
+
+
+header {
+
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top: 2px solid black; /* Ajout d'une ligne noire au-dessus du header */
+  border-bottom: 2px solid black; /* Ajout d'une ligne noire en-dessous du header */
+}
+
+
+footer {
+  border-radius: 0;
+  height: 2px;
+  background-color: whitesmoke;
+  text-align: left
+;
+  font-family: "Courier New";
+  border-top: 2px black;
+  /* Retirer l'arrondi complet du footer */
+}
+
+.details-container-artist {
+  position: relative;
+  font-family:"Noto Serif" ;
+  /* ... autres styles */
+
+  /* Ajout d'un fond blanc avec une image graphique */
+  border-radius: 10px; /* Coins arrondis pour le détail container */
+
+}
+
+
+
+.shadow-left {
+  box-shadow: 4px 0px 4px -4px rgba(0,0,0,0.75);
+  border-radius: 0/* Ombre à gauche */
+}
+.py-4 {
+  padding-top: 2rem; /* Augmenter le padding en haut du header */
+  padding-bottom: 2rem; /* Augmenter le padding en bas du header */
+  border-top: 1px solid darkgrey; /* Ajouter une bordure en haut du header */
+  border-bottom: 1px solid darkgray; /* Ajouter une bordure en bas du header */
+}
+
+.text-2xl {
+  font-family: 'Impact', sans-serif;
+  color: black;
+  text-align: left;
+
+}
+
+
+/* Pour la disposition en colonnes */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+/* Pour que les carrés prennent la même place que le filtre */
+.flex-1 {
+  flex: 1;
+}
+
+/* Stylisez les paragraphes pour être visibles */
+.artist-details {
+  padding: 20px;
+  margin: 10px 0; /* Espacement entre les paragraphes */
+  font-size: 16px; /* Taille de la police */
+  color: black; /* Couleur du texte */
+  background-color: white;
+}
+
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.artist-info h2 {
+  margin: 0; /* Retirez les marges par défaut */
+  font-size: 1.5em; /* Taille du nom de l'artiste */
+  color: black; /* Couleur du texte */
 }
 
 </style>
