@@ -1,18 +1,13 @@
 <template>
   <div id="app">
-      <!-- Header avec titre -->
-      <h1 class="text-2xl text-left">les genres les populaires 🎸</h1>
-
+      <h1 class="text-2xl text-left"> WASABI data set dashboard </h1>
       <header class="py-4 border-bottom">
-        <nav>
-        </nav>
+
       </header>
     <main class="flex flex-1">
-
         <div  class="flex flex-1 container  shadow-left flex-col square-container " v-show="isHomeVisible">
           <!-- Structure des 4 carrés avec chiffres et lignes -->
           <h2 text-white> Statistiques </h2>
-
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
             <div class="big-number"><b>156</b></div>
             <div class="lines">
@@ -42,31 +37,30 @@
           </div>
         </div>
       <router-view @route-change="handleRouteChange"></router-view>
-      <div v-show="showChartsButtons" className="componentsContainer">
-        <div className="component" id="treemap">
+      <div v-show="showChartsButtons" class="componentsContainer">
+        <div class="component" id="treemap">
           <router-link to="/treemap" v-on="hideStatistics">
-            <img src="../public/data/treemap.png" alt="treemap" className="chartImage"/>
+            <img src="../public/data/treemap.png" alt="treemap" class="chartImage"/>
           </router-link>
         </div>
-        <div className="component" id="component2">
+        <div class="component" id="component2">
           <router-link to="/pictogram">
-            <img src="../public/data/treemap.png" alt="pictogramchart" className="chartImage"/>
+            <img src="../public/data/pictogramChart.png" alt="pictogramchart" class="chartImage"/>
           </router-link>
         </div>
-        <div className="component" id="component3">
+        <div class="component" id="component3">
           <router-link to="/sunburst">
-            <img src="../public/data/treemap.png" alt="sunburst" className="chartImage"/>
+            <img src="../public/data/treemap.png" alt="sunburst" class="chartImage"/>
           </router-link>
         </div>
-        <div className="component" id="component4">
+        <div class="component" id="component4">
           <router-link to="/barchart">
-            <img src="../public/data/treemap.png" alt="barchart" className="chartImage"/>
+            <img src="../public/data/treemap.png" alt="barchart" class="chartImage"/>
           </router-link>
         </div>
       </div>
 
     </main>
-
     <footer class=" bg-gray-800 text-black py-4 text-center">
       @MIAGE M2 UXDM
     </footer>
