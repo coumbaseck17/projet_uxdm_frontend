@@ -1,13 +1,13 @@
 <template>
   <div id="app">
-      <header class="py-4 border-bottom" v-if="isHomeVisible">
+      <header class="py-4 " v-if="isHomeVisible">
         <h1 class="text-2xl text-center" > WASABI data set dashboard </h1>
-
       </header>
     <main>
-        <div  class="flex flex-1 container  shadow-left flex-col square-container " v-show="isHomeVisible">
+      <div :style="{ display: showFlexContainer ? 'flex' : 'initial' }" class="containerWrapper">
+        <div  class="statContainer" v-show="isHomeVisible">
           <!-- Structure des 4 carrés avec chiffres et lignes -->
-          <h2 text-white> Statistiques </h2>
+          <h2  class="center-text"> Statistiques </h2>
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
             <div class="big-number"><b>12263</b></div>
             <div class="lines">
@@ -40,7 +40,7 @@
       <div v-show="showChartsButtons" class="componentsContainer">
         <div class="component" id="treemap">
           <router-link to="/treemap" v-on="hideStatistics">
-            <img src="../public/data/treemap.png" alt="treemap" class="chartImage"/>
+            <img src="../public/data/treemap2.png" alt="treemap" class="chartImage"/>
           </router-link>
         </div>
         <div class="component" id="component2">
@@ -50,7 +50,7 @@
         </div>
         <div class="component" id="component3">
           <router-link to="/sunburst">
-            <img src="../public/data/sunburstChart.png" alt="sunburst" class="chartImage"/>
+            <img src="../public/data/sunburstChart2.png" alt="sunburst" class="chartImage"/>
           </router-link>
         </div>
         <div class="component" id="component4">
@@ -59,7 +59,10 @@
           </router-link>
         </div>
       </div>
-
+        <router-link v-if="!isHomeVisible" :to="{ path: '/' }" class="home-button">
+          <img src="../public/data/home.png" alt="Home" width="30" height="30">
+        </router-link>
+      </div>
     </main>
     <footer class=" bg-gray-800 text-black py-4 text-center">
       @MIAGE M2 UXDM
@@ -84,12 +87,14 @@ export default {
     return {
       showChartsButtons: true,
       isHomeVisible:true,
+      showFlexContainer: true,
     };
   },
   watch: {
     '$route'() {
       this.showChartsButtons = this.$route.path === '/';
       this.isHomeVisible = this.$route.path === '/';
+      this.showFlexContainer = this.$route.path === '/';
 
     },
   },
@@ -98,22 +103,45 @@ export default {
 
 <style>
 
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+h1, h2, h3, p{
+  font-family: 'Poppins', sans-serif;
+}
+
 header {
   font-family: 'Poppins', sans-serif;
-  color: black;
-  padding: 10px;
-  text-decoration: underline;
+  font-weight: 700;
+  //text-decoration: underline;
   text-align: center;
+  margin-bottom: 20px;
+}
+.containerWrapper {
+  display: flex;
+}
+
+.statContainer {
+  flex-direction: column;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: auto;
+  margin-bottom: 20px;
+
 }
 
 .componentsContainer {
+  flex: 1 auto;
   align-items: center;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 20px;
   padding: 20px;
   justify-content: center;
+  /* Ajoutez d'autres propriétés de style selon vos besoins */
 }
+
 
 .component {
   border: 1px solid #ccc;
@@ -128,12 +156,23 @@ header {
   margin-right: 300px;
 
 }
-
 .chartImage {
   width: 100%;
   height: auto;
   max-width: 400px;
   max-height: 280px;
 }
-
+.center-text {
+  text-align: center;
+}
+.home-button {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  margin: 10px;
+  padding: 10px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
 </style>

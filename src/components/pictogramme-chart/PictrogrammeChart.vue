@@ -1,9 +1,5 @@
 <template>
   <div class="flex flex-col min-h-screen">
-
-
-
-
     <main class="flex flex-1">
       <button @click="drawChart" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" v-if="genreIsSelected & !subgenreIsSelected">
         Retour
@@ -48,7 +44,7 @@
           </label>
         </div>
       </div>
-        <div v-if=" !genreIsSelected && !subgenreIsSelected &!currentGenre" class="flex flex-1 container  shadow-left flex-col square-container ">
+        <div v-if=" !genreIsSelected && !subgenreIsSelected &!currentGenre" class="flex flex-1 container  shadow-left flex-col square-container bottom-60 ">
           <h2 text-white> STATISTICS  </h2>
 
           <div class="square">
@@ -826,15 +822,6 @@ export default {
   min-height: 100vh;
 }
 
-
-
-
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
-
 .flex-1 {
   display: flex;
 }
@@ -844,7 +831,8 @@ export default {
   border-radius: 8px; 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
   background-color: #ffffff; 
-  padding: 20px; 
+  padding: 20px;
+  margin-top:50px;
 }
 
 
@@ -868,14 +856,14 @@ flex-direction: column;
 .square-container {
   flex-direction: column; 
   max-width: 200px; 
-  font-family: "Noto Serif";
+  font-family: "Noto Serif", 'sans-serif';
 }
 
 
 .pictogram-chart,
 .details-container,
 .filter-container {
-  font-family: 'Noto Serif';
+  font-family: 'Noto Serif', 'sans-serif';
 }
 
 .min-h-screen {
@@ -900,14 +888,14 @@ footer {
   background-color: whitesmoke;
   text-align: left
 ;
-  font-family: 'Noto Serif';
+  font-family: 'Noto Serif' , 'sans-serif';
   border-top: 2px black;
   
 }
 
 .details-container {
   position: relative;
-  font-family:"Noto Serif" ;
+  font-family:"Noto Serif",'sans-serif';
   
 
   
@@ -922,15 +910,9 @@ footer {
   box-shadow: 4px 0px 4px -4px rgba(0,0,0,0.75);
   border-radius: 0
 }
-.py-4 {
-  padding-top: 2rem; 
-  padding-bottom: 2rem; 
-  border-top: 1px solid darkgrey; 
-  border-bottom: 1px solid darkgray; 
-}
 
 .text-2xl {
-  font-family: 'Noto Serif';
+  font-family: 'Noto Serif','sans-serif';
   color: black;
   text-align: center;
   margin-left: 50px;
@@ -956,13 +938,6 @@ footer {
   height: 40px;
   margin-right: 5px;
 }
-
-.pictogram{
-  width:90px;
-  height: 90px;
-}
-
-
 
 .artist-details {
   padding: 20px;
@@ -1028,7 +1003,7 @@ footer {
 }
 
 .axis text {
-  font-family: 'Noto Serif';
+  font-family: 'Noto Serif','sans-serif';
   font-size: 12px;
 }
 .legend{
@@ -1040,7 +1015,7 @@ footer {
 .pictogram-chart {
 
   margin : 20px;
-  font-family: "Noto Serif";
+  font-family: "Noto Serif",'sans-serif';
   height: 700px;
   overflow-y: auto;
 }
@@ -1051,7 +1026,7 @@ footer {
   text-align: left;
 }
 .details-column{
-  font-family: 'Noto Serif';
+  font-family: 'Noto Serif','sans-serif';
 
   width: 200px;
   text-align: left;
@@ -1072,7 +1047,7 @@ footer {
 }
 
 .legend{
-  font-family: "Noto Serif";
+  font-family: "Noto Serif",'sans-serif';
 }
 
 </style>

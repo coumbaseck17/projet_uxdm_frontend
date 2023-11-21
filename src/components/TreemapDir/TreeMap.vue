@@ -58,8 +58,8 @@ export default {
     return {
       data: null,
       dataDetails: null,
-      width: 1000,
-      height: 800,
+      width: 800,
+      height: 600,
       colorScaleGenre: d3.scaleOrdinal(['#D50000', '#C51162', '#4A148C', '#0D47A1', '#004D40', '#1B5E20', '#F9A825', '#E65100', '#BF360C']), // Échelle de couleurs pour les genres
       colorScaleSubgenre: null,
       colorScaleArtist: d3.scaleOrdinal(d3.schemeCategory10),
