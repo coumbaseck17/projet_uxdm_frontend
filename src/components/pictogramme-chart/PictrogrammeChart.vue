@@ -192,14 +192,14 @@
                 <p><b> {{ selectedArtist.deezerFans.toLocaleString() }}</b> FANS</p>
               </div>
               <div class="detail-item">
-                <p><b>ACTIF : </b> {{ selectedArtist.lifeSpan.ended ? 'OUI' : 'NON' }}</p>
+                <p><b>Active: </b> {{ selectedArtist.lifeSpan.ended ? 'Yes' : 'No' }}</p>
               </div>
               
               <div class="detail-item" v-if="selectedArtist.recordLabel.length>0">
-                <p><b>Label:</b> {{ Array.from(selectedArtist.recordLabel.values()).join(', ') }}</p>
+                <p><b>Label(s):</b> {{ Array.from(selectedArtist.recordLabel.values()).join(', ') }}</p>
               </div>
               <div class="detail-item" v-if="selectedArtist.albums.length>0">
-                <p><b>Albums:</b></p>
+                <p><b>Album(s):</b></p>
                 <ul class="albums-list">
                   <li v-for="album in selectedArtist.albums" :key="album">{{ album }}</li>
                 </ul>
@@ -209,16 +209,16 @@
             
             <div class="details-column">
               <div class="detail-item">
-                <p> <b>GENRES:</b>{{ selectedArtist.genres.join('- ') }}</p>
+                <p> <b>Genre(s):</b>{{ selectedArtist.genres.join('- ') }}</p>
               </div>
               <div class="detail-item" v-if="selectedArtist.gender">
-                <p><b>GENDER:</b> {{ selectedArtist.gender }}</p>
+                <p><b>Gender:</b> {{ selectedArtist.gender }}</p>
               </div>
               
               <div class="detail-item empty-item">&nbsp;</div>
-              <p><b>Link:</b> <a :href="selectedArtist.urlDeezer">Deezer</a></p>
+              <p><b>Link(s):</b> <a :href="selectedArtist.urlDeezer">Deezer</a></p>
               <div class="detail-item"  v-if="selectedArtist.members.length>0">
-                <p><b>Membres:</b></p>
+                <p><b>Members :</b></p>
                 <ul class="members-list">
                   <li v-for="member in selectedArtist.members" :key="member">{{ member }}</li>
                 </ul>
@@ -814,7 +814,7 @@ export default {
           .style('padding', '5px')
           .style('display', 'inline-block')
           .style('opacity', 0.9)
-          .html(`Artist: ${artist.name}<br>Deezer Fans: ${artist.deezerFans}`);
+          .html(`Artist: ${artist.name}<br>Deezer Fans: ${artist.deezerFans.toLocaleString()}`);
 
       tooltip.style('left', event.pageX + 'px')
           .style('top', event.pageY + 'px');
