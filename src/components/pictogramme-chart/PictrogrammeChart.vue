@@ -924,7 +924,7 @@ footer {
 .text-2xl {
   font-family: 'Noto Serif';
   color: black;
-  text-align: left;
+  text-align: center;
   margin-left: 50px;
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-      <h1 class="text-2xl text-left"> WASABI data set dashboard </h1>
-      <header class="py-4 border-bottom">
+      <header class="py-4 border-bottom" v-if="isHomeVisible">
+        <h1 class="text-2xl text-center" > WASABI data set dashboard </h1>
 
       </header>
     <main class="flex flex-1">
@@ -125,6 +125,8 @@ header {
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  margin-right: 300px;
+
 }
 
 .chartImage {
@@ -133,4 +135,5 @@ header {
   max-width: 400px;
   max-height: 280px;
 }
+
 </style>
