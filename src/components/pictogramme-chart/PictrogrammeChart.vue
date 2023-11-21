@@ -822,6 +822,15 @@ export default {
   min-height: 100vh;
 }
 
+
+
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+
 .flex-1 {
   display: flex;
 }
@@ -856,14 +865,14 @@ flex-direction: column;
 .square-container {
   flex-direction: column; 
   max-width: 200px; 
-  font-family: "Noto Serif", 'sans-serif';
+  font-family: "Noto Serif";
 }
 
 
 .pictogram-chart,
 .details-container,
 .filter-container {
-  font-family: 'Noto Serif', 'sans-serif';
+  font-family: 'Noto Serif';
 }
 
 .min-h-screen {
@@ -888,14 +897,14 @@ footer {
   background-color: whitesmoke;
   text-align: left
 ;
-  font-family: 'Noto Serif' , 'sans-serif';
+  font-family: 'Noto Serif';
   border-top: 2px black;
   
 }
 
 .details-container {
   position: relative;
-  font-family:"Noto Serif",'sans-serif';
+  font-family:"Noto Serif" ;
   
 
   
@@ -910,9 +919,15 @@ footer {
   box-shadow: 4px 0px 4px -4px rgba(0,0,0,0.75);
   border-radius: 0
 }
+.py-4 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border-top: 1px solid darkgrey;
+  border-bottom: 1px solid darkgray;
+}
 
 .text-2xl {
-  font-family: 'Noto Serif','sans-serif';
+  font-family: 'Noto Serif';
   color: black;
   text-align: center;
   margin-left: 50px;
@@ -938,6 +953,13 @@ footer {
   height: 40px;
   margin-right: 5px;
 }
+
+.pictogram{
+  width:90px;
+  height: 90px;
+}
+
+
 
 .artist-details {
   padding: 20px;
@@ -1003,7 +1025,7 @@ footer {
 }
 
 .axis text {
-  font-family: 'Noto Serif','sans-serif';
+  font-family: 'Noto Serif';
   font-size: 12px;
 }
 .legend{
@@ -1015,7 +1037,7 @@ footer {
 .pictogram-chart {
 
   margin : 20px;
-  font-family: "Noto Serif",'sans-serif';
+  font-family: "Noto Serif";
   height: 700px;
   overflow-y: auto;
 }
@@ -1026,7 +1048,7 @@ footer {
   text-align: left;
 }
 .details-column{
-  font-family: 'Noto Serif','sans-serif';
+  font-family: 'Noto Serif';
 
   width: 200px;
   text-align: left;
@@ -1047,7 +1069,7 @@ footer {
 }
 
 .legend{
-  font-family: "Noto Serif",'sans-serif';
+  font-family: "Noto Serif";
 }
 
 </style>
