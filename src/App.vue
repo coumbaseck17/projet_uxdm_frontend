@@ -4,7 +4,7 @@
         <h1 class="text-2xl text-center" > WASABI data set dashboard </h1>
 
       </header>
-    <main class="flex flex-1">
+    <main>
         <div  class="flex flex-1 container  shadow-left flex-col square-container " v-show="isHomeVisible">
           <!-- Structure des 4 carrés avec chiffres et lignes -->
           <h2 text-white> Statistiques </h2>
@@ -50,7 +50,7 @@
         </div>
         <div class="component" id="component3">
           <router-link to="/sunburst">
-            <img src="../public/data/treemap.png" alt="sunburst" class="chartImage"/>
+            <img src="../public/data/sunburstChart.png" alt="sunburst" class="chartImage"/>
           </router-link>
         </div>
         <div class="component" id="component4">

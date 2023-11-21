@@ -5,13 +5,9 @@
 
     <header class="py-4">
     </header>
-
-
-
-    <main class="flex flex-1 fixed-top">
+    <div class="flex flex-1 fixed-top" style="justify-content: center;">
       <!-- Conteneur pour filter-container et pictogram-chart -->
       <div class="flex" style="width: 200px;">
-
         <div class="flex flex-1 container filter-container shadow-left flex-col ">
           <div v-show="showGenres" class="container filter-container shadow-left " >
             <!-- Contenu du filtre -->
@@ -72,11 +68,8 @@
         <button @click="showInfo = false">Exit info</button>
       </div>
 
-  </main>
   </div>
-  <footer class=" bg-gray-800 text-black py-4 text-center">
-    @MIAGE M2 UXDM
-  </footer>
+  </div>
 </template>
 
 
