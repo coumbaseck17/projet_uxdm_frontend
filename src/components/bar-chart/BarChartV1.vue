@@ -545,7 +545,7 @@ export default {
 
 
       filterTypes.forEach(value => {
-        if (value === 'group') {
+        if (value === 'Group') {
           // this.isCheckboxDisabledActivity = true;
           // this.isCheckboxDisabledEnded = true;
           // this.isCheckboxDisabledFemale = true;
@@ -555,7 +555,7 @@ export default {
           key = 'type';
           filteredData = filteredData.filter(item => item[key]=== 'Group');
         }
-        if (value === 'person') {
+        if (value === 'Person') {
           // this.isCheckboxDisabledActivity = true;
           // this.isCheckboxDisabledEnded = true;
           // this.isCheckboxDisabledFemale = true;
@@ -565,7 +565,7 @@ export default {
           key = 'type';
           filteredData = filteredData.filter(item => item[key] === 'Person');
         }
-        if (value === 'male') {
+        if (value === 'Male') {
           // this.isCheckboxDisabledActivity = true;
           // this.isCheckboxDisabledEnded = true;
           // this.isCheckboxDisabledFemale = true;
@@ -575,7 +575,7 @@ export default {
           key = 'gender';
           filteredData = filteredData.filter(item => item[key] === 'Male');
         }
-        if (value === 'female') {
+        if (value === 'Female') {
           // this.isCheckboxDisabledActivity = true;
           // this.isCheckboxDisabledEnded = true;
           // // this.isCheckboxDisabledFemale = true;
