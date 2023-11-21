@@ -1,12 +1,10 @@
 <template>
   <div class="flex flex-col min-h-screen">
-    <!-- Header avec titre -->
 
 
 
 
     <main class="flex flex-1">
-      <!-- Conteneur pour filter-container et pictogram-chart -->
       <button @click="drawChart" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" v-if="genreIsSelected & !subgenreIsSelected">
         Retour
       </button>
@@ -15,9 +13,7 @@
       </button>
       <div class="flex flex-1">
 
-        <!-- Filtres à gauche -->
         <div class="container filter-container shadow-left " v-if="currentSubgenre && subgenreIsSelected" >
-          <!-- Contenu du filtre -->
           <h2 class="v">Filtres</h2>
           <label>
             <input type="radio"  name="filterGroup" v-model="selectedFilter" value="all" @change="applyFilter">  All
@@ -42,29 +38,28 @@
         </div>
 
         <div v-if=" !genreIsSelected && !subgenreIsSelected &!currentGenre" class="flex flex-1 container  shadow-left flex-col square-container ">
-          <!-- Structure des 4 carrés avec chiffres et lignes -->
           <h2 text-white> Statistiques </h2>
 
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square">
             <div class="big-number"><b>{{ statistiques.totalArtiste }}</b></div>
             <div class="lines">
               <p>ARTISTES</p>
             </div>
           </div>
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square">
             <div class="big-number"><b>{{ statistiques.nbSolos }}</b></div>
             <div class="lines">
               <p>ARTISTES SOLOS</p>
             </div>
           </div>
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square">
             <div class="big-number"><b>{{ statistiques.nbGroupes }}</b></div>
             <div class="lines">
               <p>GROUPES</p>
               <p></p>
             </div>
           </div>
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square">
             <div class="big-number"><b>{{ statistiques.actifPourcentage }} %</b></div>
             <div class="lines">
               <p>ARTISTES ACTIFS</p>
@@ -72,29 +67,28 @@
           </div>
         </div>
         <div  class="flex flex-1 container  shadow-left flex-col square-container" v-if="currentGenre && !currentSubgenre && !subgenreIsSelected">
-          <!-- Structure des 4 carrés avec chiffres et lignes -->
           <h2> {{this.currentGenre}}</h2>
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square">
             <div class="big-number"><b>{{ statistiques.nbArtistesGenre }}</b></div>
             <div class="lines">
               <p>ARTISTES</p>
             </div>
           </div>
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square">
             <div class="big-number"><b>{{ statistiques.nbActifSolosGenre }}</b></div>
             <div class="lines">
               <p>ARTISTES</p>
               <p>SOLOS</p>
             </div>
           </div>
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square">
             <div class="big-number"><b>{{ statistiques.nbActifGroupesGenre }}</b></div>
             <div class="lines">
               <p>GROUPES</p>
               <p></p>
             </div>
           </div>
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square">
             <div class="big-number"><b>{{ statistiques.actifPourcentageGenre }} %</b></div>
             <div class="lines">
               <p>ARTISTES</p>
@@ -103,15 +97,14 @@
           </div>
         </div>
         <div  class="flex flex-1 container  shadow-left flex-col square-container" v-if="genreIsSelected && currentSubgenre  && !subgenreIsSelected">
-          <!-- Structure des 4 carrés avec chiffres et lignes -->
           <h2> {{this.currentGenre}}: {{this.currentSubgenre}}</h2>
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square">
             <div class="big-number"><b>{{ statistiques.nbArtistesSubgenre }}</b></div>
             <div class="lines">
               <p>ARTISTES</p>
             </div>
           </div>
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square">
             <div class="big-number"><b>{{ statistiques.nbActifSolosSubgenre }}</b></div>
             <div class="lines">
               <p>ARTISTES</p>
@@ -146,7 +139,7 @@
                     <div v-for="(item, itemIndex) in legend" :key="itemIndex">
                       <img :src="item.icon" alt="Pictogram" class="legend-icon" />
 
-                      <span v-html="formatLabel(item.label, item.value)"></span>
+                      <b v-html="formatLabel(item.label, item.value)" ></b>
                     </div>
 
             </div>
@@ -197,7 +190,7 @@
               <div class="detail-item">
                 <p> <b>GENRES :</b>{{ selectedArtist.genres.join('- ') }}</p>
               </div>
-              <div class="detail-item">
+              <div class="detail-item" v-if="selectedArtist.gender">
                 <p><b>GENDER:</b> {{ selectedArtist.gender }}</p>
               </div>
               <!-- Assurez-vous que chaque élément a la même hauteur -->
@@ -260,28 +253,28 @@ export default {
       graphTitle: "Titre initial du graphique",
       legend:null,
       legend1: [
-        { label: '10 ARTISTES', icon: pic1000G, value: '1000' },
-        { label: '10 ARTISTES', icon: pic100G, value: '100' },
-        { label: '10 ARTISTES', icon: pic10G, value: '10' },
-        { label: '10 ARTISTE', icon: pic1G, value: '1' },
+        { label: '10 artistes', icon: pic1000G, value: '3' },
+        { label: '10 artistes', icon: pic100G, value: '2' },
+        { label: '10 artistes', icon: pic10G, value: '1' },
+        { label: '10 artiste', icon: pic1G, value: '0'},
       ],
       legend2: [
 
-        { label: '10 ARTISTES', icon: pic10000S, value: '10000' },
-        { label: '10 ARTISTES', icon: pic1000S, value: '1000' },
-        { label: '10 ARTISTES', icon: pic100S, value: '100' },
-        { label: '10 ARTISTES', icon: pic10S, value: '10' },
-        { label: '10 ARTISTE', icon: pic1S, value: '1' },
+        { label: '10 artistes', icon: pic10000S, value: '4' },
+        { label: '10 artistes', icon: pic1000S, value: '3' },
+        { label: '10 artistes', icon: pic100S, value: '2' },
+        { label: '10 artistes', icon: pic10S, value: '1' },
+        { label: '10 artiste', icon: pic1S, value: '0' },
       ],
 
       legend3: [
-        { label: '10 FANS', icon: pic1000000F, value: '1000000' },
-        { label: '10 FANS', icon: pic100000F, value: '100000' },
-        { label: '10 FANS', icon: pic10000F, value: '10000' },
-        { label: '10 FANS', icon: pic1000F, value: '1000' },
-        { label: '10 FANS', icon: pic100F, value: '100' },
-        { label: '10 FANS', icon: pic10F, value: '10' },
-        { label: '10 FAN', icon: pic1F, value: '1' },
+        { label: '10 fans', icon: pic1000000F, value: '6' },
+        { label: '10 fans', icon: pic100000F, value: '5' },
+        { label: '10 fans', icon: pic10000F, value: '4' },
+        { label: '10 fans', icon: pic1000F, value: '3' },
+        { label: '10 fans', icon: pic100F, value: '2' },
+        { label: '10 fans', icon: pic10F, value: '1' },
+        { label: '10 fans', icon: pic1F, value: '0' },
       ],
        selectedArtist : null,
       selectedFilter:'all',
@@ -353,10 +346,15 @@ export default {
       return label.replace('10', `10<sup>${exponent}</sup>`);
     },
     drawChart() {
+      this.currentSubgenre = "";
+      this.currentGenre = "";
+      this.currentGenre = "";
+      this.genreIsSelected = false;
+      this.subgenreIsSelected = "";
+      d3.select('.pictogram-chart').selectAll('*').remove();
 
-      this.backMainPage();
-      this.graphTitle= "Les genres de musiques les plus jouées par nos artistes."
-      this.labelLegend = "artistes"
+      this.graphTitle = "Les genres de musiques les plus jouées par nos artistes.";
+      this.labelLegend = "artistes";
       this.legend = [...this.legend1];
       if (!this.data || !this.data.genres) {
         return;
@@ -379,29 +377,31 @@ export default {
 
       svg.append('g')
           .attr('class', 'y axis')
-          .call(yAxis).selectAll('.domain, .tick line')
+          .call(yAxis)
+          .selectAll('.domain, .tick line')
           .style('stroke', 'transparent');
 
       const pictogramGroups = svg.selectAll('.pictogram')
-          .data(genres)
-          .enter()
+          .data(genres, genre => genre);
+
+      pictogramGroups.exit().remove();
+
+      const enterPictogramGroups = pictogramGroups.enter()
           .append('g')
           .attr('class', 'pictogram')
           .attr('transform', (genre) => `translate(100, ${yScale(genre)})`)
-         .on('mouseover', (event, genre) => {
-            this.updateStatistiques(genre,true);
+          .on('mouseover', (event, genre) => {
+            this.updateStatistiques(genre, true);
           })
-        .on('click', (event, genre) => {
-            this.showSubgenres(genre);
-          })
-       .on('mouseout', () => {
-         this.hideDetailsGenre();
-       })
           .on('click', (event, genre) => {
             this.showSubgenres(genre);
+          })
+          .on('mouseout', () => {
+            this.hideDetailsGenre();
           });
 
-      pictogramGroups.selectAll('image')
+      const updatePictograms = enterPictogramGroups.merge(pictogramGroups)
+          .selectAll('image')
           .data((genre) => {
             const count = this.data.genres[genre].details.nombre_artists_total;
             return [
@@ -410,30 +410,38 @@ export default {
               ...Array(Math.floor((count % 100) / 10)).fill(pic10G),
               ...Array(count % 10).fill(pic1G),
             ];
-          })
-          .enter()
+          });
+
+      updatePictograms.enter()
           .append('image')
           .attr('class', 'pictogram')
+          .merge(updatePictograms)
+          .transition()
+          .duration(500)
           .attr('x', (d, i) => i * 100)
           .attr('y', 0)
           .attr('width', 40)
           .attr('height', 40)
           .attr('xlink:href', (d) => d);
 
+      updatePictograms.exit().remove();
+
+      // Supprimer les libellés existants
+      svg.selectAll('.label').remove();
+
+// Ajouter les libellés actualisés
       svg.selectAll('.label')
           .data(genres)
           .enter()
           .append('text')
           .attr('class', 'label')
           .text((genre) => `${genre} `)
-          .attr('x', 10)
-          .attr('y', (genre) => yScale(genre) + yScale.bandwidth() / 2)
+          .attr('x', 30) // Ajuster cette valeur pour décaler le texte
+          .attr('y', (genre) => yScale(genre) + yScale.bandwidth() / 2 +20)
           .attr('dy', '.35em')
           .style('font-size', '14px')
           .style('fill', 'black')
           .style('text-anchor', 'start');
-
-
     },
     toggleDisplay() {
       this.displayFilter = !this.displayFilter; // Inverse l'état d'affichage
@@ -487,66 +495,61 @@ export default {
 
     },
 
-    showSubgenres(genre)  {
-
+    showSubgenres(genre) {
       this.backSubgenrePage();
-      this.graphTitle= "Les sous-genres du "+ genre
-      this.legend= [...this.legend2];
+      this.graphTitle = "Les sous-genres du " + genre;
+      this.legend = [...this.legend2];
 
-      // Update currentGenre to the selected genre
+      // Mise à jour de currentGenre vers le genre sélectionné
       this.currentGenre = genre;
-      this.genreIsSelected=true;
-      this.labelLegend = "artistes";
-      this.selectedArtist="";
+      this.genreIsSelected = true;
+      this.selectedArtist = "";
 
-
-
-      // Remove the existing chart
+      // Retrait du graphique existant
       d3.select('.pictogram-chart').selectAll('*').remove();
 
-      // Draw the new chart for subgenres
+      // Dessin du nouveau graphique pour les sous-genres
       const subgenres = Object.keys(this.data.genres[genre].subgenres).sort((a, b) => {
         return this.data.genres[genre].subgenres[b].details.nombre_artists_total - this.data.genres[genre].subgenres[a].details.nombre_artists_total;
       });
 
-      // Create a new SVG container for subgenres
+      // Création d'un nouveau conteneur SVG pour les sous-genres
       const svg = d3.select('.pictogram-chart').append('svg')
-          .attr('width', this.width +200)
+          .attr('width', this.width + 200)
           .attr('height', this.height);
 
-      // Create a scale for the y-axis based on subgenres
+      // Création d'une échelle pour l'axe y basée sur les sous-genres
       const yScale = d3.scaleBand()
           .domain(subgenres)
           .range([0, this.innerHeight])
           .padding(0.5);
 
-
-      // Add the y-axis inside the container
+      // Ajout de l'axe y dans le conteneur
       const yAxis = d3.axisLeft(yScale);
       svg.append('g')
           .attr('class', 'y axis')
-          .call(yAxis).selectAll('.domain, .tick line')
+          .call(yAxis)
+          .selectAll('.domain, .tick line')
           .style('stroke', 'transparent');
-
-
 
       const subgenreGroups = svg.selectAll('.subgenre-group')
           .data(subgenres)
           .enter()
           .append('g')
           .attr('class', 'subgenre-group')
-          .attr('transform', (subgenre) => `translate(150, ${yScale(subgenre)})`).
-          on('mouseover', (event, subgenre) => {
-            this.updateStatistiques(subgenre,false);
+          .attr('transform', subgenre => `translate(150, ${yScale(subgenre)})`)
+          .on('mouseover', (event, subgenre) => {
+            this.updateStatistiques(subgenre, false);
           })
           .on('mouseout', () => {
             this.hideDetailsSubgenre();
-          }).on('click', (event, subgenre) => {
+          })
+          .on('click', (event, subgenre) => {
             this.fetchArtist(subgenre);
           });
 
-      // Add pictograms for each subgenre
-      subgenreGroups.selectAll('.pictogram')
+      // Ajout des pictogrammes pour chaque sous-genre
+      const updatePictograms = subgenreGroups.selectAll('.pictogram')
           .data((subgenre) => {
             const count = this.data.genres[genre].subgenres[subgenre].details.nombre_artists_total;
             return [
@@ -554,29 +557,32 @@ export default {
               ...Array(Math.floor((count % 1000) / 100)).fill(pic100S),
               ...Array(Math.floor((count % 100) / 10)).fill(pic10S),
               ...Array(count % 10).fill(pic1S),
-            ].slice(0,10);
-          })
-          .enter()
+            ].slice(0, 10);
+          });
+
+      updatePictograms.enter()
           .append('image')
+          .merge(updatePictograms)
+          .transition()
+          .duration(500)
           .attr('class', 'pictogram')
           .attr('x', (d, i) => i * 90)
-          .attr('y', -20) // Adjust the vertical position of pictograms
+          .attr('y', -20)
           .attr('width', 40)
           .attr('height', 40)
           .attr('xlink:href', d => d);
 
+      updatePictograms.exit().remove();
+
       subgenreGroups.append('text')
           .attr('class', 'label')
           .text(subgenre => subgenre)
-          .attr('x', -125) // Adjust the horizontal position of subgenre names
-          .attr('y',25)
+          .attr('x', -125)
+          .attr('y', 25)
           .style('font-size', '14px')
           .style('fill', 'black')
           .style('text-anchor', 'start');
-
-
-
-},
+    },
     async fetchArtist(subgenre) {
       try {
         this.currentSubgenre=subgenre;
@@ -594,117 +600,130 @@ export default {
         console.error('Error fetching artists:', error);
       }
     },
+
     drawArtistsChart(subgenre, artistsData) {
+      this.subgenreIsSelected = true;
+      this.currentSubgenre = subgenre;
+      this.graphTitle = "Nos artistes " + this.currentSubgenre;
+      d3.select('.pictogram-chart').selectAll('*').remove();
+      this.legend = [...this.legend3];
 
-      this.subgenreIsSelected=true;
-      this.currentSubgenre=subgenre;
-      this.graphTitle="Nos artistes " + this.currentSubgenre
-    d3.select('.pictogram-chart').selectAll('*').remove();
-      this.legend= [...this.legend3];
+      // Créer un conteneur SVG pour le graphique des artistes
+      const svg = d3.select('.pictogram-chart').append('svg')
+          .attr('width', this.width - 125)
+          .attr('height', `${artistsData.length * 50}px`);
 
+      // Créer une échelle pour l'axe y
+      const yScale = d3.scaleBand()
+          .domain(artistsData.map(artist => artist.name))
+          .range([0, artistsData.length * 35])
+          .padding(0.1);
 
+      // Ajouter l'axe y dans le conteneur
+      const yAxis = d3.axisLeft(yScale);
+      svg.append('g')
+          .attr('class', 'y axis')
+          .call(yAxis)
+          .selectAll('.domain, .tick line')
+          .style('stroke', 'transparent');
 
-    // Create an SVG container for the artist chart
-    const svg = d3.select('.pictogram-chart').append('svg')
-        .attr('width', this.width -125  )
-        .attr('height',`${artistsData.length * 50}px`)
-    ;
+      // Sélectionner les groupes existants et les mettre à jour avec les nouvelles données
+      const artistGroups = svg.selectAll('.artist-group')
+          .data(artistsData, artist => artist.name);
 
+      // Supprimer les groupes qui ne sont plus nécessaires
+      artistGroups.exit().remove();
 
-    // Create a scale for the y-axis
-    const yScale = d3.scaleBand()
-        .domain(artistsData.map(artist => artist.name))
-        .range([0, artistsData.length * 35])
-        .padding(0.1);
-
-    // Add the y-axis inside the container
-    const yAxis = d3.axisLeft(yScale);
-    svg.append('g')
-        .attr('class', 'y axis')
-        .call(yAxis).selectAll('.domain, .tick line')
-        .style('stroke', 'transparent');
-
-    // Create a group for each artist
-    const artistGroups = svg.selectAll('.artist-group')
-        .data(artistsData)
-        .enter()
-        .append('g')
-        .attr('class', 'artist-group')
-        .attr('id', artist => `artist-group-${CSS.escape(artist.name.replace(/\s+/g, '-'))}`) // Use CSS.escape()
-        .attr('transform', artist => `translate(200, ${yScale(artist.name) + yScale.bandwidth() / 2})`)
-        /*.on('mouseout', () => {
-          this.unhighlightArtist();
-        }).on('mouseover', (event, artist) => {
-          this.highlightArtist(artist);
-        })*/
-     .on('click', (event, artist) => {
-         this.selectArtist(artist);
-       }).on('mouseover', (event, artist) => {
-        this.showDeezerFansTooltip(event, artist);
-      })
+      // Créer de nouveaux groupes pour les nouvelles données
+      const enterArtistGroups = artistGroups.enter()
+          .append('g')
+          .attr('class', 'artist-group')
+          .attr('id', artist => `artist-group-${CSS.escape(artist.name.replace(/\s+/g, '-'))}`)
+          .attr('transform', artist => `translate(200, ${yScale(artist.name) + yScale.bandwidth() / 2})`)
+          .on('click', (event, artist) => {
+            this.selectArtist(artist);
+          })
+          .on('mouseover', (event, artist) => {
+            this.showDeezerFansTooltip(event, artist);
+          })
           .on('mouseout', () => {
             this.hideDeezerFansTooltip();
           });
 
-    // Add pictograms for each artist
-    artistGroups.selectAll('.pictogram-artist')
-        .data(artist => {
-          const deezerFans = artist.deezerFans;
-          return [
-            ...Array(Math.floor(deezerFans / 10000000)).fill(pic1000000F),
-            ...Array(Math.floor((deezerFans % 10000000) / 1000000)).fill(pic1000000F),
-            ...Array(Math.floor((deezerFans % 1000000) / 100000)).fill(pic100000F),
-            ...Array(Math.floor((deezerFans % 100000) / 10000)).fill(pic10000F),
-            ...Array(Math.floor(deezerFans / 1000)).fill(pic1000F),
-            ...Array(Math.floor((deezerFans % 1000) / 100)).fill(pic100F),
-            ...Array(Math.floor((deezerFans % 100) / 10)).fill(pic10F),
-            ...Array(deezerFans % 10).fill(pic1F),
-          ].slice(0,15 );
-        })
-        .enter()
-        .append('image')
-        .attr('class', 'pictogram-artist')
-        .attr('x', (d, i) => i * 40)
-        .attr('y',-20)
-        .attr('width', 40)
-        .attr('height', 40)
-        .attr('xlink:href', d => d);
+      // Ajouter des pictogrammes pour chaque artiste
+      const updatePictograms = enterArtistGroups.merge(artistGroups)
+          .selectAll('.pictogram-artist')
+          .data(artist => {
+            const deezerFans = artist.deezerFans;
+            return [
+              ...Array(Math.floor(deezerFans / 10000000)).fill(pic1000000F),
+              ...Array(Math.floor((deezerFans % 10000000) / 1000000)).fill(pic1000000F),
+              ...Array(Math.floor((deezerFans % 1000000) / 100000)).fill(pic100000F),
+              ...Array(Math.floor((deezerFans % 100000) / 10000)).fill(pic10000F),
+              ...Array(Math.floor(deezerFans / 1000)).fill(pic1000F),
+              ...Array(Math.floor((deezerFans % 1000) / 100)).fill(pic100F),
+              ...Array(Math.floor((deezerFans % 100) / 10)).fill(pic10F),
+              ...Array(deezerFans % 10).fill(pic1F),
+            ].slice(0,15 );
+          });
 
-    // Add artist names with line breaks
-    artistGroups.append('text')
-        .attr('class', 'label')
-        .text(artist => artist.name)
-        .attr('x', -150) // Adjust the horizontal position of artist names
-        .attr('y', 0)
-        .style('font-size', '14px')
-        .style('fill', 'black')
-        .style('text-anchor', 'start')
-        .call(wrap, 150); // Adjust the width for wrapping as needed
+      updatePictograms.enter()
+          .append('image')
+          .merge(updatePictograms)
+          .transition()
+          .duration(500)
+          .attr('class', 'pictogram-artist')
+          .attr('x', (d, i) => i * 40)
+          .attr('y', -20)
+          .attr('width', 40)
+          .attr('height', 40)
+          .attr('xlink:href', d => d);
 
-// Wrap function to handle line breaks
-    // Wrap function to handle line breaks
-      function wrap(text, width) {
-        text.each(function () {
-          var text = d3.select(this),
-              words = text.text().split(/\s+/),
-              word,
-              line = [],
-              y = text.attr("y"),
-              dy = 0, // Adjust as needed
-              tspan = text.text(null).append("tspan").attr("x", -150).attr("y", y).attr("dy", dy + "em"); // Adjust the starting position
+      updatePictograms.exit().remove();
 
-          while (words.length > 0) {
-            word = words.shift();
-            line.push(word);
-            tspan.text(line.join(" "));
-            if (tspan.node().getComputedTextLength() > width) {
-              line.pop();
-              tspan.text(line.join(" ") + '...');
-              break; // Truncate the text and exit the loop
+      // Ajouter les noms des artistes avec des sauts de ligne
+      const updateArtistLabels = enterArtistGroups.merge(artistGroups)
+          .selectAll('.label')
+          .data(artist => [artist]);
+
+      updateArtistLabels.enter()
+          .append('text')
+          .attr('class', 'label')
+          .merge(updateArtistLabels)
+          .text(artist => artist.name)
+          .attr('x', -150)
+          .attr('y', 0)
+          .style('font-size', '14px')
+          .style('fill', 'black')
+          .style('text-anchor', 'start')
+          .style('font-family', 'Noto Serif')
+          .call(wrap, 150);
+
+      updateArtistLabels.exit().remove();
+
+      // Fonction wrap pour gérer les sauts de ligne
+        function wrap(text, width) {
+          text.each(function () {
+            var text = d3.select(this),
+                words = text.text().split(/\s+/),
+                word,
+                line = [],
+                y = text.attr("y"),
+                dy = 0, // Adjust as needed
+                tspan = text.text(null).append("tspan").attr("x", -150).attr("y", y).attr("dy", dy + "em"); // Adjust the starting position
+
+            while (words.length > 0) {
+              word = words.shift();
+              line.push(word);
+              tspan.text(line.join(" "));
+              if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" ") + '...');
+                break; // Truncate the text and exit the loop
+              }
             }
-          }
-        });
-      }},
+          });
+        }},
 
     selectArtist(artist) {
       // Mettez à jour la variable selectedArtist
@@ -747,16 +766,7 @@ export default {
       }
     },
 
-backMainPage() {
-      this.currentSubgenre="";
-      this.currentGenre="";
-  this.currentGenre="";
 
-  this.genreIsSelected=false;
-      this.subgenreIsSelected="";
-      d3.select('.pictogram-chart').selectAll('*').remove();
-
-},
 
     backSubgenrePage() {
       this.currentSubgenre="";
@@ -1053,5 +1063,8 @@ footer {
   line-height: 1; /* Espacement minimal entre les lignes */
 }
 
+.legend{
+  font-family: "Noto Serif";
+}
 
 </style>
