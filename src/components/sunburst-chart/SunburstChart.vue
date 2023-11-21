@@ -51,7 +51,6 @@
             <h2>{{ this.selectedArtist.name }}</h2>
           </div>
           <div class="artist-details-columns flex justify-between">
-            <!-- Colonne de gauche pour les albums, genre, etc. -->
             <div class="details-column">
               <div class="detail-item">
                 <p><b> {{ this.selectedArtist.value }} fans</b></p>
@@ -127,14 +126,11 @@ export default {
 
     changeSelectedFilter(filter){
       this.selectedFilter=filter;
-      console.log(this.selectedFilter)
-      console.log(this.genreName1 + "  et "+ this.genreColor1);
       this.drawChartGenre(this.genreName1,this.genreColor1);
     },
     clearFilters() {
       this.selectedFilter='all';
       const filterGroups = ['filterGroup'];
-      console.log(this.selectedFilter)
       filterGroups.forEach(groupName => {
         const radios = document.getElementsByName(groupName);
         radios.forEach(radio => {
@@ -146,7 +142,6 @@ export default {
 
     // Fonction pour appliquer le filtre en fonction du type et de la valeur du filtre
     filterArt(filterType, filterValue, originalArtistsData) {
-      console.log(originalArtistsData)
       try {
         let filteredArtists = [...originalArtistsData]; // Utilise une copie des données originales pour filtrer
 
@@ -188,16 +183,10 @@ export default {
         filterType = 'ACTIVITY';
       }
 
-      console.log(filterType + "," + this.filterValue);
-
       return filterType;
     },
 
-
-
-
     async drawChart() {
-      // Clear previous sunburst chart genres
       d3.selectAll('svg').remove()
 
       this.labelLegend = 'artistes';
@@ -302,7 +291,7 @@ export default {
 
               if (d && d.data && d.data.name) {
                 const genreColor = color(d.data.name);
-                this.drawChartGenre(d.data.name,genreColor); // Draw the chart for the clicked genre
+                this.drawChartGenre(d.data.name,genreColor);
               }
             }
           });
@@ -382,11 +371,8 @@ export default {
             this.dataArtists =  await filterArtists(genreName, subgenre);
 
             const filterType = await this.applyFilter(this.selectedFilter);
-            console.log(filterType)
             const originalArtistsData = this.dataArtists
             this.filterArt(filterType, this.selectedFilter, originalArtistsData)
-
-            console.log("datafiltre "+this.dataArtists)
             Object.values(this.dataArtists).forEach((artist, index) => {
               subgenreObj.children.push({
                 name: artist.name,
@@ -404,8 +390,6 @@ export default {
               });
             });
           }
-
-
           catch(error) {
             console.log( "error")
           }
@@ -473,19 +457,16 @@ export default {
           })
           .on('click', (event, d) => {
             if (d.depth === 1) { // Limiter l'action du clic à la première couche (profondeur 1)
-              // Toggle visibility of the existing sunburst
               const sunburstSVG = d3.select('.sunburst-chart-genres svg');
               const isHidden = sunburstSVG.style('display') === 'none';
               sunburstSVG.style('display', isHidden ? 'block' : 'none');
               this.showGenres = false;
               this.drawChart()
             }
-            if (d.depth === 3) { // Limiter l'action du clic à la première couche (profondeur 3)"
+            if (d.depth === 3) { // Limiter l'action du clic à la 3eme couche (profondeur 3)"
               const artist = d.data;
-              console.log(artist)
               this.selectedArtist = artist;
               this.showInfo = true;
-              console.log(this.selectedArtist.name)
             }
 
           });
@@ -578,8 +559,8 @@ export default {
 }
 
 .artists-container svg {
-  width: 2500px; /* Définissez la largeur du contenu que vous souhaitez pouvoir faire défiler */
-  overflow-x: auto; /* Activez le défilement horizontal si nécessaire */
+  width: 2500px;
+  overflow-x: auto;
 }
 
 .details-container,
@@ -594,12 +575,12 @@ export default {
 }
 
 .artist-image-small {
-  width: 150px; /* Ajustez la taille de l'image */
-  height: 150px; /* Ajustez la taille de l'image */
-  border-radius: 50%; /* Forme ronde */
-  border: 2px solid white; /* Bordure autour de l'image */
-  z-index: 1; /* Mettre au-dessus du contenu des détails */
-  margin-bottom: 10px; /* Espacement avec le nom */
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px solid white;
+  z-index: 1;
+  margin-bottom: 10px;
 }
 
 .flex {
@@ -612,12 +593,6 @@ export default {
 
 .min-h-screen {
   min-height: 100vh;
-}
-
-/* Header avec titre */
-
-.text-white {
-  color: white;
 }
 
 .py-4 {
@@ -625,90 +600,70 @@ export default {
   padding-bottom: 1rem;
 }
 
-/* Conteneur principal */
 .flex-1 {
   display: flex;
 }
 
-
 .container {
-  border-radius: 8px; /* Coins légèrement arrondis */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre douce */
-  background-color: #ffffff; /* Couleur de fond blanc */
-  padding: 20px; /* Espacement intérieur */
-}
-
-/* Couleurs et styles spécifiques à Apple ou Deezer */
-.pictogram-chart {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  padding: 20px;
 }
 
 .details-container-artist {
-  background-color: #f5f5f5; /* Couleur de fond similaire à Apple */
+  background-color: #f5f5f5;
 }
 
 .filter-container {
-  background-color: white; /* Autre couleur neutre */
+  background-color: white;
 }
 
 .min-h-screen {
   min-height: 100vh;
-  background-color: white; /* Couleur bleu-gris pour l'arrière-plan */
+  background-color: white;
 }
 
-
-
 header {
-
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   border-top: 2px solid black; /* Ajout d'une ligne noire au-dessus du header */
   border-bottom: 2px solid black; /* Ajout d'une ligne noire en-dessous du header */
 }
 
-
 footer {
   border-radius: 0;
   height: 2px;
   background-color: whitesmoke;
-  text-align: left
-;
+  text-align: left;
   font-family: "Courier New";
   border-top: 2px black;
-  /* Retirer l'arrondi complet du footer */
 }
 
 .details-container-artist {
   position: relative;
   font-family:"Noto Serif" ;
-  /* ... autres styles */
-
-  /* Ajout d'un fond blanc avec une image graphique */
-  border-radius: 10px; /* Coins arrondis pour le détail container */
-
+  border-radius: 10px;
 }
-
-
 
 .shadow-left {
   box-shadow: 4px 0px 4px -4px rgba(0,0,0,0.75);
-  border-radius: 0/* Ombre à gauche */
+  border-radius: 0;
 }
+
 .py-4 {
-  padding-top: 2rem; /* Augmenter le padding en haut du header */
-  padding-bottom: 2rem; /* Augmenter le padding en bas du header */
-  border-top: 1px solid darkgrey; /* Ajouter une bordure en haut du header */
-  border-bottom: 1px solid darkgray; /* Ajouter une bordure en bas du header */
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border-top: 1px solid darkgrey;
+  border-bottom: 1px solid darkgray;
 }
 
 .text-2xl {
   font-family: 'Impact', sans-serif;
   color: black;
   text-align: left;
-
 }
 
-
-/* Pour la disposition en colonnes */
 .flex {
   display: flex;
 }
@@ -717,17 +672,15 @@ footer {
   flex-direction: column;
 }
 
-/* Pour que les carrés prennent la même place que le filtre */
 .flex-1 {
   flex: 1;
 }
 
-/* Stylisez les paragraphes pour être visibles */
 .artist-details {
   padding: 20px;
-  margin: 10px 0; /* Espacement entre les paragraphes */
-  font-size: 16px; /* Taille de la police */
-  color: black; /* Couleur du texte */
+  margin: 10px 0;
+  font-size: 16px;
+  color: black;
   background-color: white;
 }
 
@@ -741,15 +694,15 @@ footer {
 }
 
 .artist-info h2 {
-  margin: 0; /* Retirez les marges par défaut */
-  font-size: 1.5em; /* Taille du nom de l'artiste */
-  color: black; /* Couleur du texte */
+  margin: 0;
+  font-size: 1.5em;
+  color: black;
 }
 
 .grey-button {
   background-color: lightgrey;
-  padding: 8px 16px; /* Exemple de style pour le padding */
-  border: none; /* Exemple de style pour supprimer la bordure */
+  padding: 8px 16px;
+  border: none;
 }
 
 .bold-text {
