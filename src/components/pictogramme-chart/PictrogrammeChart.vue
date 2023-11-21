@@ -54,8 +54,7 @@
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
             <div class="big-number"><b>{{ statistiques.nbSolos }}</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
-              <p>SOLOS</p>
+              <p>ARTISTES SOLOS</p>
             </div>
           </div>
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
@@ -68,8 +67,7 @@
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
             <div class="big-number"><b>{{ statistiques.actifPourcentage }} %</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
-              <p>ACTIFS</p>
+              <p>ARTISTES ACTIFS</p>
             </div>
           </div>
         </div>
@@ -608,7 +606,7 @@ export default {
 
     // Create an SVG container for the artist chart
     const svg = d3.select('.pictogram-chart').append('svg')
-        .attr('width', this.width  )
+        .attr('width', this.width -125  )
         .attr('height',`${artistsData.length * 50}px`)
     ;
 
@@ -1023,11 +1021,12 @@ footer {
 /* Couleurs et styles spécifiques à Apple ou Deezer */
 .pictogram-chart {
 
-  margin : 10px;
+  margin : 20px;
   font-family: "Noto Serif";
   height: 700px;
   overflow-y: auto;
 }
+
 
 
 .detail-item{
@@ -1044,8 +1043,15 @@ footer {
 }
 
 
+.big-number {
+  font-size: 48px; /* Taille pour le gros chiffre */
+}
 
-
+.lines {
+  font-size: 14px; /* Taille plus petite pour les textes ARTISTES et SOLOS */
+  margin: 0; /* Pour supprimer les marges entre les deux paragraphes */
+  line-height: 1; /* Espacement minimal entre les lignes */
+}
 
 
 </style>
