@@ -6,33 +6,7 @@
     <div class="return-button">
 <!--      <img v-if="showCheckboxes" @click="handleReturnClick" alt="Description de l'image" width="30" height="30">-->
     </div>
-    <div v-if="showCheckboxes" class="checkbox-container" >
-      <h3 style="margin-right:10px" >Filtres: </h3>
-      <label>
-        <input type="checkbox" v-model="filterTypes.Group" @change="updateChart">
-       Groupe
-      </label>
-      <label>
-        <input type="checkbox" v-model="filterTypes.Person" @change="updateChart">
-        Solo
-      </label>
-      <label>
-      <input type="checkbox" v-model="filterTypes.Male" @change="updateChart">
-      Homme
-      </label>
-      <label>
-        <input type="checkbox" v-model="filterTypes.Female" @change="updateChart">
-        Femme
-      </label>
-      <label>
-        <input type="checkbox" v-model="filterTypes.inActivity" @change="updateChart">
-        In activity
-      </label>
-      <label>
-        <input type="checkbox" v-model="filterTypes.careerEnded" @change="updateChart">
-        Carred ended
-      </label>
-    </div>
+
 
   <div class="chart-container">
 <!--    barchart genres-->
@@ -48,11 +22,88 @@
 <!--    barchart artistes-->
     <div>
       <div class="bar-chart-artists" ref="detailsContainer3" >
+        <div v-if="showCheckboxes" class="checkbox-container" >
+          <h3 style="margin-right:10px" >Filtres: </h3>
+          <label>
+            <input type="checkbox" v-model="filterTypes.Group" @change="updateChart" >
+            Groupe
+          </label>
+          <label>
+            <input type="checkbox" v-model="filterTypes.Person" @change="updateChart" >
+            Solo
+          </label>
+          <label>
+            <input type="checkbox" v-model="filterTypes.Male" @change="updateChart" >
+            Homme
+          </label>
+          <label>
+            <input type="checkbox" v-model="filterTypes.Female" @change="updateChart" >
+            Femme
+          </label>
+          <label>
+            <input type="checkbox" v-model="filterTypes.inActivity" @change="updateChart" >
+            In activity
+          </label>
+          <label>
+            <input type="checkbox" v-model="filterTypes.careerEnded" @change="updateChart">
+            Carred ended
+          </label>
+        </div>
         </div>
       </div>
+<!--    <div v-if="showCheckboxes" class="details-column">-->
     </div>
   </div>
-  <div id="tooltip"> </div>
+  <div v-if="selectedArtist" class="fixed-info-column">
+    <!-- Ajoutez ici les informations à afficher -->
+    <div class="artist-details" >
+      <!-- Photo de profil centrée -->
+      <div class="centered">
+        <img :src="selectedArtist.picture" alt="Artist" class="artist-image-small">
+        <h2>{{ selectedArtist.name }}</h2>
+      </div>
+      <div class="artist-details-columns flex justify-between">
+        <!-- Colonne de gauche pour les albums, genre, etc. -->
+        <div class="details-column">
+          <div class="detail-item">
+            <p><b> {{ selectedArtist.deezerFans.toLocaleString() }}</b> FANS</p>
+          </div>
+          <div class="detail-item">
+            <p><b>ACTIF : </b> {{ selectedArtist.lifeSpan.ended ? 'NON' : 'YES' }}</p>
+          </div>
+          <!-- Assurez-vous que chaque élément a la même hauteur -->
+          <div class="detail-item" v-if=" selectedArtist.recordLabel && selectedArtist.recordLabel.length>0">
+            <p><b>Label:</b> {{ Array.from(selectedArtist.recordLabel.values()).join(', ') }}</p>
+          </div>
+          <div class="detail-item" v-if="selectedArtist.albums.length>0">
+            <p><b>Albums:</b></p>
+            <ul class="albums-list">
+              <li v-for="album in selectedArtist.albums" :key="album">{{ album }}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="details-column">
+          <div class="detail-item">
+            <p> <b>GENRES :</b>{{ selectedArtist.genres.join('- ') }}</p>
+          </div>
+          <div class="detail-item">
+            <p><b>GENDER:</b> {{ selectedArtist.gender }}</p>
+          </div>
+          <!-- Assurez-vous que chaque élément a la même hauteur -->
+          <div class="detail-item empty-item">&nbsp;</div>
+          <p><b>Lien Deezer:</b> <a :href="selectedArtist.urlDeezer">Deezer</a></p>
+          <div class="detail-item"  v-if="selectedArtist.members.length>0">
+            <p><b>Membres:</b></p>
+            <ul class="members-list">
+              <li v-for="member in selectedArtist.members" :key="member">{{ member }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    <!-- ... Ajoutez d'autres éléments si nécessaire ... -->
+  </div>
+<!--  </div>-->
+  </div>
 </template>
 
 <script>
@@ -79,8 +130,17 @@ export default {
         careerEnded: false
         // Ajoutez d'autres filtres avec leurs valeurs initiales
       },
+      barchart :  null,
+      subgenreSelected : null,
+      selectedArtist : null,
+      clickedArtist : false,
+      isCheckboxDisabledEnded : false,
+      isCheckboxDisabledActivity : false,
+      isCheckboxDisabledFemale : false,
+      isCheckboxDisabledMale : false,
+      isCheckboxDisabledPerson : false,
+      isCheckboxDisabledGroup : false,
 
-      subgenreSelected : null// Nouvelle propriété pour stocker les données filtrées
     };
   },
 
@@ -88,7 +148,6 @@ export default {
     try {
       const response = await fetch("./data/details_v1/all_data_details.json")
       this.data = await response.json();
-      console.log(this.data);
       this.drawChart();
     } catch (error) {
       console.error('Erreur lors de la récupération des données de l\'API : ', error);
@@ -98,11 +157,13 @@ export default {
 
   methods: {
     async drawChart() {
+
+      this.titre = "Genres";
+
       if (!this.data || !this.data.genres) {
         return;
       }
 
-      this.titre = "Genres";
 
       const width = 600;
       const height = 500;
@@ -226,7 +287,6 @@ export default {
         return this.genreDetails.subgenres[b].nombre_artists_total - this.genreDetails.subgenres[a].nombre_artists_total;
       });
 
-      console.log(this.subgenres.length);
 
       // Créer le SVG
       const svg = d3.select('.bar-chart-details').append('svg')
@@ -300,7 +360,8 @@ export default {
             this.genreSelected = genre;
             this.colorSelected = color;
             this.showArtists(subgenre, this.genreSelected, this.colorSelected);
-            return tooltip.style("visibility", "hidden");
+            tooltip.style("visibility", "hidden");
+
           });
 
 
@@ -322,12 +383,14 @@ export default {
     //afficher les artistes
     async showArtists(subgenre, genre, color) {
 
+      this.showCheckboxes = true;
+
       this.genreSelected = genre;
       this.subgenreSelected = subgenre;
 
-      this.showCheckboxes = true;
 
       this.titre = "Artistes de " + subgenre + " - " + genre;
+
 
       const encodedGenre = encodeURIComponent(genre);
       const encodedSubgenre = encodeURIComponent(subgenre);
@@ -372,15 +435,15 @@ export default {
       const yAxis = d3.axisLeft(yScale);
 
       // create a tooltip
-      // var tooltip = d3.select(".bar-chart-artists")
-      //     .append("div")
-      //     .style("position", "absolute")
-      //     .style("background-color", "white")
-      //     .style("border", "solid")
-      //     .style("border-width", "2px")
-      //     .style("border-radius", "5px")
-      //     .style("padding", "5px")
-      //     .style("visibility", "hidden");
+      var tooltip = d3.select(".bar-chart-artists")
+          .append("div")
+          .style("position", "absolute")
+          .style("background-color", "white")
+          .style("border", "solid")
+          .style("border-width", "2px")
+          .style("border-radius", "5px")
+          .style("padding", "5px")
+          .style("visibility", "hidden");
 
       // Append the axes to the SVG
       // svg.append('g')
@@ -392,26 +455,6 @@ export default {
           .attr('class', 'y-axis') // Ajoutez une classe pour sélectionner l'axe y plus tard
           .call(yAxis);
 
-      d3.select('.y-axis').selectAll('text')
-          .on('mouseover', (event, name) => {
-            // Récupérez l'artiste correspondant à l'index dans les données filtrées
-            const artist = this.data[name];
-
-            console.log('mouseover', artist, name);
-
-
-            // Vous pouvez accéder directement aux propriétés de l'artiste ici
-            const toolDetails = `
-      Nom: ${artist.name} <br>
-      Nombre de fans: ${artist.deezerFans} <br>
-      Nombre d'albums: ${artist.nombre_albums} <br>
-      Type: ${artist.type} <br>
-    `;
-            console.log(toolDetails);
-
-            // Utilisez votre fonction showTooltip avec les détails
-            this.showTooltip(event, toolDetails);
-          });
 
       // Append the bars
       svg.selectAll('rect')
@@ -424,17 +467,55 @@ export default {
           .attr('height', yScale.bandwidth())
           .attr('fill', () => color)
           .on('mouseover', (event,id) => {
-            //afficher infos artistes
+            this.clickedArtist = true;
             const artist = this.data[id];
-            console.log(artist)
-            const toolDetails = artist.name + " <br> nombre de fans :  " + artist.deezerFans
-                + ' <br> nombre album :  ' + artist.nombre_albums + " " +
-                " <br> type :  " + artist.type +
-                " <br> genres :  " + artist.genres ;
-
-            //afficher tooltip
-            this.showTooltip(event,toolDetails)
+            this.showArtistSelected(artist);
+            const toolDetails = artist.name + "<br>" + artist.deezerFans + " fans sur Deezer"
+                + "<br>" + artist.nombre_albums + " albums ";
+            tooltip.html(toolDetails).style("visibility", "visible").style("color", "black")
+                .style("border-color", color);
           })
+          .on("mousemove", function () {
+
+            return tooltip.style("top", (event.pageY - 10) + "px")
+                .style("left", (event.pageX + 10) + "px");
+          })
+          .on('mouseout', function () {
+            return tooltip.style("visibility", "hidden");
+          })
+          .on('click', (event,id) => {
+            this.clickedArtist = true;
+            const artist = this.data[id];
+            this.showArtistSelected(artist);
+            return tooltip.style("visibility", "hidden");
+          });
+
+      svg.selectAll('.y-axis .tick text')
+          // Ajoutez des gestionnaires d'événements pour le survol, le déplacement de la souris et la sortie
+          .on('mouseover',  (event, name)=>{
+            const artist = this.data.find(artist => artist.name === name);
+            this.clickedArtist = true;
+            this.showArtistSelected(artist);
+            const toolDetails = artist.name + "<br>" + artist.deezerFans + " fans sur Deezer "
+            + "<br>" + artist.nombre_albums + " albums ";
+            tooltip.html(toolDetails).style("visibility", "visible").style("color", "black")
+                .style("border-color", color);
+          })
+          .on("mousemove", function () {
+
+            return tooltip.style("top", (event.pageY - 10) + "px")
+                .style("left", (event.pageX + 10) + "px");
+          })
+          .on('mouseout', function () {
+            return tooltip.style("visibility", "hidden");
+          })
+          .on('click', (event,name) => {
+            this.clickedArtist = true;
+            const artist = this.data.find(artist => artist.name === name);
+            this.showArtistSelected(artist);
+            return tooltip.style("visibility", "hidden");
+          });
+
 
 
     },
@@ -443,8 +524,6 @@ export default {
     async filtersBar(){
       this.artistList = true;
       const checkedValues = Object.keys(this.checkboxValues).filter(key => this.checkboxValues[key]);
-      console.log(checkedValues)
-      console.log(this.genreSelected,this.subgenreSelected )
       const response2 = await fetch(
           `./data/artists_by_genre_sorted_v1/${this.genreSelected}/${this.subgenreSelected}.json`
       );
@@ -466,28 +545,63 @@ export default {
 
 
       filterTypes.forEach(value => {
-        console.log(value)
-        if (value === 'Group') {
+        if (value === 'group') {
+          // this.isCheckboxDisabledActivity = true;
+          // this.isCheckboxDisabledEnded = true;
+          // this.isCheckboxDisabledFemale = true;
+          // this.isCheckboxDisabledMale = true;
+          // this.isCheckboxDisabledPerson = true;
+          // // this.isCheckboxDisabledGroup = true;
           key = 'type';
-          filteredData = filteredData.filter(item => item[key] === 'Group');
+          filteredData = filteredData.filter(item => item[key]=== 'Group');
         }
-        if (value === 'Person') {
+        if (value === 'person') {
+          // this.isCheckboxDisabledActivity = true;
+          // this.isCheckboxDisabledEnded = true;
+          // this.isCheckboxDisabledFemale = true;
+          // this.isCheckboxDisabledMale = true;
+          // // this.isCheckboxDisabledPerson = false;
+          // this.isCheckboxDisabledGroup = true;
           key = 'type';
           filteredData = filteredData.filter(item => item[key] === 'Person');
         }
-        if (value === 'Male') {
+        if (value === 'male') {
+          // this.isCheckboxDisabledActivity = true;
+          // this.isCheckboxDisabledEnded = true;
+          // this.isCheckboxDisabledFemale = true;
+          // // this.isCheckboxDisabledMale = true;
+          // this.isCheckboxDisabledPerson = true;
+          // this.isCheckboxDisabledGroup = true;
           key = 'gender';
           filteredData = filteredData.filter(item => item[key] === 'Male');
         }
-        if (value === 'Female') {
+        if (value === 'female') {
+          // this.isCheckboxDisabledActivity = true;
+          // this.isCheckboxDisabledEnded = true;
+          // // this.isCheckboxDisabledFemale = true;
+          // this.isCheckboxDisabledMale = true;
+          // this.isCheckboxDisabledPerson = true;
+          // this.isCheckboxDisabledGroup = true;
           key = 'gender';
-          filteredData = filteredData.filter(item => item[key] === 'Female');
+          filteredData = filteredData.filter(item => item[key] === 'Female' && item[key] !== '');
         }
         if (value === 'inActivity') {
+          // this.isCheckboxDisabledActivity = true;
+          // this.isCheckboxDisabledEnded = true;
+          // this.isCheckboxDisabledFemale = true;
+          // this.isCheckboxDisabledMale = true;
+          // this.isCheckboxDisabledPerson = true;
+          // this.isCheckboxDisabledGroup = true;
           key = 'lifeSpan';
           filteredData = filteredData.filter(item => !item[key].ended);
         }
         if (value === 'careerEnded') {
+          // this.isCheckboxDisabledActivity = true;
+          // // this.isCheckboxDisabledEnded = true;
+          // this.isCheckboxDisabledFemale = true;
+          // this.isCheckboxDisabledMale = true;
+          // this.isCheckboxDisabledPerson = true;
+          // this.isCheckboxDisabledGroup = true;
           key = 'lifeSpan';
           filteredData = filteredData.filter(item => item[key].ended);
         }
@@ -508,11 +622,10 @@ export default {
 
       this.dataF = await response2.json();
 
-      console.log(this.dataF)
-
       // Filtrer les données en fonction des filtres actuels
       this.filteredData = this.filterDataByCheckedValues(this.dataF, this.getCheckedFilters());
 
+      console.log("filtered dat " + this.filteredData)
       // Mettre à jour le graphique avec les données filtrées
       this.updateBars();
     },
@@ -520,9 +633,22 @@ export default {
 
     // Méthode pour mettre à jour les barres du graphique
     updateBars() {
+
+      // create a tooltip
+      var tooltip = d3.select(".bar-chart-artists")
+          .append("div")
+          .style("position", "absolute")
+          .style("background-color", "white")
+          .style("border", "solid")
+          .style("border-width", "2px")
+          .style("border-radius", "5px")
+          .style("padding", "5px")
+          .style("visibility", "hidden");
+
       const bars = d3.select('.bar-chart-artists')
           .selectAll('rect');
 
+      this.titre = this.genreSelected + " - " + this.subgenreSelected + "(" + this.getCheckedFilters()  + ")";
 
       const xScale = d3.scaleLinear()
           .domain([0, d3.max(this.filteredData, artist => artist.deezerFans)])
@@ -535,6 +661,9 @@ export default {
 
       // Sélectionnez toutes les barres existantes
       const existingBars = bars.data(this.filteredData);
+
+      // Supprimez les barres qui ne correspondent plus aux données
+      existingBars.exit().remove();
 
 
       // Mettez à jour les propriétés des barres existantes
@@ -554,21 +683,54 @@ export default {
       d3.select('.y-axis').selectAll('text')
           .on('mouseover', (event, index) => {
             // Récupérez l'artiste correspondant à l'index dans les données filtrées
-            const artist = this.filteredData[index];
-
-            console.log('mouseover', artist);
+            const artist = this.filteredData.find(artist => artist.name === index);
+            this.clickedArtist = true;
+            this.showArtistSelected(artist);
 
             // Vous pouvez accéder directement aux propriétés de l'artiste ici
-            const toolDetails = `
-      Nom: ${artist.name} <br>
-      Nombre de fans: ${artist.deezerFans} <br>
-      Nombre d'albums: ${artist.nombre_albums} <br>
-      Type: ${artist.type} <br>
-    `;
-            console.log(toolDetails);
+            const toolDetails = artist.name + "<br>" + artist.deezerFans + " fans sur Deezer"
+                + "<br>" + artist.nombre_albums + " albums ";
+           return  tooltip.html(toolDetails).style("visibility", "visible").style("color", "black")
+                .style("border-color", this.colorSelected);
 
-            // Utilisez votre fonction showTooltip avec les détails
-            this.showTooltip(event, toolDetails);
+          })
+          .on("mousemove", function () {
+
+            return tooltip.style("top", (event.pageY - 10) + "px")
+                .style("left", (event.pageX + 10) + "px");
+          })
+          .on('mouseout', function () {
+            return tooltip.style("visibility", "hidden");
+          })
+          .on('click', (event,index) => {
+            this.clickedArtist = true;
+            const artist = this.filteredData.find(artist => artist.name === index);
+            this.showArtistSelected(artist);
+            return tooltip.style("visibility", "hidden");
+          });
+
+      existingBars.on('mouseover', (event, artist) => {
+
+        this.showArtistSelected(artist);
+            const toolDetails = artist.name + "<br>" + artist.deezerFans + " fans sur Deezer"
+                + "<br>" + artist.nombre_albums + " albums ";
+            tooltip.html(toolDetails)
+                .style("visibility", "visible")
+                .style("color", "black")
+                .style("border-color", this.colorSelected);
+          })
+          .on("mousemove", function () {
+            return tooltip.style("top", (event.pageY - 10) + "px")
+                .style("left", (event.pageX + 10) + "px");
+          })
+          .on('mouseout', function () {
+            return tooltip.style("visibility", "hidden");
+          })
+          .on('click', (event,artist) => {
+            // this.clickedArtist = true;
+            // const artist = this.data[id];
+            this.showArtistSelected(artist);
+            return tooltip.style("visibility", "hidden");
           });
 
 
@@ -585,28 +747,12 @@ export default {
       existingBars.exit().remove();
     },
 
-    showTooltip(event, toolDetails) {
-      const tooltip = d3.select('#tooltip');
-
-
-      //afficher tooltip
-      tooltip.html(toolDetails).style("visibility", "visible").style("color", "black")
-          .style("border-color", );
-
-      // Positionner la zone de texte
-      tooltip
-          .style('left', (event.pageX + 10) + 'px')
-          .style('top', (event.pageY - 20) + 'px')
-          .style('opacity', 1);
-
-      // Ajouter un événement pour masquer la zone de texte au survol
-      d3.select('body')
-          .on('mousemove', () => tooltip.style('left', (event.pageX + 10) + 'px')
-              .style('top', (event.pageY - 20) + 'px'))
-          .on('mouseout', () => tooltip.style('opacity', 0));
+    showArtistSelected(artist) {
+      console.log('click' + artist);
+      this.clickedArtist = true;
+      this.selectedArtist = artist;
+      return this.selectedArtist;
     },
-
-
 
 
   },
@@ -622,11 +768,13 @@ export default {
 
 <style scoped>
 
+
 .chart-container {
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 
 .bar-chart-artists {
   color: black;
@@ -643,19 +791,36 @@ svg {
 }
 
 .checkbox-container {
-  align-content: center;
   display: flex;
+  justify-content: center; /* Centrer horizontalement */
   align-items: center;
-  margin-left: 100px;
-  margin-right: 250px;
   width: 600px;
   height: 20px;
-  border: 2px solid #cccccc; /* Bordure de 2 pixels en couleur grise */
-  border-radius: 10px; /* Coins arrondis */
-  padding: 10px; /* Espace intérieur de 10 pixels */
+  border: 2px solid #cccccc;
+  border-radius: 10px;
+  padding: 10px;
   overflow: hidden;
-  flex-grow: 1;
+  margin-left: auto; /* Ajout de cette ligne pour centrer horizontalement */
+  margin-right: auto; /* Ajout de cette ligne pour centrer horizontalement */
 }
+
+
+.fixed-info-column {
+  position: fixed;
+  top: 10%;
+  right: 0;
+  border-color: black;
+  width: 300px; /* Ajustez la largeur selon vos besoins */ /* Ajoutez une couleur de fond si nécessaire */
+  padding: 20px; /* Ajoutez du rembourrage pour l'espace intérieur */
+  height: 600px;
+  border: 3px solid ;
+  border-radius: 25px;
+  overflow-y: auto;
+
+}
+
+
+
 
 
 </style>
