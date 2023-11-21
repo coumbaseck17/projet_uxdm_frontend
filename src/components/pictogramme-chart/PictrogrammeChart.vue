@@ -2,10 +2,10 @@
   <div class="flex flex-col min-h-screen">
     <main class="flex flex-1">
       <button @click="drawChart" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" v-if="genreIsSelected & !subgenreIsSelected">
-        Retour
+        RETURN
       </button>
       <button @click="showSubgenres(currentGenre)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" v-if="subgenreIsSelected">
-        Retour
+        RETURN
       </button>
       <div class="flex flex-1"><div class="container filter-container shadow-left" v-if="currentSubgenre && subgenreIsSelected">
         <h2 class="v">Filters</h2>
@@ -54,7 +54,7 @@
 
         <div>
           <label>
-            <input type="radio" name="filterGroup" v-model="selectedFilter" value="Not Active" @change="applyFilter"> Not Active
+            <input type="radio" name="filterGroup" v-model="selectedFilter" value="Not active" @change="applyFilter"> Not active
           </label>
         </div>
       </div>
@@ -192,7 +192,7 @@
                 <p><b> {{ selectedArtist.deezerFans.toLocaleString() }}</b> FANS</p>
               </div>
               <div class="detail-item">
-                <p><b>Active: </b> {{ selectedArtist.lifeSpan.ended ? 'Yes' : 'No' }}</p>
+                <p><b>Active: </b> {{ ! selectedArtist.lifeSpan.ended ? 'In activity' : 'Not in activity' }}</p>
               </div>
               
               <div class="detail-item" v-if="selectedArtist.recordLabel && selectedArtist.recordLabel.length>0">
@@ -214,7 +214,9 @@
               <div class="detail-item" v-if="selectedArtist.gender">
                 <p><b>Gender:</b> {{ selectedArtist.gender }}</p>
               </div>
-              
+              <div class="detail-item" v-if="selectedArtist.type">
+                <p><b>Type:</b> {{ selectedArtist.type }}</p>
+              </div>
               <div class="detail-item empty-item">&nbsp;</div>
               <p><b>Link(s):</b> <a :href="selectedArtist.urlDeezer">Deezer</a></p>
               <div class="detail-item"  v-if="selectedArtist.members && selectedArtist.members.length>0">
@@ -754,8 +756,8 @@ export default {
       const filterValue = this.selectedFilter;
       if (['all', 'Group', 'Person', ''].includes(this.selectedFilter)) {
         filterType = 'TYPE';
-      } else if (['Not active','Active'].includes(this.selectedArtist)){
-        filterType= "ACTIVITY";
+      } else if (['Not active', 'Active'].includes(this.selectedFilter)) {
+        filterType = "ACTIVITY";
       }
       else if (['Female', 'Male'].includes(this.selectedFilter)) {
         filterType = 'GENDER';
@@ -768,17 +770,18 @@ export default {
     async filterArt(filterType = null, filterValue = null) {
       try {
         let filteredArtists = [...this.originalArtistsData];
-
-        if (filterType !== null && filterValue !== null && this.originalArtistsData && ! ['all'].includes(filterValue)) {
+        if (filterType !== null && filterValue !== null && this.originalArtistsData && !['all'].includes(filterValue)) {
           filteredArtists = this.originalArtistsData.filter(artist => {
             if (filterType === "TYPE") {
               return artist.type === filterValue;
             } else if (filterType === "GENDER") {
               return artist.gender === filterValue;
-            }else if (filterValue === 'Active') {
-              return !artist.lifeSpan.ended;
-            } else if (filterValue === 'Not active') {
-              return artist.lifeSpan.ended;
+            } else if (filterType === 'ACTIVITY') {
+              if (filterValue === 'Active') {
+                return !artist.lifeSpan.ended;
+              } else {
+                return artist.lifeSpan.ended;
+              }
             }
           });
         }

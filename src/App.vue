@@ -7,7 +7,7 @@
       <div :style="{ display: showFlexContainer ? 'flex' : 'initial' }" class="containerWrapper">
         <div  class="statContainer" v-show="isHomeVisible">
           <!-- Structure des 4 carrés avec chiffres et lignes -->
-          <h2  class="center-text"> Statistiques </h2>
+          <h2  class="center-text"> Statistics </h2>
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
             <div class="big-number"><b>12263</b></div>
             <div class="lines">
