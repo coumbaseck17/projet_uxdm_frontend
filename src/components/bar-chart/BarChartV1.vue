@@ -3,12 +3,17 @@
   <h3> {{ titre }} </h3>
   <br>
   <div class="container">
-    <div class="return-button">
-<!--      <img v-if="showCheckboxes" @click="handleReturnClick" alt="Description de l'image" width="30" height="30">-->
-    </div>
+
 
 
   <div class="chart-container">
+
+    <div class="return-button">
+      <button class="close-button" @click="hundleReturn">
+        <img src="../../../public/data/60817.png" alt="retour">
+      </button>
+    </div>
+
 <!--    barchart genres-->
     <div>
       <div class="bar-chart" ref="detailsContainer" >
@@ -55,6 +60,9 @@
     </div>
   </div>
   <div v-if="selectedArtist" class="fixed-info-column">
+    <button class="close-button" @click="closeDetails">
+      <img src="../../../public/data/marque-de-croix.png" alt="Fermer">
+    </button>
     <!-- Ajoutez ici les informations à afficher -->
     <div class="artist-details" >
       <!-- Photo de profil centrée -->
@@ -273,6 +281,8 @@ export default {
 
       this.titre = "Sous-genres de " + genre;
 
+      this.namePage = 'subgenre';
+
       // Supprimer le graphique précédent
       d3.select('svg').remove();
 
@@ -383,13 +393,16 @@ export default {
     //afficher les artistes
     async showArtists(subgenre, genre, color) {
 
+      this.namePage = 'artist';
+
+
       this.showCheckboxes = true;
 
       this.genreSelected = genre;
       this.subgenreSelected = subgenre;
 
 
-      this.titre = "Artistes de " + subgenre + " - " + genre;
+      this.titre = "Artistes - " + subgenre + " - " + genre;
 
 
       const encodedGenre = encodeURIComponent(genre);
@@ -481,6 +494,7 @@ export default {
                 .style("left", (event.pageX + 10) + "px");
           })
           .on('mouseout', function () {
+            this.clickedArtist = false;
             return tooltip.style("visibility", "hidden");
           })
           .on('click', (event,id) => {
@@ -507,6 +521,7 @@ export default {
                 .style("left", (event.pageX + 10) + "px");
           })
           .on('mouseout', function () {
+            this.clickedArtist = false;
             return tooltip.style("visibility", "hidden");
           })
           .on('click', (event,name) => {
@@ -584,6 +599,9 @@ export default {
         this.filterTypes.Female = false;
       }
 
+      this.namePage = 'subgenre';
+
+
       const encodedGenre = encodeURIComponent(this.genreSelected);
       const encodedSubgenre = encodeURIComponent(this.subgenreSelected);
       const url = `data/artists_by_genre_sorted_v1/${encodedGenre}/${encodedSubgenre}.json`;
@@ -604,6 +622,8 @@ export default {
     // Méthode pour mettre à jour les barres du graphique
     updateBars(data) {
 
+        this.namePage = 'subgenre';
+
       // create a tooltip
       var tooltip = d3.select(".bar-chart-artists")
           .append("div")
@@ -618,8 +638,7 @@ export default {
       const bars = d3.select('.bar-chart-artists')
           .selectAll('rect');
 
-      this.titre = this.genreSelected + " - " + this.subgenreSelected + "(" + this.getCheckedFilters()  + ")";
-
+      this.titre = " Artistes de - " + this.subgenreSelected + " - " + this.genreSelected;
       const xScale = d3.scaleLinear()
           .domain([0, d3.max(data, artist => artist.deezerFans)])
           .range([0, innerWidth]);
@@ -724,6 +743,17 @@ export default {
       return this.selectedArtist;
     },
 
+    closeDetails() {
+      // Réinitialisez la valeur de selectedArtist à null ou à une valeur appropriée
+      this.clickedArtist = false;
+      this.selectedArtist = null;
+    },
+
+     hundleReturn() {
+       window.location.reload();
+    }
+
+
 
   },
 
@@ -787,6 +817,24 @@ svg {
   border-radius: 25px;
   overflow-y: auto;
 
+}
+
+.close-button {
+  position: absolute;
+  top: 10px; /* Ajustez la valeur selon vos besoins */
+  left: 10px; /* Ajustez la valeur selon vos besoins */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Ajoutez du CSS pour styliser l'image du bouton */
+.close-button img {
+  width: 30px; /* Ajustez la taille de l'image selon vos besoins */
+  height: 30px; /* Ajustez la taille de l'image selon vos besoins */
 }
 
 
