@@ -1,15 +1,14 @@
 <template>
   <div class="flex flex-col min-h-screen">
     <!-- Header avec titre -->
-    <h1 class="text-2xl text-left border-bottom">Popular music on Deezer 🎸</h1>
+<header><h1 style="align-self: center;">Popular music on Deezer 🎸</h1></header>
 
-    <header class="py-4">
-    </header>
+    <hr>
     <div class="flex flex-1 fixed-top" style="justify-content: center;">
-      <!-- Conteneur pour filter-container et pictogram-chart -->
-      <div class="flex" style="width: 200px;">
-        <div class="flex flex-1 container filter-container shadow-left flex-col ">
-          <div v-show="showGenres" class="container filter-container shadow-left " >
+      <!-- Conteneur pour filter-container1 et pictogram-chart -->
+      <div v-show="showGenres" class="flex" style="width: 200px;">
+        <div class="flex flex-1 container1 filter-container1 shadow-left flex-col ">
+          <div  class="container1 filter-container1 shadow-left " >
             <!-- Contenu du filtre -->
             <h2 class="v">Filtres</h2>
             <hr>
@@ -34,29 +33,29 @@
 
       </div>
       <!-- Graphique au milieu -->
-      <div class="flex flex-1 flex-col">
-        <div v-show="!showGenres" class="sunburst-chart"><div id="details-container" class="details-container"></div><div id="details-container" class="details-container"></div></div>
+      <div class="flex flex-1 flex-col" style="align-items: center">
+        <div v-show="!showGenres" class="sunburst-chart"><div id="details-container1" class="details-container1"></div><div id="details-container1" class="details-container1"></div></div>
         <div v-show="showGenres" class="sunburst-chart-genres"><div id="details-container-genres" class="details-container-genres"></div><div id="details-container-genres" class="details-container-genres"></div></div>
       </div>
 
-      <div v-if="this.selectedArtist" class="container details-container-artist">
-        <div v-show="showInfo" class="details-container-artist artist-details" >
+      <div v-show="showInfo" v-if="this.selectedArtist" class="container1 details-container-artist">
+        <div class="details-container-artist artist-details" >
           <!-- Photo de profil centrée -->
-          <div class="centered">
+          <div class="center">
             <img :src="this.selectedArtist.picture" alt="Artist" class="artist-image-small">
             <h2>{{ this.selectedArtist.name }}</h2>
           </div>
-          <div class="artist-details-columns flex justify-between">
-            <div class="details-column">
-              <div class="detail-item">
+          <div class="flex justify-between">
+            <div>
+              <div>
                 <p><b> {{ this.selectedArtist.value }} fans</b></p>
               </div>
-              <div class="detail-item">
+              <div>
                 <p><b>Active:</b> {{ this.selectedArtist.lifeSpan.ended ? 'No' : 'Yes' }}</p>
               </div>
               <p v-if="this.selectedArtist.recordLabel!=null && this.selectedArtist.recordLabel!=''">Label: {{ this.selectedArtist.recordLabel }}</p>
               <p>Albums: {{ this.selectedArtist.albums }}</p>
-              <div class="detail-item">
+              <div>
                 <p>Music genres: {{ this.selectedArtist.genres }}</p>
               </div>
               <p><b>Deezer link:</b> <a :href="this.selectedArtist.urlDeezer">Deezer</a></p>
@@ -65,7 +64,7 @@
 
           </div>
         </div>
-        <button @click="showInfo = false">Exit info</button>
+        <button @click="showInfo = false" style="align-self: center">Exit info</button>
       </div>
 
   </div>
@@ -262,19 +261,19 @@ export default {
             const genreName = d.data.name;
             const artistCount = d.value;
 
-            const detailsContainer = document.getElementById('details-container');
+            const detailsContainer = document.getElementById('details-container1');
             detailsContainer.innerHTML = `Genre: ${genreName}, Number of artists: ${artistCount}`;
             detailsContainer.style.left = `${event.pageX + 10}px`; // Offset pour éviter de cacher la souris
             detailsContainer.style.top = `${event.pageY + 10}px`; // Offset pour éviter de cacher la souris
             detailsContainer.style.display = 'block';
           })
           .on('mousemove', (event) => {
-            const detailsContainer = document.getElementById('details-container');
+            const detailsContainer = document.getElementById('details-container1');
             detailsContainer.style.left = `${event.pageX + 10}px`; // Offset pour éviter de cacher la souris
             detailsContainer.style.top = `${event.pageY + 10}px`; // Offset pour éviter de cacher la souris
           })
           .on('mouseout', () => {
-            const detailsContainer = document.getElementById('details-container');
+            const detailsContainer = document.getElementById('details-container1');
             detailsContainer.style.display = 'none';
           })
           .on('click', (event, d) => {
@@ -547,7 +546,7 @@ export default {
   font-size: 12px;
 }
 
-.filter-container label {
+.filter-container1 label {
   margin-bottom: 5px;
 }
 
@@ -556,7 +555,7 @@ export default {
   overflow-x: auto;
 }
 
-.details-container,
+.details-container1,
 .details-container-genres {
   position: absolute;
   display: none;
@@ -597,7 +596,7 @@ export default {
   display: flex;
 }
 
-.container {
+.container1 {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
@@ -608,7 +607,7 @@ export default {
   background-color: #f5f5f5;
 }
 
-.filter-container {
+.filter-container1 {
   background-color: white;
 }
 
@@ -618,10 +617,7 @@ export default {
 }
 
 header {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top: 2px solid black; /* Ajout d'une ligne noire au-dessus du header */
-  border-bottom: 2px solid black; /* Ajout d'une ligne noire en-dessous du header */
+  background-color: whitesmoke;
 }
 
 footer {
@@ -634,9 +630,8 @@ footer {
 }
 
 .details-container-artist {
-  position: relative;
+  width: 400px;
   font-family:"Noto Serif" ;
-  border-radius: 10px;
 }
 
 .shadow-left {
@@ -652,7 +647,7 @@ footer {
 }
 
 .text-2xl {
-  font-family: 'Impact', sans-serif;
+  font-family: sans-serif, "Inter Semi Bold";
   color: black;
   text-align: left;
 }
@@ -671,25 +666,18 @@ footer {
 
 .artist-details {
   padding: 20px;
-  margin: 10px 0;
   font-size: 16px;
   color: black;
   background-color: white;
 }
 
-.centered {
+.center {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   position: relative;
-}
-
-.artist-info h2 {
-  margin: 0;
-  font-size: 1.5em;
-  color: black;
 }
 
 .grey-button {
@@ -700,6 +688,14 @@ footer {
 
 .bold-text {
   font-weight: bold;
+}
+
+.artist-details {
+  padding: 20px;
+  font-size: 16px;
+  color: black;
+  background-color: white;
+  max-width: 80%;
 }
 
 </style>
