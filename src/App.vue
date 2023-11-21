@@ -9,30 +9,30 @@
           <!-- Structure des 4 carrés avec chiffres et lignes -->
           <h2 text-white> Statistiques </h2>
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
-            <div class="big-number"><b>156</b></div>
+            <div class="big-number"><b>12263</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
+              <p>ARTISTS</p>
             </div>
           </div>
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
-            <div class="big-number"><b>4545</b></div>
+            <div class="big-number"><b>5934</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
-              <p>SOLOS</p>
+              <p>SOLO ARTISTS</p>
+
             </div>
           </div>
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
-            <div class="big-number"><b>454844</b></div>
+            <div class="big-number"><b>5503</b></div>
             <div class="lines">
-              <p>GROUPES</p>
+              <p>GROUPS</p>
               <p></p>
             </div>
           </div>
           <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
-            <div class="big-number"><b>154545 %</b></div>
+            <div class="big-number"><b>79 %</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
-              <p>ACTIFS</p>
+              <p>ACTIVE ARTISTS</p>
+
             </div>
           </div>
         </div>

@@ -11,58 +11,69 @@
       <button @click="showSubgenres(currentGenre)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" v-if="subgenreIsSelected">
         Retour
       </button>
-      <div class="flex flex-1">
+      <div class="flex flex-1"><div class="container filter-container shadow-left" v-if="currentSubgenre && subgenreIsSelected">
+        <h2 class="v">Filters</h2>
 
-        <div class="container filter-container shadow-left " v-if="currentSubgenre && subgenreIsSelected" >
-          <h2 class="v">Filtres</h2>
+        <div>
           <label>
-            <input type="radio"  name="filterGroup" v-model="selectedFilter" value="all" @change="applyFilter">  All
-          </label>
-          <p>GENDER</p>
-          <label>
-            <input type="radio"  name="filterGroup" v-model="selectedFilter" value="Female" @change="applyFilter">  Female
-          </label>
-          <label>
-            <input type="radio"  name="filterGroup" v-model="selectedFilter" value="Male" @change="applyFilter">  Male
-          </label>
-          <p>TYPE</p>
-          <label>
-            <input type="radio"  name="filterGroup" v-model="selectedFilter" value="" @change="applyFilter">  Others
-          </label>
-          <label>
-            <input type="radio"   name="filterGroup" v-model="selectedFilter" value="Group" @change="applyFilter">  Group
-          </label>
-          <label>
-            <input type="radio"  name="filterGroup" v-model="selectedFilter" value="Person"  @change="applyFilter"> Person
+            <input type="radio" name="filterGroup" v-model="selectedFilter" value="all" @change="applyFilter"> All
           </label>
         </div>
 
+        <div>
+          <p><b>GENDER</b></p>
+          <label>
+            <input type="radio" name="filterGroup" v-model="selectedFilter" value="Female" @change="applyFilter"> Female
+          </label>
+        </div>
+
+        <div>
+          <label>
+            <input type="radio" name="filterGroup" v-model="selectedFilter" value="Male" @change="applyFilter"> Male
+          </label>
+        </div>
+
+
+        <div>
+          <p> <b>TYPE</b></p>
+
+          <label>
+            <input type="radio" name="filterGroup" v-model="selectedFilter" value="Group" @change="applyFilter"> Group
+          </label>
+        </div>
+
+        <div>
+          <label>
+            <input type="radio" name="filterGroup" v-model="selectedFilter" value="Person" @change="applyFilter"> Person
+          </label>
+        </div>
+      </div>
         <div v-if=" !genreIsSelected && !subgenreIsSelected &!currentGenre" class="flex flex-1 container  shadow-left flex-col square-container ">
-          <h2 text-white> Statistiques </h2>
+          <h2 text-white> STATISTICS  </h2>
 
           <div class="square">
             <div class="big-number"><b>{{ statistiques.totalArtiste }}</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
+              <p>ARTISTS</p>
             </div>
           </div>
           <div class="square">
             <div class="big-number"><b>{{ statistiques.nbSolos }}</b></div>
             <div class="lines">
-              <p>ARTISTES SOLOS</p>
+              <p>SOLO ARTISTS</p>
             </div>
           </div>
           <div class="square">
             <div class="big-number"><b>{{ statistiques.nbGroupes }}</b></div>
             <div class="lines">
-              <p>GROUPES</p>
+              <p>GROUPS</p>
               <p></p>
             </div>
           </div>
           <div class="square">
             <div class="big-number"><b>{{ statistiques.actifPourcentage }} %</b></div>
             <div class="lines">
-              <p>ARTISTES ACTIFS</p>
+              <p>ACTIVE ARTISTS</p>
             </div>
           </div>
         </div>
@@ -71,14 +82,14 @@
           <div class="square">
             <div class="big-number"><b>{{ statistiques.nbArtistesGenre }}</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
+              <p>ARTISTS</p>
             </div>
           </div>
           <div class="square">
             <div class="big-number"><b>{{ statistiques.nbActifSolosGenre }}</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
-              <p>SOLOS</p>
+              <p>SOLO ARTISTS</p>
+
             </div>
           </div>
           <div class="square">
@@ -91,8 +102,8 @@
           <div class="square">
             <div class="big-number"><b>{{ statistiques.actifPourcentageGenre }} %</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
-              <p>ACTIFS</p>
+              <p>ACTIVE ARTISTS</p>
+
             </div>
           </div>
         </div>
@@ -101,34 +112,34 @@
           <div class="square">
             <div class="big-number"><b>{{ statistiques.nbArtistesSubgenre }}</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
+              <p>ARTISTS</p>
             </div>
           </div>
           <div class="square">
             <div class="big-number"><b>{{ statistiques.nbActifSolosSubgenre }}</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
-              <p>SOLOS</p>
+              <p>SOLO ARTISTS</p>
+
             </div>
           </div>
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square"> 
             <div class="big-number"><b>{{ statistiques.nbActifGroupesSubgenre }}</b></div>
             <div class="lines">
-              <p>GROUPES</p>
+              <p>GROUPS</p>
               <p></p>
             </div>
           </div>
-          <div class="square"> <!-- Ajoutez des classes CSS pour les styles -->
+          <div class="square"> 
             <div class="big-number"><b>{{ statistiques.actifPourcentageSubgenre }} %</b></div>
             <div class="lines">
-              <p>ARTISTES</p>
-              <p>ACTIFS</p>
+              <p>ACTIVE ARTISTS</p>
+
             </div>
           </div>
         </div>
 
 
-        <!-- Graphique au milieu -->
+        
         <div class="flex flex-1 flex-col">
 
 
@@ -152,20 +163,20 @@
 
 
 
-          <!-- Placer la légende en dessous du graphique -->
+          
 
         </div>
       </div>
 
       <div class="container details-container" v-if="selectedArtist">
         <div class="artist-details" >
-          <!-- Photo de profil centrée -->
+          
           <div class="centered">
             <img :src="selectedArtist.picture" alt="Artist" class="artist-image-small">
             <h2>{{ selectedArtist.name }}</h2>
           </div>
           <div class="artist-details-columns flex justify-between">
-            <!-- Colonne de gauche pour les albums, genre, etc. -->
+            
             <div class="details-column">
               <div class="detail-item">
                 <p><b> {{ selectedArtist.deezerFans.toLocaleString() }}</b> FANS</p>
@@ -173,7 +184,7 @@
               <div class="detail-item">
                 <p><b>ACTIF : </b> {{ selectedArtist.lifeSpan.ended ? 'OUI' : 'NON' }}</p>
               </div>
-              <!-- Assurez-vous que chaque élément a la même hauteur -->
+              
               <div class="detail-item" v-if="selectedArtist.recordLabel.length>0">
                 <p><b>Label:</b> {{ Array.from(selectedArtist.recordLabel.values()).join(', ') }}</p>
               </div>
@@ -185,17 +196,17 @@
               </div>
             </div>
 
-            <!-- Colonne de droite pour d'autres détails -->
+            
             <div class="details-column">
               <div class="detail-item">
-                <p> <b>GENRES :</b>{{ selectedArtist.genres.join('- ') }}</p>
+                <p> <b>GENRES:</b>{{ selectedArtist.genres.join('- ') }}</p>
               </div>
               <div class="detail-item" v-if="selectedArtist.gender">
                 <p><b>GENDER:</b> {{ selectedArtist.gender }}</p>
               </div>
-              <!-- Assurez-vous que chaque élément a la même hauteur -->
+              
               <div class="detail-item empty-item">&nbsp;</div>
-              <p><b>Lien Deezer:</b> <a :href="selectedArtist.urlDeezer">Deezer</a></p>
+              <p><b>Link:</b> <a :href="selectedArtist.urlDeezer">Deezer</a></p>
               <div class="detail-item"  v-if="selectedArtist.members.length>0">
                 <p><b>Membres:</b></p>
                 <ul class="members-list">
@@ -212,9 +223,6 @@
 
 </template>
 
-<!-- Votre script reste inchangé -->
-
-<!-- Votre style reste inchangé -->
 
 <script>
 import * as d3 from 'd3';
@@ -244,11 +252,11 @@ export default {
   data(){
     return {
       displayFilter: true,
-      width :900 , // Augmentez la largeur du graphique
-      height : 650, // Augmentez la hauteur du graphique
+      width :900 , 
+      height : 650, 
       innerWidth: 0,
       innerHeight: 0,
-      margin : { top: 20, right: 40, bottom: 20, left: 20 }, // Ajustez les marges
+      margin : { top: 20, right: 40, bottom: 20, left: 20 }, 
 
       graphTitle: "Titre initial du graphique",
       legend:null,
@@ -353,7 +361,7 @@ export default {
       this.subgenreIsSelected = "";
       d3.select('.pictogram-chart').selectAll('*').remove();
 
-      this.graphTitle = "Les genres de musiques les plus jouées par nos artistes.";
+      this.graphTitle = "The genres of music most played by our artists";
       this.labelLegend = "artistes";
       this.legend = [...this.legend1];
       if (!this.data || !this.data.genres) {
@@ -426,17 +434,17 @@ export default {
 
       updatePictograms.exit().remove();
 
-      // Supprimer les libellés existants
+      
       svg.selectAll('.label').remove();
 
-// Ajouter les libellés actualisés
+
       svg.selectAll('.label')
           .data(genres)
           .enter()
           .append('text')
           .attr('class', 'label')
           .text((genre) => `${genre} `)
-          .attr('x', 30) // Ajuster cette valeur pour décaler le texte
+          .attr('x', 30) 
           .attr('y', (genre) => yScale(genre) + yScale.bandwidth() / 2 +20)
           .attr('dy', '.35em')
           .style('font-size', '14px')
@@ -444,13 +452,13 @@ export default {
           .style('text-anchor', 'start');
     },
     toggleDisplay() {
-      this.displayFilter = !this.displayFilter; // Inverse l'état d'affichage
+      this.displayFilter = !this.displayFilter; 
     },
     updateGraphTitle(newTitle) {
-      this.graphTitle = newTitle; // Modifiez le titre en fonction de vos besoins
+      this.graphTitle = newTitle; 
     },
     updateLegend(newLegend) {
-      this.legend = newLegend; // Mettez à jour la légende en fonction de vos besoins
+      this.legend = newLegend; 
     },
     updateStatistiques(genreOrSubgenre,isGenre) {
       let dataDetails;
@@ -497,34 +505,34 @@ export default {
 
     showSubgenres(genre) {
       this.backSubgenrePage();
-      this.graphTitle = "Les sous-genres du " + genre;
+      this.graphTitle = "The subgenres of " + genre;
       this.legend = [...this.legend2];
 
-      // Mise à jour de currentGenre vers le genre sélectionné
+      
       this.currentGenre = genre;
       this.genreIsSelected = true;
       this.selectedArtist = "";
 
-      // Retrait du graphique existant
+      
       d3.select('.pictogram-chart').selectAll('*').remove();
 
-      // Dessin du nouveau graphique pour les sous-genres
+      
       const subgenres = Object.keys(this.data.genres[genre].subgenres).sort((a, b) => {
         return this.data.genres[genre].subgenres[b].details.nombre_artists_total - this.data.genres[genre].subgenres[a].details.nombre_artists_total;
       });
 
-      // Création d'un nouveau conteneur SVG pour les sous-genres
+      
       const svg = d3.select('.pictogram-chart').append('svg')
           .attr('width', this.width + 200)
           .attr('height', this.height);
 
-      // Création d'une échelle pour l'axe y basée sur les sous-genres
+      
       const yScale = d3.scaleBand()
           .domain(subgenres)
           .range([0, this.innerHeight])
           .padding(0.5);
 
-      // Ajout de l'axe y dans le conteneur
+      
       const yAxis = d3.axisLeft(yScale);
       svg.append('g')
           .attr('class', 'y axis')
@@ -548,7 +556,7 @@ export default {
             this.fetchArtist(subgenre);
           });
 
-      // Ajout des pictogrammes pour chaque sous-genre
+      
       const updatePictograms = subgenreGroups.selectAll('.pictogram')
           .data((subgenre) => {
             const count = this.data.genres[genre].subgenres[subgenre].details.nombre_artists_total;
@@ -589,7 +597,7 @@ export default {
         if (!this.originalArtistsData) {
           this.originalArtistsData = await filterArtists(this.currentGenre, subgenre);
         }
-        this.artistsData = [...this.originalArtistsData]; // Crée une copie des données d'origine
+        this.artistsData = [...this.originalArtistsData]; 
 
         if (this.artistsData) {
           this.drawArtistsChart(subgenre, this.artistsData);
@@ -604,22 +612,22 @@ export default {
     drawArtistsChart(subgenre, artistsData) {
       this.subgenreIsSelected = true;
       this.currentSubgenre = subgenre;
-      this.graphTitle = "Nos artistes " + this.currentSubgenre;
+      this.graphTitle = "Our " + this.currentSubgenre + "'s artists";
       d3.select('.pictogram-chart').selectAll('*').remove();
       this.legend = [...this.legend3];
 
-      // Créer un conteneur SVG pour le graphique des artistes
+      
       const svg = d3.select('.pictogram-chart').append('svg')
           .attr('width', this.width - 125)
           .attr('height', `${artistsData.length * 50}px`);
 
-      // Créer une échelle pour l'axe y
+      
       const yScale = d3.scaleBand()
           .domain(artistsData.map(artist => artist.name))
           .range([0, artistsData.length * 35])
           .padding(0.1);
 
-      // Ajouter l'axe y dans le conteneur
+      
       const yAxis = d3.axisLeft(yScale);
       svg.append('g')
           .attr('class', 'y axis')
@@ -627,14 +635,14 @@ export default {
           .selectAll('.domain, .tick line')
           .style('stroke', 'transparent');
 
-      // Sélectionner les groupes existants et les mettre à jour avec les nouvelles données
+      
       const artistGroups = svg.selectAll('.artist-group')
           .data(artistsData, artist => artist.name);
 
-      // Supprimer les groupes qui ne sont plus nécessaires
+      
       artistGroups.exit().remove();
 
-      // Créer de nouveaux groupes pour les nouvelles données
+      
       const enterArtistGroups = artistGroups.enter()
           .append('g')
           .attr('class', 'artist-group')
@@ -650,7 +658,7 @@ export default {
             this.hideDeezerFansTooltip();
           });
 
-      // Ajouter des pictogrammes pour chaque artiste
+      
       const updatePictograms = enterArtistGroups.merge(artistGroups)
           .selectAll('.pictogram-artist')
           .data(artist => {
@@ -664,7 +672,7 @@ export default {
               ...Array(Math.floor((deezerFans % 1000) / 100)).fill(pic100F),
               ...Array(Math.floor((deezerFans % 100) / 10)).fill(pic10F),
               ...Array(deezerFans % 10).fill(pic1F),
-            ].slice(0,15 );
+            ].slice(0,14 );
           });
 
       updatePictograms.enter()
@@ -681,7 +689,7 @@ export default {
 
       updatePictograms.exit().remove();
 
-      // Ajouter les noms des artistes avec des sauts de ligne
+      
       const updateArtistLabels = enterArtistGroups.merge(artistGroups)
           .selectAll('.label')
           .data(artist => [artist]);
@@ -691,7 +699,7 @@ export default {
           .attr('class', 'label')
           .merge(updateArtistLabels)
           .text(artist => artist.name)
-          .attr('x', -150)
+          .attr('x', -200)
           .attr('y', 0)
           .style('font-size', '14px')
           .style('fill', 'black')
@@ -701,7 +709,7 @@ export default {
 
       updateArtistLabels.exit().remove();
 
-      // Fonction wrap pour gérer les sauts de ligne
+      
         function wrap(text, width) {
           text.each(function () {
             var text = d3.select(this),
@@ -709,8 +717,8 @@ export default {
                 word,
                 line = [],
                 y = text.attr("y"),
-                dy = 0, // Adjust as needed
-                tspan = text.text(null).append("tspan").attr("x", -150).attr("y", y).attr("dy", dy + "em"); // Adjust the starting position
+                dy = 0, 
+                tspan = text.text(null).append("tspan").attr("x", -150).attr("y", y).attr("dy", dy + "em"); 
 
             while (words.length > 0) {
               word = words.shift();
@@ -719,18 +727,18 @@ export default {
               if (tspan.node().getComputedTextLength() > width) {
                 line.pop();
                 tspan.text(line.join(" ") + '...');
-                break; // Truncate the text and exit the loop
+                break; 
               }
             }
           });
         }},
 
     selectArtist(artist) {
-      // Mettez à jour la variable selectedArtist
+      
       this.selectedArtist = artist;
     },
     applyFilter() {
-      // Déterminez le filterType en fonction de la filterValue
+      
       let filterType = null;
       const filterValue = this.selectedFilter;
       if (['all', 'Group', 'Person', ''].includes(this.selectedFilter)) {
@@ -740,12 +748,12 @@ export default {
       }
       console.log(filterType + "," + filterValue)
 
-      // Appelez la fonction pour appliquer le filtre
+      
       this.filterArt(filterType, filterValue);
     },
     async filterArt(filterType = null, filterValue = null) {
       try {
-        let filteredArtists = [...this.originalArtistsData]; // Utilise une copie des données originales pour filtrer
+        let filteredArtists = [...this.originalArtistsData]; 
 
         if (filterType !== null && filterValue !== null && this.originalArtistsData && ! ['all'].includes(filterValue)) {
           filteredArtists = this.originalArtistsData.filter(artist => {
@@ -757,9 +765,9 @@ export default {
           });
         }
 
-        // Mettre à jour les données filtrées et afficher le nouveau graphique
+        
         this.artistsData = filteredArtists;
-        // Redessiner le graphique avec les artistes filtrés
+        
         this.drawArtistsChart(this.currentSubgenre, this.artistsData);
       } catch (error) {
         console.error('Error filtering artists:', error);
@@ -818,7 +826,7 @@ export default {
   min-height: 100vh;
 }
 
-/* Header avec titre */
+
 
 
 .py-4 {
@@ -826,44 +834,44 @@ export default {
   padding-bottom: 1rem;
 }
 
-/* Conteneur principal */
+
 .flex-1 {
   display: flex;
 }
 
 
 .container {
-  border-radius: 8px; /* Coins légèrement arrondis */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre douce */
-  background-color: #ffffff; /* Couleur de fond blanc */
-  padding: 20px; /* Espacement intérieur */
+  border-radius: 8px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  background-color: #ffffff; 
+  padding: 20px; 
 }
 
 
 
 .details-container {
-  background-color: #f5f5f5; /* Couleur de fond similaire à Apple */
+  background-color: #f5f5f5; 
   float:left;
-  max-width: 25%; /* Ajustez la largeur maximale selon vos besoins */
+  max-width: 25%; 
   margin-left: 0;
 
 }
 
 .filter-container {
-  background-color: white; /* Autre couleur neutre */
+  background-color: white; 
   margin: 10px;
-  max-width: 200px; /* Ajuster la largeur au contenu des carrés */
+  max-width: 200px; 
 flex-direction: column;
 
 }
 
 .square-container {
-  flex-direction: column; /* Pour empiler les carrés verticalement */
-  max-width: 200px; /* Ajuster la largeur au contenu des carrés */
+  flex-direction: column; 
+  max-width: 200px; 
   font-family: "Noto Serif";
 }
 
-/* Espacement entre les éléments */
+
 .pictogram-chart,
 .details-container,
 .filter-container {
@@ -872,7 +880,7 @@ flex-direction: column;
 
 .min-h-screen {
   min-height: 100vh;
-  background-color: white; /* Couleur bleu-gris pour l'arrière-plan */
+  background-color: white; 
 }
 
 
@@ -881,8 +889,8 @@ header {
 
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  border-top: 2px solid black; /* Ajout d'une ligne noire au-dessus du header */
-  border-bottom: 2px solid black; /* Ajout d'une ligne noire en-dessous du header */
+  border-top: 2px solid black; 
+  border-bottom: 2px solid black; 
 }
 
 
@@ -894,16 +902,16 @@ footer {
 ;
   font-family: 'Noto Serif';
   border-top: 2px black;
-  /* Retirer l'arrondi complet du footer */
+  
 }
 
 .details-container {
   position: relative;
   font-family:"Noto Serif" ;
-  /* ... autres styles */
+  
 
-  /* Ajout d'un fond blanc avec une image graphique */
-  border-radius: 10px; /* Coins arrondis pour le détail container */
+  
+  border-radius: 10px; 
   height: 750px;
   overflow-y: auto;
 }
@@ -912,13 +920,13 @@ footer {
 
 .shadow-left {
   box-shadow: 4px 0px 4px -4px rgba(0,0,0,0.75);
-  border-radius: 0/* Ombre à gauche */
+  border-radius: 0
 }
 .py-4 {
-  padding-top: 2rem; /* Augmenter le padding en haut du header */
-  padding-bottom: 2rem; /* Augmenter le padding en bas du header */
-  border-top: 1px solid darkgrey; /* Ajouter une bordure en haut du header */
-  border-bottom: 1px solid darkgray; /* Ajouter une bordure en bas du header */
+  padding-top: 2rem; 
+  padding-bottom: 2rem; 
+  border-top: 1px solid darkgrey; 
+  border-bottom: 1px solid darkgray; 
 }
 
 .text-2xl {
@@ -929,7 +937,7 @@ footer {
 }
 
 
-/* Pour la disposition en colonnes */
+
 .flex {
   display: flex;
 }
@@ -938,7 +946,7 @@ footer {
   flex-direction: column;
 }
 
-/* Pour que les carrés prennent la même place que le filtre */
+
 .flex-1 {
   flex: 1;
 }
@@ -955,33 +963,33 @@ footer {
 }
 
 
-/* Stylisez les paragraphes pour être visibles */
+
 .artist-details {
   padding: 20px;
-  margin: 10px 0; /* Espacement entre les paragraphes */
-  font-size: 16px; /* Taille de la police */
-  color: black; /* Couleur du texte */
+  margin: 10px 0; 
+  font-size: 16px; 
+  color: black; 
   background-color: white;
   max-width: 80%;
 }
 
 
-/* Pour le rectangle blanc superposé */
 
 
 
-/* Pour les carrés square avec une image de fond */
+
+
 .square {
   position: relative;
-  width: 120px; /* Augmentez la taille totale du carré */
-  height: 120px; /* Augmentez la taille totale du carré */
+  width: 140px;
+  height: 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 20px; /* Espacement entre les carrés */
-  overflow: hidden; /* Pour cacher le dépassement du carré blanc */
-  border-radius: 20px; /* Ajoutez des coins arrondis */
+  margin: 20px; 
+  overflow: hidden; 
+  border-radius: 20px; 
   border: 2px solid black;
 
 }
@@ -996,22 +1004,22 @@ footer {
 }
 
 .artist-image-small {
-  width: 150px; /* Ajustez la taille de l'image */
-  height: 150px; /* Ajustez la taille de l'image */
-  border-radius: 50%; /* Forme ronde */
-  border: 2px solid white; /* Bordure autour de l'image */
-  z-index: 1; /* Mettre au-dessus du contenu des détails */
-  margin-bottom: 10px; /* Espacement avec le nom */
+  width: 150px; 
+  height: 150px; 
+  border-radius: 50%; 
+  border: 2px solid white; 
+  z-index: 1; 
+  margin-bottom: 10px; 
 }
 
 .artist-info h2 {
-  margin: 0; /* Retirez les marges par défaut */
-  font-size: 1.5em; /* Taille du nom de l'artiste */
-  color: black; /* Couleur du texte */
+  margin: 0; 
+  font-size: 1.5em; 
+  color: black; 
 }
 
 
-/*GRAP*/
+
 .axis path,
 .axis line {
   fill: none;
@@ -1028,7 +1036,7 @@ footer {
 
 }
 
-/* Couleurs et styles spécifiques à Apple ou Deezer */
+
 .pictogram-chart {
 
   margin : 20px;
@@ -1054,13 +1062,13 @@ footer {
 
 
 .big-number {
-  font-size: 48px; /* Taille pour le gros chiffre */
+  font-size: 48px; 
 }
 
 .lines {
-  font-size: 14px; /* Taille plus petite pour les textes ARTISTES et SOLOS */
-  margin: 0; /* Pour supprimer les marges entre les deux paragraphes */
-  line-height: 1; /* Espacement minimal entre les lignes */
+  font-size: 14px; 
+  margin: 0; 
+  line-height: 1; 
 }
 
 .legend{
