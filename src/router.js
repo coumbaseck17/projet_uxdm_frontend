@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import TreemapV1 from '@/components/TreemapDir/TreeMap.vue';
 import PictrogrammeChart from "@/components/pictogramme-chart/PictrogrammeChart";
 import SunburstChart from '@/components/sunburst-chart/SunburstChart.vue';
-import TreemapV4 from '@/components/TreemapDir/TreeMap.vue';
+import BarChart from '@/components/bar-chart/BarChartV1.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -22,7 +22,7 @@ const router = createRouter({
         },
         {
             path: '/barchart',
-            component: TreemapV4,
+            component: BarChart,
         },
     ],
 });

@@ -180,13 +180,12 @@ export default {
       const svg = d3.select('.bar-chart').append('svg')
           .attr('width', width)
           .attr('height', height)
-          .style('background-color', 'burlywood')
           .append('g')
           .attr('transform', `translate(${margin.left}, ${margin.top})`)
       ;
 
       // Créer une échelle de couleurs ordinales en bleu
-      const colorScale = d3.scaleOrdinal(d3.schemeYlOrBr[this.genres.length]);
+      const colorScale = d3.scaleOrdinal(d3.schemeSpectral[this.genres.length]);
 
       // Create the scales
       const xScale = d3.scaleLinear()
@@ -292,7 +291,6 @@ export default {
       const svg = d3.select('.bar-chart-details').append('svg')
           .attr('width', width)
           .attr('height', height)
-          .style('background-color', 'burlywood')
           .append('g')
           .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
@@ -426,7 +424,6 @@ export default {
       const svg = d3.select('.bar-chart-artists').append('svg')
           .attr('width', width)
           .attr('height', this.data.length * 15 + margin.top + margin.bottom)
-          .style('background-color', 'burlywood')
           .append('g')  // Ajout d'un groupe pour appliquer les marges
           .attr('transform', `translate(150, ${margin.top})`);
 
@@ -738,6 +735,12 @@ export default {
 
 <style scoped>
 
+h3 {
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+  color: black;
+}
 
 .chart-container {
   display: flex;
@@ -750,7 +753,6 @@ export default {
   color: black;
   width: 100%;
   height: 100%;
-  /*background-color: burlywood;*/
   overflow: auto; /* Ajoutez cette propriété pour activer le défilement */
 }
 

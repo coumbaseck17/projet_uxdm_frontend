@@ -55,7 +55,7 @@
         </div>
         <div class="component" id="component4">
           <router-link to="/barchart">
-            <img src="../public/data/treemap.png" alt="barchart" class="chartImage"/>
+            <img src="../public/data/barchart.png" alt="barchart" class="chartImage"/>
           </router-link>
         </div>
       </div>
