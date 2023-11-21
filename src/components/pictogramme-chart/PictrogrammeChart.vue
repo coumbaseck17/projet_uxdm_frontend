@@ -105,7 +105,7 @@
           <div class="square">
             <div class="big-number"><b>{{ statistiques.nbActifGroupesGenre }}</b></div>
             <div class="lines">
-              <p>GROUPES</p>
+              <p>GROUPS</p>
               <p></p>
             </div>
           </div>
@@ -178,7 +178,7 @@
         </div>
       </div>
 
-      <div class="container details-container" v-if="selectedArtist">
+      <div class="container details-container" v-if="showInfo">
         <div class="artist-details" >
           
           <div class="centered">
@@ -195,10 +195,10 @@
                 <p><b>Active: </b> {{ selectedArtist.lifeSpan.ended ? 'Yes' : 'No' }}</p>
               </div>
               
-              <div class="detail-item" v-if="selectedArtist.recordLabel.length>0">
+              <div class="detail-item" v-if="selectedArtist.recordLabel && selectedArtist.recordLabel.length>0">
                 <p><b>Label(s):</b> {{ Array.from(selectedArtist.recordLabel.values()).join(', ') }}</p>
               </div>
-              <div class="detail-item" v-if="selectedArtist.albums.length>0">
+              <div class="detail-item" v-if="selectedArtist.albums && selectedArtist.albums.length>0">
                 <p><b>Album(s):</b></p>
                 <ul class="albums-list">
                   <li v-for="album in selectedArtist.albums" :key="album">{{ album }}</li>
@@ -217,7 +217,7 @@
               
               <div class="detail-item empty-item">&nbsp;</div>
               <p><b>Link(s):</b> <a :href="selectedArtist.urlDeezer">Deezer</a></p>
-              <div class="detail-item"  v-if="selectedArtist.members.length>0">
+              <div class="detail-item"  v-if="selectedArtist.members && selectedArtist.members.length>0">
                 <p><b>Members :</b></p>
                 <ul class="members-list">
                   <li v-for="member in selectedArtist.members" :key="member">{{ member }}</li>
@@ -271,18 +271,18 @@ export default {
       graphTitle: "Titre initial du graphique",
       legend:null,
       legend1: [
-        { label: '10 artistes', icon: pic1000G, value: '3' },
-        { label: '10 artistes', icon: pic100G, value: '2' },
-        { label: '10 artistes', icon: pic10G, value: '1' },
-        { label: '10 artiste', icon: pic1G, value: '0'},
+        { label: '10 artists', icon: pic1000G, value: '3' },
+        { label: '10 artists', icon: pic100G, value: '2' },
+        { label: '10 artists', icon: pic10G, value: '1' },
+        { label: '10 artist', icon: pic1G, value: '0'},
       ],
       legend2: [
 
-        { label: '10 artistes', icon: pic10000S, value: '4' },
-        { label: '10 artistes', icon: pic1000S, value: '3' },
-        { label: '10 artistes', icon: pic100S, value: '2' },
-        { label: '10 artistes', icon: pic10S, value: '1' },
-        { label: '10 artiste', icon: pic1S, value: '0' },
+        { label: '10 artists', icon: pic10000S, value: '4' },
+        { label: '10 artists', icon: pic1000S, value: '3' },
+        { label: '10 artists', icon: pic100S, value: '2' },
+        { label: '10 artists', icon: pic10S, value: '1' },
+        { label: '10 artist', icon: pic1S, value: '0' },
       ],
 
       legend3: [
@@ -292,11 +292,11 @@ export default {
         { label: '10 fans', icon: pic1000F, value: '3' },
         { label: '10 fans', icon: pic100F, value: '2' },
         { label: '10 fans', icon: pic10F, value: '1' },
-        { label: '10 fans', icon: pic1F, value: '0' },
+        { label: '10 fan', icon: pic1F, value: '0' },
       ],
-       selectedArtist : null,
+      selectedArtist : "",
       selectedFilter:'all',
-
+      showInfo:false,
       currentSubgenre:null,
       currentGenre :null,
       genreIsSelected: false,
@@ -746,6 +746,7 @@ export default {
     selectArtist(artist) {
       
       this.selectedArtist = artist;
+      this.showInfo=true;
     },
     applyFilter() {
 
@@ -801,6 +802,8 @@ export default {
       this.selectedFilter='all';
       this.originalArtistsData=null;
       this.artistsData=null;
+      this.selectedArtist=null;
+      this.showInfo=false;
 
     },
 
@@ -893,7 +896,7 @@ flex-direction: column;
 .pictogram-chart,
 .details-container,
 .filter-container {
-  font-family: 'Noto Serif';
+  font-family: 'Noto Serif',serif;
 }
 
 .min-h-screen {
