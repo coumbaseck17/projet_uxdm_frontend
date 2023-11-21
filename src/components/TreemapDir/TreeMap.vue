@@ -13,27 +13,27 @@
             <h3 style="margin-right:10px" >Filtres: </h3>
             <div class="checkbox-item">
               <label class="styled-label" for="maCheckbox">Groups</label>
-              <input type="checkbox" id="groupe" v-model="checkboxValues.group" class="styled-checkbox" @change="filtersTreemap" />
+              <input type="checkbox" id="groupe" v-model="checkboxValues.group" class="styled-checkbox" @change="filtersTreemap" :disabled="checkboxValues.solo" />
             </div>
             <div class="checkbox-item">
               <label class="styled-label" for="maCheckbox">Solo artists</label>
-              <input type="checkbox" id="solo" v-model="checkboxValues.solo" class="styled-checkbox" @change="filtersTreemap" />
+              <input type="checkbox" id="solo" v-model="checkboxValues.solo" class="styled-checkbox" @change="filtersTreemap" :disabled="checkboxValues.group"/>
             </div>
             <div class="checkbox-item">
               <label class="styled-label" for="maCheckbox">Female</label>
-              <input type="checkbox" id="femme" v-model="checkboxValues.female" class="styled-checkbox" @change="filtersTreemap" />
+              <input type="checkbox" id="femme" v-model="checkboxValues.female" class="styled-checkbox" @change="filtersTreemap" :disabled="checkboxValues.male"/>
             </div>
             <div class="checkbox-item">
               <label class="styled-label" for="maCheckbox">Male</label>
-              <input type="checkbox" id="home" v-model="checkboxValues.male" class="styled-checkbox" @change="filtersTreemap" />
+              <input type="checkbox" id="home" v-model="checkboxValues.male" class="styled-checkbox" @change="filtersTreemap" :disabled="checkboxValues.female"/>
             </div>
             <div class="checkbox-item">
               <label class="styled-label" for="maCheckbox">In activity</label>
-              <input type="checkbox" id="enActivité" v-model="checkboxValues.inActivity" class="styled-checkbox" @change="filtersTreemap" />
+              <input type="checkbox" id="enActivité" v-model="checkboxValues.inActivity" class="styled-checkbox" @change="filtersTreemap" :disabled="checkboxValues.careerEnded"/>
             </div>
             <div class="checkbox-item">
               <label class="styled-label" for="maCheckbox">Not in activity</label>
-              <input type="checkbox" id="pasenActivité" v-model="checkboxValues.careerEnded" class="styled-checkbox" @change="filtersTreemap" />
+              <input type="checkbox" id="pasenActivité" v-model="checkboxValues.careerEnded" class="styled-checkbox" @change="filtersTreemap" :disabled="checkboxValues.inActivity"/>
             </div>
           </div>
         </div>
@@ -373,6 +373,15 @@ export default {
 
     async filtersTreemap(){
       this.artistList = true;
+
+      if (this.checkboxValues.group) {
+        // Si la case à cocher "Group" est cochée, désactivez les autres cases à cocher
+        this.checkboxValues.person = false;
+        this.checkboxValues.male = false;
+        this.checkboxValues.female = false;
+        // Désactivez d'autres cases à cocher au besoin
+      }
+
       const checkedValues = Object.keys(this.checkboxValues).filter(key => this.checkboxValues[key]);
       const response2 = await fetch(
           `./data/artists_by_genre_sorted_v1/${this.currentGenre}/${this.currentSubgenre}.json`
