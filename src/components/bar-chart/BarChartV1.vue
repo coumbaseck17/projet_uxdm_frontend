@@ -25,27 +25,27 @@
         <div v-if="showCheckboxes" class="checkbox-container" >
           <h3 style="margin-right:10px" >Filtres: </h3>
           <label>
-            <input type="checkbox" v-model="filterTypes.Group" @change="updateChart" >
+            <input type="checkbox" v-model="filterTypes.Group" @change="updateChart" :disabled="filterTypes.Person">
             Groupe
           </label>
           <label>
-            <input type="checkbox" v-model="filterTypes.Person" @change="updateChart" >
+            <input type="checkbox" v-model="filterTypes.Person" @change="updateChart" :disabled="filterTypes.Group" >
             Solo
           </label>
           <label>
-            <input type="checkbox" v-model="filterTypes.Male" @change="updateChart" >
+            <input type="checkbox" v-model="filterTypes.Male" @change="updateChart" :disabled="filterTypes.Female" >
             Homme
           </label>
           <label>
-            <input type="checkbox" v-model="filterTypes.Female" @change="updateChart" >
+            <input type="checkbox" v-model="filterTypes.Female" @change="updateChart" :disabled="filterTypes.Male">
             Femme
           </label>
           <label>
-            <input type="checkbox" v-model="filterTypes.inActivity" @change="updateChart" >
+            <input type="checkbox" v-model="filterTypes.inActivity" @change="updateChart" :disabled="filterTypes.careerEnded">
             In activity
           </label>
           <label>
-            <input type="checkbox" v-model="filterTypes.careerEnded" @change="updateChart">
+            <input type="checkbox" v-model="filterTypes.careerEnded" @change="updateChart" :disabled="filterTypes.inActivity">
             Carred ended
           </label>
         </div>
@@ -521,7 +521,7 @@ export default {
     },
 
 
-    async filtersBar(){
+    /**async filtersBar(){
       this.artistList = true;
       const checkedValues = Object.keys(this.checkboxValues).filter(key => this.checkboxValues[key]);
       const response2 = await fetch(
@@ -531,7 +531,7 @@ export default {
       this.dataDetails = await response2.json();
       const filteredData = this.filterDataByCheckedValues(this.dataDetails, checkedValues);
       console.log(filteredData)
-    },
+    },*/
 
     // Méthode pour obtenir les filtres cochés
     getCheckedFilters() {
@@ -539,69 +539,32 @@ export default {
     },
 
     // Méthode pour filtrer les données en fonction des filtres cochés
-    filterDataByCheckedValues(dataG, filterTypes) {
+    filterDataByCheckedValues(data, filterTypes) {
       let key;
-      let filteredData = [...dataG];
-
-
+      let filteredData = [...data];
+      console.log(filteredData);
       filterTypes.forEach(value => {
         if (value === 'Group') {
-          // this.isCheckboxDisabledActivity = true;
-          // this.isCheckboxDisabledEnded = true;
-          // this.isCheckboxDisabledFemale = true;
-          // this.isCheckboxDisabledMale = true;
-          // this.isCheckboxDisabledPerson = true;
-          // // this.isCheckboxDisabledGroup = true;
           key = 'type';
           filteredData = filteredData.filter(item => item[key]=== 'Group');
         }
         if (value === 'Person') {
-          // this.isCheckboxDisabledActivity = true;
-          // this.isCheckboxDisabledEnded = true;
-          // this.isCheckboxDisabledFemale = true;
-          // this.isCheckboxDisabledMale = true;
-          // // this.isCheckboxDisabledPerson = false;
-          // this.isCheckboxDisabledGroup = true;
           key = 'type';
           filteredData = filteredData.filter(item => item[key] === 'Person');
         }
         if (value === 'Male') {
-          // this.isCheckboxDisabledActivity = true;
-          // this.isCheckboxDisabledEnded = true;
-          // this.isCheckboxDisabledFemale = true;
-          // // this.isCheckboxDisabledMale = true;
-          // this.isCheckboxDisabledPerson = true;
-          // this.isCheckboxDisabledGroup = true;
           key = 'gender';
           filteredData = filteredData.filter(item => item[key] === 'Male');
         }
         if (value === 'Female') {
-          // this.isCheckboxDisabledActivity = true;
-          // this.isCheckboxDisabledEnded = true;
-          // // this.isCheckboxDisabledFemale = true;
-          // this.isCheckboxDisabledMale = true;
-          // this.isCheckboxDisabledPerson = true;
-          // this.isCheckboxDisabledGroup = true;
           key = 'gender';
           filteredData = filteredData.filter(item => item[key] === 'Female' && item[key] !== '');
         }
         if (value === 'inActivity') {
-          // this.isCheckboxDisabledActivity = true;
-          // this.isCheckboxDisabledEnded = true;
-          // this.isCheckboxDisabledFemale = true;
-          // this.isCheckboxDisabledMale = true;
-          // this.isCheckboxDisabledPerson = true;
-          // this.isCheckboxDisabledGroup = true;
           key = 'lifeSpan';
           filteredData = filteredData.filter(item => !item[key].ended);
         }
         if (value === 'careerEnded') {
-          // this.isCheckboxDisabledActivity = true;
-          // // this.isCheckboxDisabledEnded = true;
-          // this.isCheckboxDisabledFemale = true;
-          // this.isCheckboxDisabledMale = true;
-          // this.isCheckboxDisabledPerson = true;
-          // this.isCheckboxDisabledGroup = true;
           key = 'lifeSpan';
           filteredData = filteredData.filter(item => item[key].ended);
         }
@@ -614,25 +577,32 @@ export default {
 
     // Méthode pour mettre à jour le graphique en fonction des filtres actuels
     async updateChart() {
+      if (this.filterTypes.Group) {
+        // Si la case à cocher "Group" est cochée, désactivez les autres cases à cocher
+        this.filterTypes.Person = false;
+        this.filterTypes.Male = false;
+        this.filterTypes.Female = false;
+      }
 
       const encodedGenre = encodeURIComponent(this.genreSelected);
       const encodedSubgenre = encodeURIComponent(this.subgenreSelected);
       const url = `data/artists_by_genre_sorted_v1/${encodedGenre}/${encodedSubgenre}.json`;
       const response2 = await fetch(url);
 
-      this.dataF = await response2.json();
+      const dataF = await response2.json();
+      console.log(dataF)
 
       // Filtrer les données en fonction des filtres actuels
-      this.filteredData = this.filterDataByCheckedValues(this.dataF, this.getCheckedFilters());
+      const dataUpdated = this.filterDataByCheckedValues(dataF, this.getCheckedFilters());
 
-      console.log("filtered dat " + this.filteredData)
+      console.log(dataUpdated)
       // Mettre à jour le graphique avec les données filtrées
-      this.updateBars();
+      this.updateBars(dataUpdated);
     },
 
 
     // Méthode pour mettre à jour les barres du graphique
-    updateBars() {
+    updateBars(data) {
 
       // create a tooltip
       var tooltip = d3.select(".bar-chart-artists")
@@ -651,16 +621,16 @@ export default {
       this.titre = this.genreSelected + " - " + this.subgenreSelected + "(" + this.getCheckedFilters()  + ")";
 
       const xScale = d3.scaleLinear()
-          .domain([0, d3.max(this.filteredData, artist => artist.deezerFans)])
+          .domain([0, d3.max(data, artist => artist.deezerFans)])
           .range([0, innerWidth]);
 
       const yScale = d3.scaleBand()
-          .domain(this.filteredData.map(artist => artist.name))
-          .range([0, this.filteredData.length * 15])
+          .domain(data.map(artist => artist.name))
+          .range([0, data.length * 15])
           .padding(0.3);
 
       // Sélectionnez toutes les barres existantes
-      const existingBars = bars.data(this.filteredData);
+      const existingBars = bars.data(data);
 
       // Supprimez les barres qui ne correspondent plus aux données
       existingBars.exit().remove();
@@ -683,7 +653,7 @@ export default {
       d3.select('.y-axis').selectAll('text')
           .on('mouseover', (event, index) => {
             // Récupérez l'artiste correspondant à l'index dans les données filtrées
-            const artist = this.filteredData.find(artist => artist.name === index);
+            const artist = data.find(artist => artist.name === index);
             this.clickedArtist = true;
             this.showArtistSelected(artist);
 
@@ -704,7 +674,7 @@ export default {
           })
           .on('click', (event,index) => {
             this.clickedArtist = true;
-            const artist = this.filteredData.find(artist => artist.name === index);
+            const artist = data.find(artist => artist.name === index);
             this.showArtistSelected(artist);
             return tooltip.style("visibility", "hidden");
           });
