@@ -43,6 +43,20 @@
             <input type="radio" name="filterGroup" v-model="selectedFilter" value="Person" @change="applyFilter"> Person
           </label>
         </div>
+
+        <div>
+          <p> <b>Activity</b></p>
+
+          <label>
+            <input type="radio" name="filterGroup" v-model="selectedFilter" value="Active" @change="applyFilter"> Active
+          </label>
+        </div>
+
+        <div>
+          <label>
+            <input type="radio" name="filterGroup" v-model="selectedFilter" value="Not Active" @change="applyFilter"> Not Active
+          </label>
+        </div>
       </div>
         <div v-if=" !genreIsSelected && !subgenreIsSelected &!currentGenre" class="flex flex-1 container  shadow-left flex-col square-container bottom-60 ">
           <h2 text-white> STATISTICS  </h2>
@@ -734,22 +748,25 @@ export default {
       this.selectedArtist = artist;
     },
     applyFilter() {
-      
+
       let filterType = null;
       const filterValue = this.selectedFilter;
       if (['all', 'Group', 'Person', ''].includes(this.selectedFilter)) {
         filterType = 'TYPE';
-      } else if (['Female', 'Male'].includes(this.selectedFilter)) {
+      } else if (['Not active','Active'].includes(this.selectedArtist)){
+        filterType= "ACTIVITY";
+      }
+      else if (['Female', 'Male'].includes(this.selectedFilter)) {
         filterType = 'GENDER';
       }
       console.log(filterType + "," + filterValue)
 
-      
+
       this.filterArt(filterType, filterValue);
     },
     async filterArt(filterType = null, filterValue = null) {
       try {
-        let filteredArtists = [...this.originalArtistsData]; 
+        let filteredArtists = [...this.originalArtistsData];
 
         if (filterType !== null && filterValue !== null && this.originalArtistsData && ! ['all'].includes(filterValue)) {
           filteredArtists = this.originalArtistsData.filter(artist => {
@@ -757,13 +774,17 @@ export default {
               return artist.type === filterValue;
             } else if (filterType === "GENDER") {
               return artist.gender === filterValue;
+            }else if (filterValue === 'Active') {
+              return !artist.lifeSpan.ended;
+            } else if (filterValue === 'Not active') {
+              return artist.lifeSpan.ended;
             }
           });
         }
 
-        
+
         this.artistsData = filteredArtists;
-        
+
         this.drawArtistsChart(this.currentSubgenre, this.artistsData);
       } catch (error) {
         console.error('Error filtering artists:', error);
