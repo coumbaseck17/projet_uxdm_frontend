@@ -4,9 +4,8 @@
   <br>
   <div class="container">
     <div class="return-button">
-<!--      <img v-if="showCheckboxes" @click="handleReturnClick" alt="Description de l'image" width="30" height="30">-->
+        <img src="../../../public/data/refresh2.png" alt="retour" @click="hundleReturn" width="30" height="30">
     </div>
-
 
   <div class="chart-container">
 <!--    barchart genres-->
@@ -721,6 +720,11 @@ export default {
       return this.selectedArtist;
     },
 
+    hundleReturn() {
+      window.location.reload();
+    }
+
+
 
   },
 
@@ -790,7 +794,10 @@ svg {
   overflow-y: auto;
 
 }
-
+.return-button{
+  border-color: white;
+  background-color: white;
+}
 
 
 
