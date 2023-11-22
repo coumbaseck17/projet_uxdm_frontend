@@ -747,7 +747,7 @@ svg {
   overflow: hidden;
   margin-left: auto;
   margin-right: auto;
-
+}
 
 .fixed-info-column {
   position: fixed;
