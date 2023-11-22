@@ -79,7 +79,7 @@ export default {
   router,
   methods :{
     hideStatistics() {
-      // Masquer les statistiques lorsque la route change vers un autre composant que Home.vue
+      // Masquer les statistiques lorsque la route change vers un autre composant
       this.isHomeVisible = false;
     },
   },
@@ -114,7 +114,6 @@ h1, h2, h3, p{
 header {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
-  //text-decoration: underline;
   text-align: center;
   margin-bottom: 20px;
 }
@@ -139,7 +138,6 @@ header {
   grid-gap: 20px;
   padding: 20px;
   justify-content: center;
-  /* Ajoutez d'autres propriétés de style selon vos besoins */
 }
 
 

@@ -8,17 +8,17 @@
     </div>
 
   <div class="chart-container">
-<!--    barchart genres-->
+
     <div>
       <div class="bar-chart" ref="detailsContainer" >
         </div>
     </div>
-<!--    barchart sousgenres-->
+
     <div>
       <div class="bar-chart-details" ref="detailsContainer2" >
       </div>
     </div>
-<!--    barchart artistes-->
+
     <div>
       <div class="bar-chart-artists" ref="detailsContainer3" >
         <div v-if="showCheckboxes" class="checkbox-container" >
@@ -50,19 +50,15 @@
         </div>
         </div>
       </div>
-<!--    <div v-if="showCheckboxes" class="details-column">-->
     </div>
   </div>
   <div v-if="selectedArtist" class="fixed-info-column">
-    <!-- Ajoutez ici les informations à afficher -->
     <div class="artist-details" >
-      <!-- Photo de profil centrée -->
       <div class="centered">
         <img :src="selectedArtist.picture" alt="Artist" class="artist-image-small">
         <h2>{{ selectedArtist.name }}</h2>
       </div>
       <div class="artist-details-columns flex justify-between">
-        <!-- Colonne de gauche pour les albums, genre, etc. -->
         <div class="details-column">
           <div class="detail-item">
             <p><b> {{ selectedArtist.deezerFans.toLocaleString() }}</b> FANS</p>
@@ -70,7 +66,6 @@
           <div class="detail-item">
             <p><b>ACTIF : </b> {{ selectedArtist.lifeSpan.ended ? 'NON' : 'YES' }}</p>
           </div>
-          <!-- Assurez-vous que chaque élément a la même hauteur -->
           <div class="detail-item" v-if=" selectedArtist.recordLabel && selectedArtist.recordLabel.length>0">
             <p><b>Label:</b> {{ Array.from(selectedArtist.recordLabel.values()).join(', ') }}</p>
           </div>
@@ -88,7 +83,6 @@
           <div class="detail-item">
             <p><b>GENDER:</b> {{ selectedArtist.gender }}</p>
           </div>
-          <!-- Assurez-vous que chaque élément a la même hauteur -->
           <div class="detail-item empty-item">&nbsp;</div>
           <p><b>Lien Deezer:</b> <a :href="selectedArtist.urlDeezer">Deezer</a></p>
           <div class="detail-item"  v-if="selectedArtist.members.length>0">
@@ -127,7 +121,6 @@ export default {
         Female : false,
         inActivity: false,
         careerEnded: false
-        // Ajoutez d'autres filtres avec leurs valeurs initiales
       },
       barchart :  null,
       subgenreSelected : null,
@@ -170,12 +163,12 @@ export default {
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
 
-      // Triez les genres en fonction du nombre d'artistes total de manière décroissante
+
       this.genres = Object.keys(this.data.genres).sort((a, b) => {
         return this.data.genres[b].details.nombre_artists_total - this.data.genres[a].details.nombre_artists_total;
       });
 
-      // Créer le SVG
+
       const svg = d3.select('.bar-chart').append('svg')
           .attr('width', width)
           .attr('height', height)
@@ -183,7 +176,6 @@ export default {
           .attr('transform', `translate(${margin.left}, ${margin.top})`)
       ;
 
-      // Créer une échelle de couleurs ordinales en bleu
       const colorScale = d3.scaleOrdinal(d3.schemeSpectral[this.genres.length]);
 
       // Create the scales
@@ -395,7 +387,7 @@ export default {
       const response = await fetch(url);
       this.data = await response.json();
 
-      // Supprimer le graphique précédent
+
       d3.select('svg').remove();
 
       this.artists = Object.keys(this.data).sort((a, b) => {
@@ -404,10 +396,9 @@ export default {
 
 
       const width = 800;
-      // const height = 500;
       const margin = {top: 20, right: 20, bottom: 30, left: 50};
       const innerWidth = width - margin.left - margin.right;
-      // const innerHeight = height - margin.top - margin.bottom;
+
 
       // Create the scales
       const xScale = d3.scaleLinear()
@@ -427,7 +418,6 @@ export default {
           .attr('transform', `translate(150, ${margin.top})`);
 
       // Create the axes
-      // const xAxis = d3.axisBottom(xScale);
       const yAxis = d3.axisLeft(yScale);
 
       // create a tooltip
@@ -441,18 +431,13 @@ export default {
           .style("padding", "5px")
           .style("visibility", "hidden");
 
-      // Append the axes to the SVG
-      // svg.append('g')
-      //     .attr('transform', `translate(0, ${innerHeight})`)
-      //     .call(xAxis);
 
-      // Ajoutez l'axe y à votre SVG
       svg.append('g')
-          .attr('class', 'y-axis') // Ajoutez une classe pour sélectionner l'axe y plus tard
+          .attr('class', 'y-axis')
           .call(yAxis);
 
 
-      // Append the bars
+
       svg.selectAll('rect')
           .data(this.artists)
           .enter()
@@ -487,7 +472,6 @@ export default {
           });
 
       svg.selectAll('.y-axis .tick text')
-          // Ajoutez des gestionnaires d'événements pour le survol, le déplacement de la souris et la sortie
           .on('mouseover',  (event, name)=>{
             const artist = this.data.find(artist => artist.name === name);
             this.clickedArtist = true;
@@ -516,18 +500,6 @@ export default {
 
     },
 
-
-    /**async filtersBar(){
-      this.artistList = true;
-      const checkedValues = Object.keys(this.checkboxValues).filter(key => this.checkboxValues[key]);
-      const response2 = await fetch(
-          `./data/artists_by_genre_sorted_v1/${this.genreSelected}/${this.subgenreSelected}.json`
-      );
-
-      this.dataDetails = await response2.json();
-      const filteredData = this.filterDataByCheckedValues(this.dataDetails, checkedValues);
-      console.log(filteredData)
-    },*/
 
     // Méthode pour obtenir les filtres cochés
     getCheckedFilters() {
@@ -625,21 +597,21 @@ export default {
           .range([0, data.length * 15])
           .padding(0.3);
 
-      // Sélectionnez toutes les barres existantes
+
       const existingBars = bars.data(data);
 
-      // Supprimez les barres qui ne correspondent plus aux données
+
       existingBars.exit().remove();
 
 
-      // Mettez à jour les propriétés des barres existantes
+
       existingBars.transition()
           .duration(500)
           .attr('y', artist => yScale(artist.name))
           .attr('width', artist => xScale(artist.deezerFans))
           .attr('height', yScale.bandwidth());
 
-      // Mettez à jour l'axe y avec la nouvelle échelle
+
       d3.select('.bar-chart-artists').select('.y-axis')
           .transition()
           .duration(500)
@@ -648,12 +620,11 @@ export default {
 
       d3.select('.y-axis').selectAll('text')
           .on('mouseover', (event, index) => {
-            // Récupérez l'artiste correspondant à l'index dans les données filtrées
+
             const artist = data.find(artist => artist.name === index);
             this.clickedArtist = true;
             this.showArtistSelected(artist);
 
-            // Vous pouvez accéder directement aux propriétés de l'artiste ici
             const toolDetails = artist.name + "<br>" + artist.deezerFans + " fans sur Deezer"
                 + "<br>" + artist.nombre_albums + " albums ";
            return  tooltip.html(toolDetails).style("visibility", "visible").style("color", "black")
@@ -693,8 +664,6 @@ export default {
             return tooltip.style("visibility", "hidden");
           })
           .on('click', (event,artist) => {
-            // this.clickedArtist = true;
-            // const artist = this.data[id];
             this.showArtistSelected(artist);
             return tooltip.style("visibility", "hidden");
           });
@@ -757,7 +726,7 @@ h3 {
   color: black;
   width: 100%;
   height: 100%;
-  overflow: auto; /* Ajoutez cette propriété pour activer le défilement */
+  overflow: auto;
 }
 
 
@@ -768,7 +737,7 @@ svg {
 
 .checkbox-container {
   display: flex;
-  justify-content: center; /* Centrer horizontalement */
+  justify-content: center;
   align-items: center;
   width: 600px;
   height: 20px;
@@ -776,9 +745,8 @@ svg {
   border-radius: 10px;
   padding: 10px;
   overflow: hidden;
-  margin-left: auto; /* Ajout de cette ligne pour centrer horizontalement */
-  margin-right: auto; /* Ajout de cette ligne pour centrer horizontalement */
-}
+  margin-left: auto;
+  margin-right: auto;
 
 
 .fixed-info-column {
@@ -786,8 +754,8 @@ svg {
   top: 10%;
   right: 0;
   border-color: black;
-  width: 300px; /* Ajustez la largeur selon vos besoins */ /* Ajoutez une couleur de fond si nécessaire */
-  padding: 20px; /* Ajoutez du rembourrage pour l'espace intérieur */
+  width: 300px;
+  padding: 20px;
   height: 600px;
   border: 3px solid ;
   border-radius: 25px;
